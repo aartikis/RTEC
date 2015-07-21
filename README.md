@@ -53,6 +53,6 @@ Datasets for these applications are available from [my site](http://users.iit.de
 # Paper
 Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://dx.doi.org/10.1109/TKDE.2014.2356476). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
 
-# Related Sotware
+# Related Software
 - [ILED](https://github.com/nkatzz/ILED): Incremental Learning of Event Definitions. ILED automatically constructs Event Calculus rules, such as complex event patterns, from (very large) annotated datasets.
 - [LoMRF](https://github.com/anskarl/LoMRF):  Library for Markov Logic Networks. LoMRF supports Event Calculus reasoning under uncertainty.
