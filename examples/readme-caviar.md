@@ -5,6 +5,8 @@
 
 # Execution Instructions
 
+Unzip the compressed dataset in the /data/complete caviar/ directory.
+
 Go to the /execution scripts/complete caviar/ directory.
 
 Launch Prolog.
@@ -26,3 +28,4 @@ To see the intervals of the fluents in the last window, type:
 ```prolog
 holdsFor(U,I).
 ```
+
