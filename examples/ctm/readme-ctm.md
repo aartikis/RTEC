@@ -26,7 +26,7 @@ Load continuousQueries.prolog:
 Invoke continuousER(TimesFile, Window, Step, LastTime) with appropriate values for the 3 arguments. Eg:
 
 ```prolog
-continuousER('times.txt', 10000,1000,50000).
+continuousER('times.txt', 10000, 1000, 50000).
 ```
 instructs RTEC to perform continuous queries where window=10000, step=1000, the event recognition times per query are recorded in times.txt, and querying ends when time-point 50000 is reached.
 
