@@ -18,7 +18,7 @@ continuousER(TimesFile, InputFile, WM, Step, LastTime) :-
   updateManySDE(0, WM), %retractOrientation,
   WMPlus1 is WM+1, 
   % the first event recognition time should not be counted
-  % because there is old input facts being retracted
+  % because there are no old input facts being retracted
   eventRecognition(WM, WMPlus1),
   CurrentTime is WM+Step,
   updateManySDE(WM, CurrentTime), 
