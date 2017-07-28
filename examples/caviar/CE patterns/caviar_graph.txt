@@ -1,0 +1,55 @@
+digraph
+{
+	node [shape=Mrecord];
+	rankdir=LR;
+	ranksep="1.2 equally";
+
+	0 [label="<abrupt(_)=true> abrupt(_)=true|<active(_)=true> active(_)=true|<appear(_)> appear(_)|<disappear(_)> disappear(_)|<distance(_,_,24)=true> distance(_,_,24)=true|<distance(_,_,25)=true> distance(_,_,25)=true|<distance(_,_,30)=true> distance(_,_,30)=true|<distance(_,_,34)=true> distance(_,_,34)=true|<inactive(_)=true> inactive(_)=true|<running(_)=true> running(_)=true|<walking(_)=true> walking(_)=true"];
+	1 [label="<close(_,_,24)=true> close(_,_,24)=true|<close(_,_,25)=true> close(_,_,25)=true|<close(_,_,30)=true> close(_,_,30)=true|<close(_,_,34)=true> close(_,_,34)=true|<close(_,_,_)=true> close(_,_,_)=true|<leaving_object(_,_)=false> leaving_object(_,_)=false|<person(_)=false> person(_)=false|<person(_)=true> person(_)=true"];
+	2 [label="<activeOrInactivePerson(_)=true> activeOrInactivePerson(_)=true|<close(_,_,34)=false> close(_,_,34)=false|<close(_,_,_)=false> close(_,_,_)=false|<closeSymmetric(_,_,30)=true> closeSymmetric(_,_,30)=true|<closeSymmetric(_,_,_)=true> closeSymmetric(_,_,_)=true|<fighting(_,_)=true> fighting(_,_)=true|<moving(_,_)=true> moving(_,_)=true"];
+	3 [label="<greeting1(_,_)=true> greeting1(_,_)=true|<greeting2(_,_)=true> greeting2(_,_)=true|<leaving_object(_,_)=true> leaving_object(_,_)=true|<meeting(_,_)=false> meeting(_,_)=false"];
+	4 [label="<meeting(_,_)=true> meeting(_,_)=true"];
+
+	0:"abrupt(_)=true" -> 1:"person(_)=true"
+	0:"abrupt(_)=true" -> 2:"fighting(_,_)=true"
+	0:"abrupt(_)=true" -> 3:"greeting1(_,_)=true"
+	0:"abrupt(_)=true" -> 3:"meeting(_,_)=false"
+	0:"active(_)=true" -> 1:"person(_)=true"
+	0:"active(_)=true" -> 2:"activeOrInactivePerson(_)=true"
+	0:"appear(_)" -> 3:"leaving_object(_,_)=true"
+	0:"disappear(_)" -> 1:"leaving_object(_,_)=false"
+	0:"disappear(_)" -> 1:"person(_)=false"
+	0:"disappear(_)" -> 1:"person(_)=true"
+	0:"disappear(_)" -> 4:"meeting(_,_)=true"
+	0:"distance(_,_,24)=true" -> 1:"close(_,_,24)=true"
+	0:"distance(_,_,25)=true" -> 1:"close(_,_,25)=true"
+	0:"distance(_,_,30)=true" -> 1:"close(_,_,30)=true"
+	0:"distance(_,_,34)=true" -> 1:"close(_,_,34)=true"
+	0:"inactive(_)=true" -> 2:"activeOrInactivePerson(_)=true"
+	0:"inactive(_)=true" -> 2:"fighting(_,_)=true"
+	0:"inactive(_)=true" -> 3:"leaving_object(_,_)=true"
+	0:"running(_)=true" -> 1:"person(_)=true"
+	0:"running(_)=true" -> 3:"greeting1(_,_)=true"
+	0:"running(_)=true" -> 3:"meeting(_,_)=false"
+	0:"walking(_)=true" -> 1:"person(_)=true"
+	0:"walking(_)=true" -> 2:"moving(_,_)=true"
+	0:"walking(_)=true" -> 3:"greeting2(_,_)=true"
+	1:"close(_,_,24)=true" -> 1:"close(_,_,25)=true"
+	1:"close(_,_,24)=true" -> 2:"fighting(_,_)=true"
+	1:"close(_,_,25)=true" -> 1:"close(_,_,30)=true"
+	1:"close(_,_,25)=true" -> 3:"greeting1(_,_)=true"
+	1:"close(_,_,25)=true" -> 3:"greeting2(_,_)=true"
+	1:"close(_,_,30)=true" -> 1:"close(_,_,34)=true"
+	1:"close(_,_,34)=true" -> 2:"moving(_,_)=true"
+	1:"close(_,_,_)=true" -> 2:"close(_,_,_)=false"
+	1:"close(_,_,_)=true" -> 2:"closeSymmetric(_,_,_)=true"
+	1:"person(_)=true" -> 2:"activeOrInactivePerson(_)=true"
+	1:"person(_)=true" -> 3:"greeting1(_,_)=true"
+	1:"person(_)=true" -> 3:"leaving_object(_,_)=true"
+	2:"activeOrInactivePerson(_)=true" -> 3:"greeting1(_,_)=true"
+	2:"activeOrInactivePerson(_)=true" -> 3:"greeting2(_,_)=true"
+	2:"close(_,_,34)=false" -> 3:"meeting(_,_)=false"
+	2:"closeSymmetric(_,_,30)=true" -> 3:"leaving_object(_,_)=true"
+	3:"greeting1(_,_)=true" -> 4:"meeting(_,_)=true"
+	3:"greeting2(_,_)=true" -> 4:"meeting(_,_)=true"
+}

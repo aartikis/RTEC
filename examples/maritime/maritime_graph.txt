@@ -1,0 +1,33 @@
+digraph
+{
+	node [shape=Mrecord];
+	rankdir=LR;
+	ranksep="1.2 equally";
+
+	0 [label="<coord(_,_,_)> coord(_,_,_)|<gap_start(_)> gap_start(_)|<isInArea(_,_)> isInArea(_,_)|<leavesArea(_,_)> leavesArea(_,_)|<proximity(_,_)=true> proximity(_,_)=true|<slow_motion_end(_)> slow_motion_end(_)|<slow_motion_start(_)> slow_motion_start(_)|<stop_end(_)> stop_end(_)|<stop_start(_)> stop_start(_)|<velocity(_,_,_)> velocity(_,_,_)"];
+	1 [label="<highSpeedIn(_,_)=true> highSpeedIn(_,_)=true|<sailing(_)=true> sailing(_)=true|<stopped(_)=true> stopped(_)=true|<withinArea(_,_)=true> withinArea(_,_)=true"];
+	2 [label="<lowSpeed(_)=true> lowSpeed(_)=true"];
+	3 [label="<loitering(_)=true> loitering(_)=true|<rendezVouz(_,_)=true> rendezVouz(_,_)=true"];
+
+	0:"coord(_,_,_)" -> 1:"stopped(_)=true"
+	0:"coord(_,_,_)" -> 2:"lowSpeed(_)=true"
+	0:"gap_start(_)" -> 1:"highSpeedIn(_,_)=true"
+	0:"gap_start(_)" -> 1:"sailing(_)=true"
+	0:"isInArea(_,_)" -> 1:"highSpeedIn(_,_)=true"
+	0:"isInArea(_,_)" -> 1:"withinArea(_,_)=true"
+	0:"leavesArea(_,_)" -> 1:"highSpeedIn(_,_)=true"
+	0:"leavesArea(_,_)" -> 1:"withinArea(_,_)=true"
+	0:"proximity(_,_)=true" -> 3:"rendezVouz(_,_)=true"
+	0:"slow_motion_end(_)" -> 2:"lowSpeed(_)=true"
+	0:"slow_motion_start(_)" -> 2:"lowSpeed(_)=true"
+	0:"stop_end(_)" -> 1:"stopped(_)=true"
+	0:"stop_start(_)" -> 1:"stopped(_)=true"
+	0:"velocity(_,_,_)" -> 1:"highSpeedIn(_,_)=true"
+	0:"velocity(_,_,_)" -> 1:"sailing(_)=true"
+	1:"stopped(_)=true" -> 2:"lowSpeed(_)=true"
+	1:"stopped(_)=true" -> 3:"loitering(_)=true"
+	1:"stopped(_)=true" -> 3:"rendezVouz(_,_)=true"
+	1:"withinArea(_,_)=true" -> 3:"loitering(_)=true"
+	2:"lowSpeed(_)=true" -> 3:"loitering(_)=true"
+	2:"lowSpeed(_)=true" -> 3:"rendezVouz(_,_)=true"
+}

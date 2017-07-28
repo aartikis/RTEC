@@ -1,0 +1,119 @@
+holds close(Id1, Id2, 24) iff
+	distance(Id1, Id2, 24).
+
+holds close(Id1, Id2, 25) iff
+	close(Id1, Id2, 24) or
+	distance(Id1, Id2, 25).
+
+holds close(Id1, Id2, 30) iff 
+	close(Id1, Id2, 25) or
+	distance(Id1, Id2, 30).
+
+holds close(Id1, Id2, 34) iff
+	close(Id1, Id2, 30) or
+	distance(Id1, Id2, 34).
+
+holds close(Id1, Id2, Threshold)=false iff
+	not close(Id1, Id2, Threshold).
+
+holds closeSymmetric(Id1, Id2, Threshold) iff
+	close(Id1, Id2, Threshold) or
+	close(Id2, Id1, Threshold).
+
+
+
+
+
+initiate person(Id) if
+	start walking(Id),
+	not happens disappear(Id).
+
+initiate person(Id) if
+	start running(Id),
+	not happens disappear(Id).
+
+initiate person(Id) if
+	start active(Id),
+	not happens disappear(Id).
+
+initiate person(Id) if
+	start abrupt(Id),
+	not happens disappear(Id).
+
+initiate person(Id)=false if
+	happens disappear(Id).
+
+
+
+
+
+initiate leaving_object(Person, Object) if
+	happens appear(Object),
+	holds inactive(Object),
+	holds person(Person),
+	holds closeSymmetric(Person, Object, 30).
+
+initiate leaving_object(Person, Object)=false if
+	happens disappear(Object).
+
+
+
+
+
+initiate meeting(P1, P2) if
+	start greeting1(P1, P2),
+	not happens disappear(P1),
+	not happens disappear(P2).
+
+initiate meeting(P1, P2) if
+	start greeting2(P1, P2),
+	not happens disappear(P1),
+	not happens disappear(P2).
+
+holds greeting1(P1, P2) iff
+	(activeOrInactivePerson(P1),
+	person(P2),
+	close(P1, P2, 25)),
+	not(running(P2) or abrupt(P2)).
+
+holds greeting2(P1, P2) iff
+	walking(P1),
+	activeOrInactivePerson(P2),
+	close(P2, P1, 25).
+
+holds activeOrInactivePerson(P) iff
+	active(P) or (inactive(P), person(P)).
+
+initiate meeting(P1, P2)=false if
+	start running(P1).
+
+initiate meeting(P1, P2)=false if
+	start running(P2).
+
+initiate meeting(P1, P2)=false if
+	start abrupt(P1).
+
+initiate meeting(P1, P2)=false if
+	start abrupt(P2).
+
+initiate meeting(P1, P2)=false if
+	start close(P1, P2, 34)=false.
+
+
+	
+	
+	
+holds moving(P1, P2) iff
+	walking(P1),
+	walking(P2),
+	close(P1, P2, 34).
+
+	
+	
+	
+
+holds fighting(P1, P2) iff
+	((abrupt(P1) or abrupt(P2)),
+	close(P1, P2, 24)),
+	not(inactive(P1) or inactive(P2)).
+	

@@ -1,0 +1,64 @@
+initiate stopped(Vessel) if
+	happens stop_start(Vessel),
+	happens coord(Vessel, Lon, Lat),
+	nearPorts(Lon,Lat,[]).
+
+terminate stopped(Vessel) if
+	happens stop_end(Vessel).
+
+initiate lowSpeed(Vessel) if
+	happens slow_motion_start(Vessel),
+	happens coord(Vessel, Lon, Lat),
+	nearPorts(Lon,Lat,[]).
+
+terminate lowSpeed(Vessel) if
+	happens slow_motion_end(Vessel).
+
+terminate lowSpeed(Vessel) if
+	start stopped(Vessel).
+
+initiate withinArea(Vessel, AreaName) if
+	happens isInArea(Vessel, AreaName).
+
+terminate withinArea(Vessel, AreaName) if
+	happens leavesArea(Vessel, AreaName).
+
+initiate sailing(Vessel) if
+	happens velocity(Vessel, Speed, Heading),
+	Speed > 2.0.
+
+terminate sailing(Vessel) if
+	happens velocity(Vessel, Speed, Heading),
+	Speed < 2.0.
+
+terminate sailing(Vessel) if
+	happens gap_start(Vessel).
+
+initiate highSpeedIn(Vessel, AreaName) if
+	happens isInArea(Vessel, AreaName),
+	happens velocity(Vessel, Speed, Heading),
+	speedArea(AreaName,SpeedArea),
+	Speed > SpeedArea.
+
+terminate highSpeedIn(Vessel, AreaName) if
+	happens isInArea(Vessel, AreaName),
+	happens velocity(Vessel, Speed, Heading),
+	speedArea(AreaName,SpeedArea),
+	Speed < SpeedArea.
+
+terminate highSpeedIn(Vessel, AreaName) if
+	happens leavesArea(Vessel, AreaName).
+
+terminate highSpeedIn(Vessel, AreaName) if
+	happens gap_start(Vessel).
+
+holds loitering(Vessel) iff
+	((lowSpeed(Vessel) or stopped(Vessel)),
+	withinArea(Vessel, AreaName)),
+	duration > 600.
+
+holds rendezVouz(Vessel1, Vessel2) iff
+	(proximity(Vessel1, Vessel2),
+	(lowSpeed(Vessel1) or stopped(Vessel1)),
+	(lowSpeed(Vessel2) or stopped(Vessel2))),
+	duration > 600.

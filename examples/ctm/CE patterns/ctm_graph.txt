@@ -1,0 +1,54 @@
+digraph
+{
+	node [shape=Mrecord];
+	rankdir=LR;
+	ranksep="1.2 equally";
+
+	0 [label="<abrupt_acceleration(_,_)=abrupt> abrupt_acceleration(_,_)=abrupt|<abrupt_acceleration(_,_)=very_abrupt> abrupt_acceleration(_,_)=very_abrupt|<abrupt_deceleration(_,_)=abrupt> abrupt_deceleration(_,_)=abrupt|<abrupt_deceleration(_,_)=very_abrupt> abrupt_deceleration(_,_)=very_abrupt|<internal_temperature_change(_,_,normal)> internal_temperature_change(_,_,normal)|<internal_temperature_change(_,_,very_cold)> internal_temperature_change(_,_,very_cold)|<internal_temperature_change(_,_,very_warm)> internal_temperature_change(_,_,very_warm)|<noise_level_change(_,_,high)> noise_level_change(_,_,high)|<noise_level_change(_,_,low)> noise_level_change(_,_,low)|<passenger_density_change(_,_,high)> passenger_density_change(_,_,high)|<passenger_density_change(_,_,low)> passenger_density_change(_,_,low)|<sharp_turn(_,_)=sharp> sharp_turn(_,_)=sharp|<sharp_turn(_,_)=very_sharp> sharp_turn(_,_)=very_sharp|<stop_enter(_,_,_,early)> stop_enter(_,_,_,early)|<stop_enter(_,_,_,scheduled)> stop_enter(_,_,_,scheduled)|<stop_enter(_,_,_,late)> stop_enter(_,_,_,late)|<stop_leave(_,_,_,early)> stop_leave(_,_,_,early)"];
+	1 [label="<driving_style(_,_)=uncomfortable> driving_style(_,_)=uncomfortable|<driving_style(_,_)=unsafe> driving_style(_,_)=unsafe|<internal_temperature(_,_)=normal> internal_temperature(_,_)=normal|<internal_temperature(_,_)=very_cold> internal_temperature(_,_)=very_cold|<internal_temperature(_,_)=very_warm> internal_temperature(_,_)=very_warm|<noise_level(_,_)=high> noise_level(_,_)=high|<noise_level(_,_)=low> noise_level(_,_)=low|<passenger_density(_,_)=high> passenger_density(_,_)=high|<passenger_density(_,_)=low> passenger_density(_,_)=low|<punctuality(_,_)=punctual> punctuality(_,_)=punctual"];
+	2 [label="<driver_comfort(_,_)=reducing> driver_comfort(_,_)=reducing|<driving_quality(_,_)=high> driving_quality(_,_)=high|<driving_quality(_,_)=medium> driving_quality(_,_)=medium|<passenger_comfort(_,_)=reducing> passenger_comfort(_,_)=reducing|<punctuality(_,_)=non_punctual> punctuality(_,_)=non_punctual"];
+	3 [label="<driving_quality(_,_)=low> driving_quality(_,_)=low|<passenger_satisfaction(_,_)=reducing> passenger_satisfaction(_,_)=reducing|<punctuality_change(_,_,non_punctual)> punctuality_change(_,_,non_punctual)|<punctuality_change(_,_,punctual)> punctuality_change(_,_,punctual)"];
+
+	0:"abrupt_acceleration(_,_)=abrupt" -> 1:"driving_style(_,_)=uncomfortable"
+	0:"abrupt_acceleration(_,_)=very_abrupt" -> 1:"driving_style(_,_)=uncomfortable"
+	0:"abrupt_acceleration(_,_)=very_abrupt" -> 1:"driving_style(_,_)=unsafe"
+	0:"abrupt_deceleration(_,_)=abrupt" -> 1:"driving_style(_,_)=uncomfortable"
+	0:"abrupt_deceleration(_,_)=very_abrupt" -> 1:"driving_style(_,_)=uncomfortable"
+	0:"abrupt_deceleration(_,_)=very_abrupt" -> 1:"driving_style(_,_)=unsafe"
+	0:"internal_temperature_change(_,_,normal)" -> 1:"internal_temperature(_,_)=normal"
+ 	0:"internal_temperature_change(_,_,very_cold)" -> 1:"internal_temperature(_,_)=very_cold"
+ 	0:"internal_temperature_change(_,_,very_warm)" -> 1:"internal_temperature(_,_)=very_warm"
+ 	0:"noise_level_change(_,_,high)" -> 1:"noise_level(_,_)=high"
+ 	0:"noise_level_change(_,_,low)" -> 1:"noise_level(_,_)=low"
+ 	0:"passenger_density_change(_,_,high)" -> 1:"passenger_density(_,_)=high"
+	0:"passenger_density_change(_,_,low)" -> 1:"passenger_density(_,_)=low"
+	0:"sharp_turn(_,_)=sharp" -> 1:"driving_style(_,_)=uncomfortable"
+	0:"sharp_turn(_,_)=very_sharp" -> 1:"driving_style(_,_)=unsafe"
+	0:"stop_enter(_,_,_,early)" -> 1:"punctuality(_,_)=punctual"
+	0:"stop_enter(_,_,_,late)" -> 1:"punctuality(_,_)=punctual"
+	0:"stop_enter(_,_,_,scheduled)" -> 1:"punctuality(_,_)=punctual"
+	0:"stop_leave(_,_,_,early)" -> 1:"punctuality(_,_)=punctual"
+	1:"driving_style(_,_)=uncomfortable" -> 2:"driver_comfort(_,_)=reducing"
+	1:"driving_style(_,_)=uncomfortable" -> 2:"driving_quality(_,_)=high"
+	1:"driving_style(_,_)=uncomfortable" -> 2:"driving_quality(_,_)=medium"
+	1:"driving_style(_,_)=uncomfortable" -> 2:"passenger_comfort(_,_)=reducing"
+	1:"driving_style(_,_)=unsafe" -> 2:"driver_comfort(_,_)=reducing"
+	1:"driving_style(_,_)=unsafe" -> 2:"driving_quality(_,_)=high"
+	1:"driving_style(_,_)=unsafe" -> 2:"passenger_comfort(_,_)=reducing"
+	1:"driving_style(_,_)=unsafe" -> 3:"driving_quality(_,_)=low"
+	1:"internal_temperature(_,_)=very_cold" -> 2:"driver_comfort(_,_)=reducing"
+	1:"internal_temperature(_,_)=very_cold" -> 2:"passenger_comfort(_,_)=reducing"
+	1:"internal_temperature(_,_)=very_warm" -> 2:"driver_comfort(_,_)=reducing"
+	1:"internal_temperature(_,_)=very_warm" -> 2:"passenger_comfort(_,_)=reducing"
+	1:"noise_level(_,_)=high" -> 2:"driver_comfort(_,_)=reducing"
+	1:"noise_level(_,_)=high" -> 2:"passenger_comfort(_,_)=reducing"
+	1:"passenger_density(_,_)=high" -> 2:"passenger_comfort(_,_)=reducing"
+	1:"punctuality(_,_)=punctual" -> 2:"driving_quality(_,_)=high"
+	1:"punctuality(_,_)=punctual" -> 2:"driving_quality(_,_)=medium"
+	1:"punctuality(_,_)=punctual" -> 2:"punctuality(_,_)=non_punctual"
+	1:"punctuality(_,_)=punctual" -> 3:"punctuality_change(_,_,non_punctual)"
+	2:"passenger_comfort(_,_)=reducing" -> 3:"passenger_satisfaction(_,_)=reducing"
+	2:"punctuality(_,_)=non_punctual" -> 3:"driving_quality(_,_)=low"
+	2:"punctuality(_,_)=non_punctual" -> 3:"passenger_satisfaction(_,_)=reducing"
+	2:"punctuality(_,_)=non_punctual" -> 3:"punctuality_change(_,_,punctual)"
+}
