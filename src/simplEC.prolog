@@ -282,13 +282,20 @@ holdsFor		--> 	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("iff"), space
 					%findall((D, P), (cachingPriority(D, P), sub_string(D, 0, _, _, Prefix), assertz(head(D)), HeadPriority > P, assertz(cachingPriority(D, HeadPriority)), propagatePriority(D, HeadPriority)), _))
 				}.
 
-starAt			-->	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("if"), space, atBody(Body, _, HeadDeclRepr, HeadGraphRepr), ".",
+starAt			-->	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("if"), space, atBody(EntireBody, _, HeadDeclRepr, HeadGraphRepr), ".",
 				{
+					split_string(EntireBody, "^", "", BodyParts),
+					%writeln(EntireBody),
+					%writeln(BodyParts),
+					findall(Body,
+					(member(Body, BodyParts),
+					%writeln(Body),
 					string_codes(Body, BodyCodes),
 					list_head(BodyCodes, _, CommaFreeBodyCodes),
 					string_codes(CommaFreeBody, CommaFreeBodyCodes),
-					
-					write(Head), write(" :-"), write(CommaFreeBody), write(".\n\n"),
+					%writeln(CommaFreeBody),
+					write(Head), write(" :-"), write(CommaFreeBody), write(".\n\n")),
+					_),
 					
 					%HeadPriority is BodyPriority + 1,
 					%
@@ -321,7 +328,7 @@ starAt			-->	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("if"), space, a
 sep("iff")		--> 	"iff".
 sep("if")		--> 	"if".
 
-head(HeadStr, DeclRepr, GraphRepr)						--> 	"holds", space, fluent("sD", "output", CTStr, DeclRepr, GraphRepr, _, _, null, null),
+head(HeadStr, DeclRepr, GraphRepr)						--> 	fluent("sD", "output", CTStr, DeclRepr, GraphRepr, _, _, null, null),
 									{
 										atomics_to_string(["holdsFor(", CTStr, ", I)"], "", HeadStr),
 										(\+ head(DeclRepr) -> assertz(head(DeclRepr))
@@ -439,7 +446,7 @@ value(ValStr, val)						-->	"=", number(ArgStr),
 									{
 										string_concat("=", ArgStr, ValStr)
 									}.
-value("=true", val)						-->	[].
+%value("=true", val)						-->	[].
 
 restChars(Chars)						--> 	string_without([9, 10, 13, 32, 40, 41, 44, 46], Chars).
 
@@ -634,26 +641,37 @@ durationConstraint(DCStr)					-->	"duration", space, operator(OpStr), space, num
 										atomics_to_string([",\n\tfindall((S,E), (member((S,E), I", PrevInt, "), Diff is E-S, Diff ", OpStr, " ", NumStr, "), I", Int, ")"], "", DCStr)
 									}.
 
-atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"happens", space, event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
+atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			--> atBodyPart(AtBodyPartStr, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(MoreAtBodyPartsStr, _, HeadDeclRepr, HeadGraphRepr),
+									{
+										atomics_to_string([AtBodyPartStr, "^", MoreAtBodyPartsStr], "", AtBodyStr)
+									}.
+
+atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"happens", space, event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
 									{
 										atomics_to_string([",\n\thappensAt(", CTStr, ", T)", MCondStr], "", AtBodyStr)
 										%Priority is Priority1 + Priority2
 									}.
-atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"not happens", space, event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
-									{
-										atomics_to_string([",\n\t\\+ happensAt(", CTStr, ", T)", MCondStr], "", AtBodyStr)
-										%Priority is Priority1 + Priority2
-									}.
-atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"start", space, fluent("sD", "input", CTStr, _, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
+%atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"not happens", space, event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
+%									{
+%										atomics_to_string([",\n\t\\+ happensAt(", CTStr, ", T)", MCondStr], "", AtBodyStr)
+%										%Priority is Priority1 + Priority2
+%									}.
+atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"start", space, fluent("sD", "input", CTStr, _, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
 									{
 										atomics_to_string([",\n\thappensAt(start(", CTStr, "), T)", MCondStr], "", AtBodyStr)
 										%Priority is Priority1 + Priority2
 									}.
-atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"end", space, fluent("sD", "input", CTStr, _, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
+atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"end", space, fluent("sD", "input", CTStr, _, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
 									{
 										atomics_to_string([",\n\thappensAt(end(", CTStr, "), T)", MCondStr], "", AtBodyStr)
 										%Priority is Priority1 + Priority2
 									}.
+
+moreAtBodyParts(MoreAtBodyPartsStr, _, HeadDeclRepr, HeadGraphRepr)		--> space, "or", space, atBodyPart(AtBodyPartStr, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(MMoreAtBodyPartsStr, _, HeadDeclRepr, HeadGraphRepr),
+									{
+										atomics_to_string([AtBodyPartStr, "^", MMoreAtBodyPartsStr], "", MoreAtBodyPartsStr)
+									}.
+moreAtBodyParts("", _, _, _)		--> [].
 
 condition(CondStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"start", space, fluent("sD", "input", CTStr, _, _, Priority, _, HeadDeclRepr, HeadGraphRepr),
 									{
@@ -671,11 +689,11 @@ condition(CondStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"not happens", s
 									{
 										atomics_to_string([",\n\t\\+ happensAt(", CTStr, ", T)"], "", CondStr)
 									}.
-condition(CondStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"holds", space, fluent("sD", "input", CTStr, _, _, Priority, _, HeadDeclRepr, HeadGraphRepr),
+condition(CondStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	fluent("sD", "input", CTStr, _, _, Priority, _, HeadDeclRepr, HeadGraphRepr),
 									{
 										atomics_to_string([",\n\tholdsAt(", CTStr, ", T)"], "", CondStr)
 									}.
-condition(CondStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"not holds", space, fluent("sD", "input", CTStr, _, _, Priority, _, HeadDeclRepr, HeadGraphRepr),
+condition(CondStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"not", space, fluent("sD", "input", CTStr, _, _, Priority, _, HeadDeclRepr, HeadGraphRepr),
 									{
 										atomics_to_string([",\n\t\\+ holdsAt(", CTStr, ", T)"], "", CondStr)
 									}.
