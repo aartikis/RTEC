@@ -1,119 +1,83 @@
-holds close(Id1, Id2, 24) iff
-	distance(Id1, Id2, 24).
+close(Id1, Id2, 24)=true iff
+	distance(Id1, Id2, 24)=true.
 
-holds close(Id1, Id2, 25) iff
-	close(Id1, Id2, 24) or
-	distance(Id1, Id2, 25).
+close(Id1, Id2, 25)=true iff
+	close(Id1, Id2, 24)=true or
+	distance(Id1, Id2, 25)=true.
 
-holds close(Id1, Id2, 30) iff 
-	close(Id1, Id2, 25) or
-	distance(Id1, Id2, 30).
+close(Id1, Id2, 30)=true iff 
+	close(Id1, Id2, 25)=true or
+	distance(Id1, Id2, 30)=true.
 
-holds close(Id1, Id2, 34) iff
-	close(Id1, Id2, 30) or
-	distance(Id1, Id2, 34).
+close(Id1, Id2, 34)=true iff
+	close(Id1, Id2, 30)=true or
+	distance(Id1, Id2, 34)=true.
 
-holds close(Id1, Id2, Threshold)=false iff
-	not close(Id1, Id2, Threshold).
+close(Id1, Id2, Threshold)=false iff
+	not close(Id1, Id2, Threshold)=true.
 
-holds closeSymmetric(Id1, Id2, Threshold) iff
-	close(Id1, Id2, Threshold) or
-	close(Id2, Id1, Threshold).
+closeSymmetric(Id1, Id2, Threshold)=true iff
+	close(Id1, Id2, Threshold)=true or
+	close(Id2, Id1, Threshold)=true.
 
-
-
-
-
-initiate person(Id) if
-	start walking(Id),
-	not happens disappear(Id).
-
-initiate person(Id) if
-	start running(Id),
-	not happens disappear(Id).
-
-initiate person(Id) if
-	start active(Id),
-	not happens disappear(Id).
-
-initiate person(Id) if
-	start abrupt(Id),
+initiate person(Id)=true if
+	start walking(Id)=true,
+	not happens disappear(Id)
+or	start running(Id)=true,
+	not happens disappear(Id)
+or	start active(Id)=true,
+	not happens disappear(Id)
+or	start abrupt(Id)=true,
 	not happens disappear(Id).
 
 initiate person(Id)=false if
-	happens disappear(Id).
+	disappear(Id).
 
-
-
-
-
-initiate leaving_object(Person, Object) if
-	happens appear(Object),
-	holds inactive(Object),
-	holds person(Person),
-	holds closeSymmetric(Person, Object, 30).
+initiate leaving_object(Person, Object)=true if
+	appear(Object),
+	inactive(Object)=true,
+	person(Person)=true,
+	closeSymmetric(Person, Object, 30)=true.
 
 initiate leaving_object(Person, Object)=false if
-	happens disappear(Object).
+	disappear(Object).
 
-
-
-
-
-initiate meeting(P1, P2) if
-	start greeting1(P1, P2),
+initiate meeting(P1, P2)=true if
+	start greeting1(P1, P2)=true,
+	not happens disappear(P1),
+	not happens disappear(P2)
+or	start greeting2(P1, P2)=true,
 	not happens disappear(P1),
 	not happens disappear(P2).
 
-initiate meeting(P1, P2) if
-	start greeting2(P1, P2),
-	not happens disappear(P1),
-	not happens disappear(P2).
+greeting1(P1, P2)=true iff
+	(activeOrInactivePerson(P1)=true,
+	person(P2)=true,
+	close(P1, P2, 25)=true),
+	not(running(P2)=true or abrupt(P2)=true).
 
-holds greeting1(P1, P2) iff
-	(activeOrInactivePerson(P1),
-	person(P2),
-	close(P1, P2, 25)),
-	not(running(P2) or abrupt(P2)).
+greeting2(P1, P2)=true iff
+	walking(P1)=true,
+	activeOrInactivePerson(P2)=true,
+	close(P2, P1, 25)=true.
 
-holds greeting2(P1, P2) iff
-	walking(P1),
-	activeOrInactivePerson(P2),
-	close(P2, P1, 25).
-
-holds activeOrInactivePerson(P) iff
-	active(P) or (inactive(P), person(P)).
+activeOrInactivePerson(P)=true iff
+	active(P)=true or (inactive(P)=true, person(P)=true).
 
 initiate meeting(P1, P2)=false if
-	start running(P1).
+	start running(P1)=true
+or	start running(P2)=true
+or	start abrupt(P1)=true
+or	start abrupt(P2)=true
+or	start close(P1, P2, 34)=false.
 
-initiate meeting(P1, P2)=false if
-	start running(P2).
+moving(P1, P2)=true iff
+	walking(P1)=true,
+	walking(P2)=true,
+	close(P1, P2, 34)=true.
 
-initiate meeting(P1, P2)=false if
-	start abrupt(P1).
-
-initiate meeting(P1, P2)=false if
-	start abrupt(P2).
-
-initiate meeting(P1, P2)=false if
-	start close(P1, P2, 34)=false.
-
-
-	
-	
-	
-holds moving(P1, P2) iff
-	walking(P1),
-	walking(P2),
-	close(P1, P2, 34).
-
-	
-	
-	
-
-holds fighting(P1, P2) iff
-	((abrupt(P1) or abrupt(P2)),
-	close(P1, P2, 24)),
-	not(inactive(P1) or inactive(P2)).
+fighting(P1, P2)=true iff
+	((abrupt(P1)=true or abrupt(P2)=true),
+	close(P1, P2, 24)=true),
+	not(inactive(P1)=true or inactive(P2)=true).
 	

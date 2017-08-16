@@ -1,0 +1,76 @@
+initially punctuality(_,_)=punctual.
+
+initiate punctuality(Id, VehicleType)=punctual if
+	stop_enter(Id, VehicleType, _, scheduled)
+or	stop_enter(Id, VehicleType, _, early).
+
+terminate punctuality(Id, VehicleType)=punctual if
+	stop_enter(Id, VehicleType, _, late)
+or	stop_leave(Id, VehicleType, _, early).
+
+punctuality(Id, VehicleType)=non_punctual iff
+	not punctuality(Id, VehicleType)=punctual.
+
+happens punctuality_change(Id, VehicleType, punctual) if
+	end punctuality(Id, VehicleType)=non_punctual.
+
+happens punctuality_change(Id, VehicleType, non_punctual) if
+	end punctuality(Id, VehicleType)=punctual.
+
+driving_style(Id, VehicleType)=unsafe iff
+	sharp_turn(Id, VehicleType)=very_sharp or
+	abrupt_acceleration(Id, VehicleType)=very_abrupt or
+	abrupt_deceleration(Id, VehicleType)=very_abrupt.
+
+driving_style(Id, VehicleType)=uncomfortable iff
+	(sharp_turn(Id, VehicleType)=sharp,
+	not(abrupt_acceleration(Id, VehicleType)=very_abrupt or abrupt_deceleration(Id, VehicleType)=very_abrupt)) or
+	abrupt_acceleration(Id, VehicleType)=abrupt or
+	abrupt_deceleration(Id, VehicleType)=abrupt.
+
+driving_quality(Id, VehicleType)=high iff
+	punctuality(Id, VehicleType)=punctual,
+	not(driving_style(Id, VehicleType)=unsafe or driving_style(Id, VehicleType)=uncomfortable).
+
+driving_quality(Id, VehicleType)=medium iff
+	punctuality(Id, VehicleType)=punctual,
+	driving_style(Id, VehicleType)=uncomfortable.
+
+driving_quality(Id, VehicleType)=low iff
+	punctuality(Id, VehicleType)=non_punctual or
+	driving_style(Id, VehicleType)=unsafe.
+
+passenger_comfort(Id, VehicleType)=reducing iff
+	driving_style(Id, VehicleType)=uncomfortable or
+	driving_style(Id, VehicleType)=unsafe or
+	passenger_density(Id, VehicleType)=high or
+	noise_level(Id, VehicleType)=high or
+	internal_temperature(Id, VehicleType)=very_warm or
+	internal_temperature(Id, VehicleType)=very_cold.
+
+initially passenger_density(_,_)=low.
+
+initiate passenger_density(Id, VehicleType)=Value if
+	passenger_density_change(Id, VehicleType, Value).
+
+initially noise_level(_,_)=low.
+
+initiate noise_level(Id, VehicleType)=Value if
+	noise_level_change(Id, VehicleType, Value).
+
+initially internal_temperature(_,_)=normal.
+
+initiate internal_temperature(Id, VehicleType)=Value if
+	internal_temperature_change(Id, VehicleType, Value).
+
+driver_comfort(Id, VehicleType)=reducing iff
+	driving_style(Id, VehicleType)=uncomfortable or
+	driving_style(Id, VehicleType)=unsafe or
+	noise_level(Id, VehicleType)=high or
+	internal_temperature(Id, VehicleType)=very_warm or
+	internal_temperature(Id, VehicleType)=very_cold.
+
+passenger_satisfaction(Id, VehicleType)=reducing iff
+	punctuality(Id, VehicleType)=non_punctual or
+	passenger_comfort(Id, VehicleType)=reducing.
+

@@ -646,7 +646,7 @@ atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			--> atBodyPart(AtBodyPartStr
 										atomics_to_string([AtBodyPartStr, "^", MoreAtBodyPartsStr], "", AtBodyStr)
 									}.
 
-atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	"happens", space, event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
+atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
 									{
 										atomics_to_string([",\n\thappensAt(", CTStr, ", T)", MCondStr], "", AtBodyStr)
 										%Priority is Priority1 + Priority2
