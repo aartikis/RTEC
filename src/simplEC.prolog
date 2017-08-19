@@ -1,6 +1,6 @@
 :- [library(dcg/basics)].
 
-:- dynamic cachingPriority/2, declared/5, defines/3, graphines/2, head/1, noCaching/1, matchRepr/2.
+:- dynamic atem/1, cachingPriority/2, declared/5, defines/3, graphines/2, head/1, noCaching/1, matchRepr/2.
 
 % -----------------------------------------------
 % AUXILIARY TOOLS
@@ -220,6 +220,7 @@ space			-->	[].
 goal			--> 	space, ceDefinition, space, goal.
 goal			--> 	[].
 
+ceDefinition		-->	atemporalPredicates.
 ceDefinition		-->	initially.
 ceDefinition		-->	holdsFor.
 ceDefinition		-->	starAt.
@@ -234,6 +235,17 @@ ceDefinition		-->	string_without([46], ErrRule), ".",
 					write(LogStream, "\nERROR: Unknown event pattern detected.\nPlease check your syntax.\n\n"),
 					close(LogStream)
 				}.
+				
+atemporalPredicates		--> "atemporal:", space, functawr(FncStr), moreFacts, ".",
+				{
+					assertz(atem(FncStr))
+				}.
+				
+moreFacts		--> space, ",", space, functawr(FncStr), moreFacts,
+				{
+					assertz(atem(FncStr))
+				}.
+moreFacts		--> "".
 
 initially		-->	"initially", space, fluent("simple", "output", CTStr, _, _, _, _, null, null), ".",
 				{
@@ -332,8 +344,7 @@ head(HeadStr, DeclRepr, GraphRepr)						--> 	fluent("sD", "output", CTStr, DeclR
 									{
 										atomics_to_string(["holdsFor(", CTStr, ", I)"], "", HeadStr),
 										(\+ head(DeclRepr) -> assertz(head(DeclRepr))
-										;
-										true)
+										;										true)
 									}.
 head(HeadStr, DeclRepr, GraphRepr)						--> 	"initiate", space, fluent("simple", "output", CTStr, DeclRepr, GraphRepr, _, _, null, null),
 									{
@@ -353,6 +364,7 @@ head(HeadStr, DeclRepr, GraphRepr)						--> 	"happens", space, event("output", E
 
 fluent(Type, Etype, CTStr, DeclRepr, GraphRepr, Priority, I, HeadDeclRepr, HeadGraphRepr)	--> 	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index), ")", value(ValStr, VType), !,
 									{
+										\+ atem(FncStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")", ValStr], "", CTStr),
 										atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRePrefix),
 										atomics_to_string([DeclRePrefix, ValStr], "", DeclRepr),
@@ -446,7 +458,7 @@ value(ValStr, val)						-->	"=", number(ArgStr),
 									{
 										string_concat("=", ArgStr, ValStr)
 									}.
-%value("=true", val)						-->	[].
+value("=true", val)						-->	[].
 
 restChars(Chars)						--> 	string_without([9, 10, 13, 32, 40, 41, 44, 46], Chars).
 
