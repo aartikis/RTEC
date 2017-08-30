@@ -229,6 +229,7 @@ goal			--> 	space, ceDefinition, space, goal.
 goal			--> 	[].
 
 ceDefinition		-->	atemporalPredicates.
+ceDefinition		-->	multivaluedFluents.
 ceDefinition		-->	initially.
 ceDefinition		-->	holdsFor.
 ceDefinition		-->	starAt.
@@ -244,16 +245,34 @@ ceDefinition		-->	string_without([46], ErrRule), ".",
 					close(LogStream)
 				}.
 				
-atemporalPredicates		--> "atemporal:", space, functawr(FncStr), moreFacts, ".",
+atemporalPredicates	-->	"atemporal:", space, functawr(FncStr), moreFacts, ".",
 				{
 					assertz(atem(FncStr))
 				}.
 				
-moreFacts		--> space, ",", space, functawr(FncStr), moreFacts,
+moreFacts		-->	space, ",", space, functawr(FncStr), moreFacts,
 				{
 					assertz(atem(FncStr))
 				}.
-moreFacts		--> "".
+moreFacts		-->	"".
+
+multivaluedFluents	-->	"multivalued:", space, multivaluedFluent, moremultivaluedFluents.
+
+moremultivaluedFluents	-->	space, ",", space, multivaluedFluent, moremultivaluedFluents.
+moremultivaluedFluents	-->	"".
+
+multivaluedFluent	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, "=", space, list(_, List),
+				{
+					atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRePrefix),
+					
+					forall(member(ValStr, List), 
+					
+					(atomics_to_string([DeclRePrefix, "=", ValStr], "", DeclRepr),
+					atomics_to_string([FncStr, "(", GArgLStr, ")=", ValStr], "", GraphRepr),
+					atomics_to_string([FncStr, "(", IndArgLStr, ")=", ValStr, ", ", Index], "", IndRepr),
+					
+					assertz(declared(DeclRepr, GraphRepr, IndRepr, "sD", "input"))))
+				}.
 
 initially		-->	"initially", space, fluent("simple", "output", CTStr, _, _, _, _, null, null), ".",
 				{
@@ -370,7 +389,7 @@ head(HeadStr, DeclRepr, GraphRepr)						--> 	"happens", space, event("output", E
 										atomics_to_string(["happensAt(", EvStr, ", T)"], "", HeadStr)
 									}.
 
-fluent(Type, Etype, CTStr, DeclRepr, GraphRepr, Priority, I, HeadDeclRepr, HeadGraphRepr)	--> 	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index), ")", space, value(ValStr, VType), !,
+fluent(Type, Etype, CTStr, DeclRepr, GraphRepr, Priority, I, HeadDeclRepr, HeadGraphRepr)	--> 	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, value(ValStr, VType), !,
 									{
 										\+ atem(FncStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")", ValStr], "", CTStr),
@@ -411,7 +430,7 @@ fluent(Type, Etype, CTStr, DeclRepr, GraphRepr, Priority, I, HeadDeclRepr, HeadG
 										assertz(matchRepr(DeclRepr, GraphRepr)))
 									}.
 
-event(Etype, EvStr, DeclRepr, GraphRepr, Priority, HeadDeclRepr, HeadGraphRepr)		-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index), ")",
+event(Etype, EvStr, DeclRepr, GraphRepr, Priority, HeadDeclRepr, HeadGraphRepr)		-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")",
 									{
 										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", EvStr),
 										atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRepr),
@@ -458,6 +477,14 @@ value(ValStr, var)						-->	"=", space, variable(ArgStr),
 									{
 										string_concat("=", ArgStr, ValStr)
 									}.
+value(ValStr, var)						-->	"=", space, tuple(ArgStr, List),
+									{
+										list_head(List, First, _),
+										string_codes(First, FirCd),
+										list_head(FirCd, F, _),
+										char_type(F, upper),
+										string_concat("=", ArgStr, ValStr)
+									}.
 value(ValStr, val)						-->	"=", space, functawr(ArgStr),
 									{
 										string_concat("=", ArgStr, ValStr)
@@ -470,7 +497,7 @@ value(ValStr, val)						-->	"=", space, numUnit(ArgStr),
 									{
 										string_concat("=", ArgStr, ValStr)
 									}.
-value(ValStr, val)						-->	"=", space, tuple(ArgStr),
+value(ValStr, val)						-->	"=", space, tuple(ArgStr, _),
 									{
 										string_concat("=", ArgStr, ValStr)
 									}.
@@ -478,7 +505,7 @@ value("=true", val)						-->	[].
 
 restChars(Chars)						--> 	string_without([9, 10, 13, 32, 40, 41, 44, 46], Chars).
 
-argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, ArgStr)		--> 	argument(ArgStr), moreArguments(MArgStr, UMArgStr, GMArgStr),
+argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, ArgStr, ArgList)	--> 	argument(ArgStr), moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList),
 									{
 										string_concat(ArgStr, MArgStr, ArgLStr),
 										string_concat("_", UMArgStr, UArgLStr),
@@ -491,26 +518,29 @@ argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, ArgStr)		--> 	argument(Ar
 										;
 										string_concat("_", GMArgStr, GArgLStr))),
 										
-										string_concat(ArgStr, UMArgStr, IndArgLStr)
+										string_concat(ArgStr, UMArgStr, IndArgLStr),
+										addToHead(MArgList, ArgStr, ArgList)
 									}.
-argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, "X")		--> 	"_", moreArguments(MArgStr, UMArgStr, GMArgStr),
+argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, "X", ArgList)	--> 	"_", moreArguments(MArgStr, UMArgStr, GMArgStr),
 									{
 										string_concat("_", MArgStr, ArgLStr),
 										string_concat("_", UMArgStr, UArgLStr),
 										string_concat("_", GMArgStr, GArgLStr),
-										string_concat("X", UMArgStr, IndArgLStr)
+										string_concat("X", UMArgStr, IndArgLStr),
+										addToHead(MArgList, "_", ArgList)
 									}.
 
 argument(ArgStr) 						--> 	functawr(ArgStr).
 argument(ArgStr) 						--> 	variable(ArgStr).
 argument(ArgStr) 						--> 	number(ArgStr).
-argument(ArgStr) 						--> 	list(ArgStr).
+argument(ArgStr) 						--> 	list(ArgStr, _).
+argument(ArgStr) 						--> 	tuple(ArgStr, _).
 
-moreArguments(MArgStr, MArgStr, MArgStr)					--> 	[],
+moreArguments(MArgStr, MArgStr, MArgStr, [])				--> 	[],
 									{
 										string_codes(MArgStr, [])
 									}.
-moreArguments(MArgStr, UMArgStr, GMArgStr)				-->	",", space, argument(ArgStr), moreArguments(MMArgStr, UMMArgStr, GMMArgStr),
+moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList)				-->	",", space, argument(ArgStr), moreArguments(MMArgStr, UMMArgStr, GMMArgStr, MMArgList),
 									{
 										atomics_to_string([",", ArgStr, MMArgStr], "", MArgStr),
 										string_concat(",_", UMMArgStr, UMArgStr),
@@ -521,13 +551,15 @@ moreArguments(MArgStr, UMArgStr, GMArgStr)				-->	",", space, argument(ArgStr), 
 										;
 										(char_type(First, digit) -> atomics_to_string([",", ArgStr, GMMArgStr], "", GMArgStr)
 										;
-										string_concat(",_", GMMArgStr, GMArgStr)))
+										string_concat(",_", GMMArgStr, GMArgStr))),
+										addToHead(MMArgList, ArgStr, MArgList)
 									}.
-moreArguments(MArgStr, UMArgStr, GMArgStr)				-->	",", space, "_", moreArguments(MMArgStr, UMMArgStr, GMMArgStr),
+moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList)				-->	",", space, "_", moreArguments(MMArgStr, UMMArgStr, GMMArgStr, MMArgList),
 									{
 										string_concat(",_", MMArgStr, MArgStr),
 										string_concat(",_", UMMArgStr, UMArgStr),
-										string_concat(",_", GMMArgStr, GMArgStr)
+										string_concat(",_", GMMArgStr, GMArgStr),
+										addToHead(MMArgList, ArgStr, MArgList)
 									}.
 
 forBody(BodyStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	expression(BodyStr, _, Priority, HeadDeclRepr, HeadGraphRepr).
@@ -783,9 +815,6 @@ moreConditions("", 0, _, _)					-->	[].
 
 atemporalConstraint(ACStr)					-->	fact(FStr),
 									{
-										split_string(FStr, "(", "", FSplit),
-										list_head(FSplit, FncStr, _),
-										atem(FncStr),
 										atomics_to_string([",\n\t", FStr], "", ACStr)
 									}.
 atemporalConstraint(ACStr)					-->	math(MStr),
@@ -794,9 +823,6 @@ atemporalConstraint(ACStr)					-->	math(MStr),
 									}.
 atemporalConstraint(ACStr)					-->	"not", space, fact(FStr),
 									{
-										split_string(FStr, "(", "", FSplit),
-										list_head(FSplit, FncStr, _),
-										atem(FncStr),
 										atomics_to_string([",\n\t\\+ ", FStr], "", ACStr)
 									}.
 atemporalConstraint(ACStr)					-->	"not", space, math(MStr),
@@ -804,7 +830,7 @@ atemporalConstraint(ACStr)					-->	"not", space, math(MStr),
 										atomics_to_string([",\n\t\\+ ", MStr], "", ACStr)
 									}.
 
-fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index), ")", space, operator(OpStr), space, variable(Var2Str),
+fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, operator(OpStr), space, variable(Var2Str),
 									{
 										\+ atem(FncStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
@@ -822,7 +848,7 @@ fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	f
 										
 										atomics_to_string(["Value", " ", OpStr, " ", Var2Str], "", MStr)
 									}.
-fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index), ")", space, operator(OpStr), space, number(NumStr),
+fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, operator(OpStr), space, number(NumStr),
 									{
 										\+ atem(FncStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
@@ -840,7 +866,7 @@ fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	f
 										
 										atomics_to_string(["Value", " ", OpStr, " ", NumStr], "", MStr)
 									}.
-fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index), ")", space, operator(OpStr), space, numUnit(NUStr),
+fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, operator(OpStr), space, numUnit(NUStr),
 									{
 										\+ atem(FncStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
@@ -859,8 +885,9 @@ fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	f
 										atomics_to_string(["Value", " ", OpStr, " ", NUStr], "", MStr)
 									}.
 
-fact(FStr)							-->	functawr(FncStr), "(", argumentsList(ArgLStr, _, _, _, _), ")",
+fact(FStr)							-->	functawr(FncStr), "(", argumentsList(ArgLStr, _, _, _, _, _), ")",
 									{
+										atem(FncStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr)
 									}.
 
@@ -888,13 +915,13 @@ numUnit(NUStr)							-->	number(NumStr), space, functawr(FncStr),
 										atomics_to_string([NumStr, " ", FncStr], "", NUStr)
 									}.
 
-list(LStr)							-->	"[", space, argumentsList(ArgLStr, _, _, _, _), space, "]",
+list(LStr, List)							-->	"[", space, argumentsList(ArgLStr, _, _, _, _, List), space, "]",
 									{
 										atomics_to_string(["[", ArgLStr, "]"], "", LStr)
 									}.
-list("[]")							-->	"[]".
+list("[]", [])							-->	"[]".
 
-tuple(TStr)							-->	"(", space, argumentsList(ArgLStr, _, _, _, _), space, ")",
+tuple(TStr, List)						-->	"(", space, argumentsList(ArgLStr, _, _, _, _, List), space, ")",
 									{
 										atomics_to_string(["(", ArgLStr, ")"], "", TStr)
 									}.
