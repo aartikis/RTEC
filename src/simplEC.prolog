@@ -783,6 +783,9 @@ moreConditions("", 0, _, _)					-->	[].
 
 atemporalConstraint(ACStr)					-->	fact(FStr),
 									{
+										split_string(FStr, "(", "", FSplit),
+										list_head(FSplit, FncStr, _),
+										atem(FncStr),
 										atomics_to_string([",\n\t", FStr], "", ACStr)
 									}.
 atemporalConstraint(ACStr)					-->	math(MStr),
@@ -791,6 +794,9 @@ atemporalConstraint(ACStr)					-->	math(MStr),
 									}.
 atemporalConstraint(ACStr)					-->	"not", space, fact(FStr),
 									{
+										split_string(FStr, "(", "", FSplit),
+										list_head(FSplit, FncStr, _),
+										atem(FncStr),
 										atomics_to_string([",\n\t\\+ ", FStr], "", ACStr)
 									}.
 atemporalConstraint(ACStr)					-->	"not", space, math(MStr),
