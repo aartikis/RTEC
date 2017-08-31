@@ -261,7 +261,7 @@ multivaluedFluents	-->	"multivalued:", space, multivaluedFluent, moremultivalued
 moremultivaluedFluents	-->	space, ",", space, multivaluedFluent, moremultivaluedFluents.
 moremultivaluedFluents	-->	"".
 
-multivaluedFluent	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, "=", space, list(_, List),
+multivaluedFluent	-->	functawr(FncStr), "(", argumentsList(_, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, "=", space, list(_, List),
 				{
 					atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRePrefix),
 					
@@ -282,7 +282,7 @@ initially		-->	"initially", space, fluent("simple", "output", CTStr, _, _, _, _,
 					%propagatePriority(DeclRepr, GraphRepr, 1)
 				}.
 					
-holdsFor		--> 	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("iff"), space, {nb_setval(intervalNo, 1)}, forBody(Body, _, HeadDeclRepr, HeadGraphRepr), ".",
+holdsFor		--> 	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep, space, {nb_setval(intervalNo, 1)}, forBody(Body, _, HeadDeclRepr, HeadGraphRepr), ".",
 				{
 					split_string(Body, "\n", ",\t\n", BodySubs),
 					findall((Term, VNames), (member(Sub, BodySubs), term_string(Term, Sub, [variable_names(VNames)])), Terms),
@@ -321,7 +321,7 @@ holdsFor		--> 	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("iff"), space
 					%findall((D, P), (cachingPriority(D, P), sub_string(D, 0, _, _, Prefix), assertz(head(D)), HeadPriority > P, assertz(cachingPriority(D, HeadPriority)), propagatePriority(D, HeadPriority)), _))
 				}.
 
-starAt			-->	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("if"), space, atBody(EntireBody, _, HeadDeclRepr, HeadGraphRepr), ".",
+starAt			-->	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep, space, atBody(EntireBody, _, HeadDeclRepr, HeadGraphRepr), ".",
 				{
 					split_string(EntireBody, "^", "", BodyParts),
 					%writeln(EntireBody),
@@ -364,8 +364,8 @@ starAt			-->	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep("if"), space, a
 					true)
 				}.
 	
-sep("iff")		--> 	"iff".
-sep("if")		--> 	"if".
+sep		--> 	"iff".
+sep		--> 	"if".
 
 head(HeadStr, DeclRepr, GraphRepr)						--> 	fluent("sD", "output", CTStr, DeclRepr, GraphRepr, _, _, null, null),
 									{
@@ -521,7 +521,7 @@ argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, ArgStr, ArgList)	--> 	arg
 										string_concat(ArgStr, UMArgStr, IndArgLStr),
 										addToHead(MArgList, ArgStr, ArgList)
 									}.
-argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, "X", ArgList)	--> 	"_", moreArguments(MArgStr, UMArgStr, GMArgStr),
+argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, "X", ArgList)	--> 	"_", moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList),
 									{
 										string_concat("_", MArgStr, ArgLStr),
 										string_concat("_", UMArgStr, UArgLStr),
@@ -559,7 +559,7 @@ moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList)				-->	",", space, "_", mor
 										string_concat(",_", MMArgStr, MArgStr),
 										string_concat(",_", UMMArgStr, UMArgStr),
 										string_concat(",_", GMMArgStr, GMArgStr),
-										addToHead(MMArgList, ArgStr, MArgList)
+										addToHead(MMArgList, "_", MArgList)
 									}.
 
 forBody(BodyStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	expression(BodyStr, _, Priority, HeadDeclRepr, HeadGraphRepr).
@@ -716,7 +716,10 @@ moreAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	",", space, re
 										}.
 moreAtBodyAlternatives([], _, _, _)					-->	[].
 
-firstAtBodyAlternatives([BPStr], _, HeadDeclRepr, HeadGraphRepr)	-->	atBodyPart(BPStr, _, HeadDeclRepr, HeadGraphRepr).
+firstAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	atBodyPart(BPStr, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr),
+										{
+											addToHead(BPList, BPStr, List)
+										}.
 firstAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", atBodyPart(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, atBodyPart(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
 										{
 											addToHead(BPList, BPStr2, BPTemp),
@@ -823,17 +826,17 @@ atemporalConstraint(ACStr)					-->	"not", space, math(MStr),
 										atomics_to_string([",\n\t\\+ ", MStr], "", ACStr)
 									}.
 
-fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, operator(OpStr), space, variable(Var2Str),
+fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, _, _, _), ")", space, operator(OpStr), space, variable(Var2Str),
 									{
 										\+ atem(FncStr),
-										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
+										%atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")=", "Value"], "", CTStr),
 										atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRePrefix),
 										atomics_to_string([DeclRePrefix, "Value"], "", DeclRepr),
 										atomics_to_string([FncStr, "(", GArgLStr, ")=", "Value"], "", GraphRepr),
-										atomics_to_string([FncStr, "(", IndArgLStr, ")=", "Value", ", ", Index], "", IndRepr),
+										%atomics_to_string([FncStr, "(", IndArgLStr, ")=", "Value", ", ", Index], "", IndRepr),
 										
-										findall((D, I, T, E), (declared(D, G, I, T, E), sub_string(D, 0, _, _, DeclRePrefix), assertz(declared(D, G, I, Type, Etype))), _),
+										findall((D, I, T, E), (declared(D, G, I, T, E), sub_string(D, 0, _, _, DeclRePrefix), assertz(declared(D, G, I, "sD", "input"))), _),
 										
 										assertz(defines(DeclRepr, HeadDeclRepr, Priority)),
 										
@@ -841,17 +844,17 @@ fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	f
 										
 										atomics_to_string(["Value", " ", OpStr, " ", Var2Str], "", MStr)
 									}.
-fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, operator(OpStr), space, number(NumStr),
+fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, _, _, _), ")", space, operator(OpStr), space, number(NumStr),
 									{
 										\+ atem(FncStr),
-										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
+										%atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")=", "Value"], "", CTStr),
 										atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRePrefix),
 										atomics_to_string([DeclRePrefix, "Value"], "", DeclRepr),
 										atomics_to_string([FncStr, "(", GArgLStr, ")=", "Value"], "", GraphRepr),
-										atomics_to_string([FncStr, "(", IndArgLStr, ")=", "Value", ", ", Index], "", IndRepr),
+										%atomics_to_string([FncStr, "(", IndArgLStr, ")=", "Value", ", ", Index], "", IndRepr),
 										
-										findall((D, I, T, E), (declared(D, G, I, T, E), sub_string(D, 0, _, _, DeclRePrefix), assertz(declared(D, G, I, Type, Etype))), _),
+										findall((D, I, T, E), (declared(D, G, I, T, E), sub_string(D, 0, _, _, DeclRePrefix), assertz(declared(D, G, I, "sD", "input"))), _),
 										
 										assertz(defines(DeclRepr, HeadDeclRepr, Priority)),
 										
@@ -859,17 +862,17 @@ fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	f
 										
 										atomics_to_string(["Value", " ", OpStr, " ", NumStr], "", MStr)
 									}.
-fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, operator(OpStr), space, numUnit(NUStr),
+fluaint("sD", "input", CTStr, MStr, Priority, HeadDeclRepr, HeadGraphRepr)	-->	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, _, _, _), ")", space, operator(OpStr), space, numUnit(NUStr),
 									{
 										\+ atem(FncStr),
-										atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
+										%atomics_to_string([FncStr, "(", ArgLStr, ")"], "", FStr),
 										atomics_to_string([FncStr, "(", ArgLStr, ")=", "Value"], "", CTStr),
 										atomics_to_string([FncStr, "(", UArgLStr, ")"], "", DeclRePrefix),
 										atomics_to_string([DeclRePrefix, "Value"], "", DeclRepr),
 										atomics_to_string([FncStr, "(", GArgLStr, ")=", "Value"], "", GraphRepr),
-										atomics_to_string([FncStr, "(", IndArgLStr, ")=", "Value", ", ", Index], "", IndRepr),
+										%atomics_to_string([FncStr, "(", IndArgLStr, ")=", "Value", ", ", Index], "", IndRepr),
 										
-										findall((D, I, T, E), (declared(D, G, I, T, E), sub_string(D, 0, _, _, DeclRePrefix), assertz(declared(D, G, I, Type, Etype))), _),
+										findall((D, I, T, E), (declared(D, G, I, T, E), sub_string(D, 0, _, _, DeclRePrefix), assertz(declared(D, G, I, "sD", "input"))), _),
 										
 										assertz(defines(DeclRepr, HeadDeclRepr, Priority)),
 										
