@@ -256,7 +256,7 @@ moreFacts		-->	space, ",", space, functawr(FncStr), moreFacts,
 				}.
 moreFacts		-->	"".
 
-multivaluedFluents	-->	"multivalued:", space, multivaluedFluent, moremultivaluedFluents.
+multivaluedFluents	-->	"multivalued:", space, multivaluedFluent, moremultivaluedFluents, ".".
 
 moremultivaluedFluents	-->	space, ",", space, multivaluedFluent, moremultivaluedFluents.
 moremultivaluedFluents	-->	"".
@@ -701,7 +701,7 @@ durationConstraint(DCStr)					-->	"duration", space, operator(OpStr), space, num
 										atomics_to_string([",\n\tfindall((S,E), (member((S,E), I", PrevInt, "), Diff is E-S, Diff ", OpStr, " ", NumStr, "), I", Int, ")"], "", DCStr)
 									}.
 
-atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	atBodyAlternatives(List1, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyAlternatives(ListOfLists, _, HeadDeclRepr, HeadGraphRepr),
+atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	firstAtBodyAlternatives(List1, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyAlternatives(ListOfLists, _, HeadDeclRepr, HeadGraphRepr),
 										{
 											addToHead(ListOfLists, List1, List),
 							
@@ -710,30 +710,21 @@ atBody(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	atBodyAlternatives(List1
 											atomics_to_string(AltBodyStrs, "^", AtBodyStr)
 										}.
 
-moreAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	",", space, atBodyAlternatives(List1, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyAlternatives(ListOfLists, _, HeadDeclRepr, HeadGraphRepr),
+moreAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	",", space, restAtBodyAlternatives(List1, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyAlternatives(ListOfLists, _, HeadDeclRepr, HeadGraphRepr),
 										{
 											addToHead(ListOfLists, List1, List)
 										}.
 moreAtBodyAlternatives([], _, _, _)					-->	[].
 
-atBodyAlternatives([BPStr], _, HeadDeclRepr, HeadGraphRepr)		-->	atBodyPart(BPStr, _, HeadDeclRepr, HeadGraphRepr).
-atBodyAlternatives([BPStr], _, HeadDeclRepr, HeadGraphRepr)		-->	conditionGroup(BPStr, _, HeadDeclRepr, HeadGraphRepr).
-atBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", atBodyPart(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, atBodyPart(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
+firstAtBodyAlternatives([BPStr], _, HeadDeclRepr, HeadGraphRepr)	-->	atBodyPart(BPStr, _, HeadDeclRepr, HeadGraphRepr).
+firstAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", atBodyPart(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, atBodyPart(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
 										{
 											addToHead(BPList, BPStr2, BPTemp),
 											addToHead(BPTemp, BPStr1, List)
 										}.
-atBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", atBodyPart(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, conditionGroup(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
-										{
-											addToHead(BPList, BPStr2, BPTemp),
-											addToHead(BPTemp, BPStr1, List)
-										}.
-atBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", conditionGroup(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, atBodyPart(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
-										{
-											addToHead(BPList, BPStr2, BPTemp),
-											addToHead(BPTemp, BPStr1, List)
-										}.
-atBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", conditionGroup(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, conditionGroup(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
+
+restAtBodyAlternatives([BPStr], _, HeadDeclRepr, HeadGraphRepr)		-->	conditionGroup(BPStr, _, HeadDeclRepr, HeadGraphRepr).
+restAtBodyAlternatives(List, _, HeadDeclRepr, HeadGraphRepr)		-->	"(", conditionGroup(BPStr1, _, HeadDeclRepr, HeadGraphRepr), space, "or", space, conditionGroup(BPStr2, _, HeadDeclRepr, HeadGraphRepr), moreConditionGroups(BPList, _, HeadDeclRepr, HeadGraphRepr), ")",
 										{
 											addToHead(BPList, BPStr2, BPTemp),
 											addToHead(BPTemp, BPStr1, List)
@@ -743,11 +734,13 @@ moreAtBodyParts(List, _, HeadDeclRepr, HeadGraphRepr)			-->	space, "or", space, 
 										{
 											addToHead(BPList, BPStr, List)
 										}.
-moreAtBodyParts(List, _, HeadDeclRepr, HeadGraphRepr)			-->	space, "or", space, conditionGroup(BPStr, _, HeadDeclRepr, HeadGraphRepr), moreAtBodyParts(BPList, _, HeadDeclRepr, HeadGraphRepr),
+moreAtBodyParts([], _, _, _)						-->	[].
+
+moreConditionGroups(List, _, HeadDeclRepr, HeadGraphRepr)		-->	space, "or", space, conditionGroup(BPStr, _, HeadDeclRepr, HeadGraphRepr), moreConditionGroups(BPList, _, HeadDeclRepr, HeadGraphRepr),
 										{
 											addToHead(BPList, BPStr, List)
 										}.
-moreAtBodyParts([], _, _, _)						-->	[].
+moreConditionGroups([], _, _, _)					-->	[].
 
 atBodyPart(AtBodyStr, _, HeadDeclRepr, HeadGraphRepr)			-->	event("input", CTStr, _, _, _, HeadDeclRepr, HeadGraphRepr), moreConditions(MCondStr, _, HeadDeclRepr, HeadGraphRepr),
 									{
