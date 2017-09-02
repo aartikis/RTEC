@@ -282,7 +282,7 @@ initially		-->	"initially", space, fluent("simple", "output", CTStr, _, _, _, _,
 					%propagatePriority(DeclRepr, GraphRepr, 1)
 				}.
 					
-holdsFor		--> 	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep, space, {nb_setval(intervalNo, 1)}, forBody(Body, _, HeadDeclRepr, HeadGraphRepr), ".",
+holdsFor		--> 	head(Head, HeadDeclRepr, HeadGraphRepr), space, sep, space, {nb_setval(intervalNo, 1)}, forBody(Body, HeadDeclRepr, HeadGraphRepr), ".",
 				{
 					split_string(Body, "\n", ",\t\n", BodySubs),
 					findall((Term, VNames), (member(Sub, BodySubs), term_string(Term, Sub, [variable_names(VNames)])), Terms),
@@ -562,127 +562,112 @@ moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList)				-->	",", space, "_", mor
 										addToHead(MMArgList, "_", MArgList)
 									}.
 
-forBody(BodyStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	expression(BodyStr, _, Priority, HeadDeclRepr, HeadGraphRepr).
-forBody(BodyStr, Priority, HeadDeclRepr, HeadGraphRepr)			-->	expression(ExprStr, _, Priority, HeadDeclRepr, HeadGraphRepr), ",", space, constraints(ConStr),
-									{
-										atomics_to_string([ExprStr, ConStr], ",\n\t", BodyStr)
-									}.
+forBody(BodyStr, HeadDeclRepr, HeadGraphRepr)	-->	antonis(AStr, IA, HeadDeclRepr, HeadGraphRepr), moreAntonides(MMAStr, IMMA, HeadDeclRepr, HeadGraphRepr),
+				{
+					IMMA \= [],
+					
+					addToHead(IMMA, IA, IMMMA),
+					atomics_to_string([AStr, MMAStr], "", MMMAStr),
+					
+					split_string(MMMAStr, "\n", ",\t\n", MMMASubStrs),
+					findall((Term, VNames), (member(MMMASub, MMMASubStrs), term_string(Term, MMMASub, [variable_names(VNames)])), Terms),
+					
+					%Step 1
+					findall(ICU,
+						(
+							member(ICI, IMMMA), 
+							atom_string(ICIAtom, ICI), 
+							member((complement_all(ICUVar, ICIVar), [ICUAtom=ICUVar, ICIAtom=ICIVar]), Terms),
+							atom_string(ICUAtom, ICU)
+						), 
+						ICUS),
+					with_output_to(string(ICUSStr), write(ICUS)),
+					
+					findall(ICI,
+						(
+							member(ICI, IMMMA), 
+							atom_string(ICIAtom, ICI), 
+							member((complement_all(_, ICIVar), [_=_, ICIAtom=ICIVar]), Terms)
+						), 
+						ICIS),
+					
+					%Step 2
+					findall((complement_all(ICUVar, ICIVar), [ICUAtom=ICUVar, ICIAtom=ICIVar]),
+						(
+							member(ICU, ICUS), 
+							atom_string(ICUAtom, ICU), 
+							member((complement_all(ICUVar, ICIVar), [ICUAtom=ICUVar, ICIAtom=ICIVar]), Terms)
+						),
+						Delete),
+					subtract(Terms, Delete, NewTerms),
+					findall(S, (member((T, V), NewTerms), term_string(T, S, [variable_names(V)])), BodyStrSplit),
+					atomics_to_string(BodyStrSplit, ",\n\t", BodyStrPending),
+					
+					%Step 3
+					subtract(IMMMA, ICIS, IntersectI),
+					with_output_to(string(IntersectIStr), write(IntersectI)),
+					
+					nb_getval(intervalNo, Int),
+					NewInt is Int + 1,
+					NewerInt is NewInt + 1,
+					nb_setval(intervalNo, NewerInt),
+					string_concat("I", Int, IFB1),
+					string_concat("I", NewInt, IFB2),
+					
+					atomics_to_string([BodyStrPending, ",\n\t", "intersect_all(", IntersectIStr, ", ", IFB1, ")"], "", FBStr1),
+					
+					%Step 4
+					(ICUS \= [] -> atomics_to_string([",\n\t", "relative_complement_all(", IFB1, ", ", ICUSStr, ", ", IFB2, ")"], "", FBStr2)
+					;
+					atomics_to_string([], "", FBStr2)),
+					
+					atomics_to_string([FBStr1, FBStr2], "", BodyStr)
+				}.
 
-expression(ExprStr, I, _, HeadDeclRepr, HeadGraphRepr)			-->	component(CompStr, T1, _, HeadDeclRepr, HeadGraphRepr), moreComponents(MCompStr, T2, and, _, HeadDeclRepr, HeadGraphRepr),
-									{
-										nb_getval(intervalNo, Int),
-										string_concat("I", Int, I),
-										NewInt is Int + 1,
-										nb_setval(intervalNo, NewInt),
-										
-										atom_string(T1Atom, T1),
-										atom_string(T2Atom, T2),
-										atom_string(IAtom, I),
-									
-										atomics_to_string([CompStr, MCompStr], ",\n\t", ExprStrPending),
-										split_string(ExprStrPending, "\n", ",\t\n", SubStrings),
-										findall((Term, VNames), (member(Sub, SubStrings), term_string(Term, Sub, [variable_names(VNames)])), Terms),
-										(
-											(member((complement_all(List, SomeI), Vars), Terms), last(Vars, T2Atom=SomeI)) ->
-											delete(Terms, (complement_all(List, SomeI), Vars), TermsPending1),
-											delete(Vars, T2Atom=SomeI, VarsPending1),
-											addToHead(VarsPending1, T1Atom=Anon1, VarsPending2),
-											addToTail(VarsPending2, IAtom=AnonI, NewVars),
-											addToTail(TermsPending1, (relative_complement_all(Anon1, List, AnonI), NewVars), NewTerms)
-											;
-											(member((intersect_all(List, SomeI), Vars), Terms), last(Vars, T1Atom=SomeI)) ->
-											delete(Terms, (intersect_all(List, SomeI), Vars), TermsPending1),
-											delete(Vars, T1Atom=SomeI, VarsPending1),
-											addToHead(VarsPending1, T2Atom=Anon2, VarsPending2),
-											addToTail(VarsPending2, IAtom=AnonI, NewVars),
-											addToHead(List, Anon2, NewList),
-											addToTail(TermsPending1, (intersect_all(NewList, AnonI), NewVars), NewTerms)
-											;
-											(member((intersect_all(List, SomeI), Vars), Terms), last(Vars, T2Atom=SomeI)) ->
-											delete(Terms, (intersect_all(List, SomeI), Vars), TermsPending1),
-											delete(Vars, T2Atom=SomeI, VarsPending1),
-											addToHead(VarsPending1, T1Atom=Anon1, VarsPending2),
-											addToTail(VarsPending2, IAtom=AnonI, NewVars),
-											addToHead(List, Anon1, NewList),
-											addToTail(TermsPending1, (intersect_all(NewList, AnonI), NewVars), NewTerms)
-											;
-											addToTail(Terms, (intersect_all([Anon1, Anon2], AnonI), [T1Atom=Anon1, T2Atom=Anon2, IAtom=AnonI]), NewTerms)
-										),
-										findall(S, (member((T, V), NewTerms), term_string(T, S, [variable_names(V)])), ExprStrSplit),
-										atomics_to_string(ExprStrSplit, ",\n\t", ExprStr)
-		
-										%Priority is Priority1 + Priority2
-									}.
-expression(ExprStr, I, _, HeadDeclRepr, HeadGraphRepr)			-->	component(CompStr, T1, _, HeadDeclRepr, HeadGraphRepr), moreComponents(MCompStr, T2, or, _, HeadDeclRepr, HeadGraphRepr),
-									{
-										nb_getval(intervalNo, Int),
-										string_concat("I", Int, I),
-										NewInt is Int + 1,
-										nb_setval(intervalNo, NewInt),
-										
-										atom_string(T1Atom, T1),
-										atom_string(T2Atom, T2),
-										atom_string(IAtom, I),
-										
-										atomics_to_string([CompStr, MCompStr], ",\n\t", ExprStrPending),
-										split_string(ExprStrPending, "\n", ",\t\n", SubStrings),
-										findall((Term, VNames), (member(Sub, SubStrings), term_string(Term, Sub, [variable_names(VNames)])), Terms),
-										(
-											(member((union_all(List, SomeI), Vars), Terms), last(Vars, T1Atom=SomeI)) ->
-											delete(Terms, (union_all(List, SomeI), Vars), TermsPending1),
-											delete(Vars, T1Atom=SomeI, VarsPending1),
-											addToHead(VarsPending1, T2Atom=Anon2, VarsPending2),
-											addToTail(VarsPending2, IAtom=AnonI, NewVars),
-											addToTail(List, Anon2, NewList),
-											addToTail(TermsPending1, (union_all(NewList, AnonI), NewVars), NewTerms)
-											;
-											(member((union_all(List, SomeI), Vars), Terms), last(Vars, T2Atom=SomeI)) ->
-											delete(Terms, (union_all(List, SomeI), Vars), TermsPending1),
-											delete(Vars, T2Atom=SomeI, VarsPending1),
-											addToHead(VarsPending1, T1Atom=Anon1, VarsPending2),
-											addToTail(VarsPending2, IAtom=AnonI, NewVars),
-											addToTail(List, Anon1, NewList),
-											addToTail(TermsPending1, (union_all(NewList, AnonI), NewVars), NewTerms)
-											;
-											addToTail(Terms, (union_all([Anon1, Anon2], AnonI), [T1Atom=Anon1, T2Atom=Anon2, IAtom=AnonI]), NewTerms)
-										),
-										findall(S, (member((T, V), NewTerms), term_string(T, S, [variable_names(V)])), ExprStrSplit),
-										atomics_to_string(ExprStrSplit, ",\n\t", ExprStr)
-		
-										%Priority is Priority1 + Priority2
-									}.
-expression(ExprStr, I, Priority, HeadDeclRepr, HeadGraphRepr)			-->	component(ExprStr, I, Priority, HeadDeclRepr, HeadGraphRepr), moreComponents(null).
+moreAntonides(MMAStr, IMMA, HeadDeclRepr, HeadGraphRepr)	-->	space, ",", space, antonis(AStr, IA, HeadDeclRepr, HeadGraphRepr), moreAntonides(MAStr, IMA, HeadDeclRepr, HeadGraphRepr),
+								{
+									addToHead(IMA, IA, IMMA),
+									atomics_to_string([AStr, MAStr], "", MMAStr)
+								}.
+moreAntonides("", [], _, _)		-->	[].
 
-moreComponents(MCompStr, I, and, Priority, HeadDeclRepr, HeadGraphRepr)	-->	",", space, expression(MCompStr, I, Priority, HeadDeclRepr, HeadGraphRepr).
-moreComponents(MCompStr, I, or, Priority, HeadDeclRepr, HeadGraphRepr)		-->	space, "or", space, expression(MCompStr, I, Priority, HeadDeclRepr, HeadGraphRepr).
-moreComponents(null)						-->	[].
+antonis(AStr, IA, HeadDeclRepr, HeadGraphRepr)	--> manolis(MStr, IM, HeadDeclRepr, HeadGraphRepr), mOReManolides(MMMStr, IMMM, HeadDeclRepr, HeadGraphRepr),
+						{
+							IMMM \= [],
+							addToHead(IMMM, IM, IMMMM),
+							with_output_to(string(IMMMMStr), write(IMMMM)),
+							nb_getval(intervalNo, Int),
+							NewInt is Int + 1,
+							nb_setval(intervalNo, NewInt),
+							string_concat("I", Int, IA),
+							atomics_to_string([MStr, MMMStr, ",\n\t", "union_all(", IMMMMStr, ", ", IA, ")"], "", AStr)
+						}.
+antonis(AStr, IA, HeadDeclRepr, HeadGraphRepr)	-->	manolis(AStr, IA, HeadDeclRepr, HeadGraphRepr).
+antonis(AStr, IA, HeadDeclRepr, HeadGraphRepr)	--> "(", antonis(AStr, IA, HeadDeclRepr, HeadGraphRepr), ")".
+antonis(AStr, IAF, HeadDeclRepr, HeadGraphRepr)	-->	"not", space, antonis(AStrOld, IAI, HeadDeclRepr, HeadGraphRepr),
+						{
+							nb_getval(intervalNo, Int),
+							NewInt is Int + 1,
+							nb_setval(intervalNo, NewInt),
+							string_concat("I", Int, IAF),
+							atomics_to_string([AStrOld, ",\n\t", "complement_all(", IAI, ", ", IAF, ")"], "", AStr)
+						}.
+antonis(AStr, _, _, _)	-->	constraint(AStr).
 
-component(CompStr, T, Priority, HeadDeclRepr, HeadGraphRepr)			-->	fluent("sD", "input", Str, _, _, Priority, T, HeadDeclRepr, HeadGraphRepr),
-									{
-										atomics_to_string([",\n\tholdsFor(", Str, ", ", T, ")"], "", CompStr)
-									}.
-component(CompStr, T, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"(", space, expression(CompStr, T, Priority, HeadDeclRepr, HeadGraphRepr), space, ")".
-component(CompStr, T, Priority, HeadDeclRepr, HeadGraphRepr)			-->	"not", space, expression(Str, ExpT, Priority, HeadDeclRepr, HeadGraphRepr),
-									{
-										nb_getval(intervalNo, Int),
-										NewInt is Int + 1,
-										nb_setval(intervalNo, NewInt),
-										string_concat("I", Int, T),
-										atomics_to_string([Str, ",\n\tcomplement_all([", ExpT, "], ", T, ")"], "", CompStr)
-									}.
+mOReManolides(MMMStr, IMMM, HeadDeclRepr, HeadGraphRepr)	-->	space, "or", space, manolis(MStr, IM, HeadDeclRepr, HeadGraphRepr), mOReManolides(MMStr, IMM, HeadDeclRepr, HeadGraphRepr),
+								{
+									addToHead(IMM, IM, IMMM),
+									atomics_to_string([MStr, MMStr], "", MMMStr)
+								}.
+mOReManolides("", [], _, _)		--> [].
 
-constraints(ConStr)						-->	durationConstraint(DCStr), moreConstraints(MConStr),
-									{
-										atomics_to_string([DCStr, MConStr], ",\n\t", ConStr)
-									}.
-constraints(ConStr)						-->	atemporalConstraint(ACStr), moreConstraints(MConStr),
-									{
-										atomics_to_string([ACStr, MConStr], ",\n\t", ConStr)
-									}.
-constraints("")							-->	[].
+manolis(MStr, I, HeadDeclRepr, HeadGraphRepr)			-->	fluent("sD", "input", Str, _, _, _, I, HeadDeclRepr, HeadGraphRepr),
+								{
+									atomics_to_string([",\n\t", "holdsFor(", Str, ", ", I, ")"], "", MStr)
+								}.
 
-moreConstraints(MConStr)					-->	",", space, constraints(MConStr).
-moreConstraints("")						-->	[].
+constraint(PStr)	-->	durationConstraint(PStr).
+constraint(PStr)	--> atemporalConstraint(PStr).
 
 durationConstraint(DCStr)					-->	"duration", space, operator(OpStr), space, variable(VarStr),
 									{
