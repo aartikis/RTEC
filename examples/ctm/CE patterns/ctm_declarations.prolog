@@ -1,29 +1,16 @@
-
-/****************************************************************
- *                                                              *
- * Event Recognition for City Transport Management (CTM)	* 
- *                                                              *
- *                                                              *
- * Implemented in YAP						*
- * Alexander Artikis						*
- *								*
- ****************************************************************/
-
-
-/********************************************************************** DECLARATIONS *******************************************************************************
- -Declare the entities of the event description: events, simple and statically determined fluents.
- -For each entity state if it is input or output (simple fluents are by definition output entities).
- -For each input/output entity state its index.
- -For input entities/statically determined fluents state whether the intervals will be collected into a list or built from time-points.
- -Declare the groundings of the fluents and output entities/events.
- -Declare the order of caching of output entities.
- *******************************************************************************************************************************************************************/
- 
 event(stop_enter(_,_,_,_)).				inputEntity(stop_enter(_,_,_,_)).			index(stop_enter(Id,_,_,_), 			Id).
 event(stop_leave(_,_,_,_)).				inputEntity(stop_leave(_,_,_,_)).			index(stop_leave(Id,_,_,_), 			Id).
 event(internal_temperature_change(_,_,_)).		inputEntity(internal_temperature_change(_,_,_)).	index(internal_temperature_change(Id,_,_), 	Id).
 event(noise_level_change(_,_,_)).			inputEntity(noise_level_change(_,_,_)).			index(noise_level_change(Id,_,_), 		Id).
 event(passenger_density_change(_,_,_)).			inputEntity(passenger_density_change(_,_,_)).		index(passenger_density_change(Id,_,_), 	Id).
+
+sDFluent(abrupt_acceleration(_,_)=abrupt).		inputEntity(abrupt_acceleration(_,_)=abrupt).		index(abrupt_acceleration(Id,_)=abrupt, 	Id).
+sDFluent(abrupt_acceleration(_,_)=very_abrupt).		inputEntity(abrupt_acceleration(_,_)=very_abrupt).	index(abrupt_acceleration(Id,_)=very_abrupt, 	Id).
+sDFluent(abrupt_deceleration(_,_)=abrupt).		inputEntity(abrupt_deceleration(_,_)=abrupt).		index(abrupt_deceleration(Id,_)=abrupt, 	Id).
+sDFluent(abrupt_deceleration(_,_)=very_abrupt).		inputEntity(abrupt_deceleration(_,_)=very_abrupt).	index(abrupt_deceleration(Id,_)=very_abrupt, 	Id).
+sDFluent(sharp_turn(_,_)=sharp).			inputEntity(sharp_turn(_,_)=sharp).			index(sharp_turn(Id,_)=sharp, 			Id).
+sDFluent(sharp_turn(_,_)=very_sharp).			inputEntity(sharp_turn(_,_)=very_sharp).		index(sharp_turn(Id,_)=very_sharp, 		Id).
+
 event(punctuality_change(_,_,punctual)).		outputEntity(punctuality_change(_,_,punctual)).		index(punctuality_change(Id,_,punctual),	Id).
 event(punctuality_change(_,_,non_punctual)).		outputEntity(punctuality_change(_,_,non_punctual)).	index(punctuality_change(Id,_,non_punctual),	Id).
 
@@ -33,12 +20,6 @@ simpleFluent(noise_level(_,_)=high).			outputEntity(noise_level(_,_)=high).			in
 simpleFluent(internal_temperature(_,_)=very_warm).	outputEntity(internal_temperature(_,_)=very_warm).	index(internal_temperature(Id,_)=very_warm, 	Id).
 simpleFluent(internal_temperature(_,_)=very_cold).	outputEntity(internal_temperature(_,_)=very_cold).	index(internal_temperature(Id,_)=very_cold, 	Id).
 
-sDFluent(abrupt_acceleration(_,_)=abrupt).		inputEntity(abrupt_acceleration(_,_)=abrupt).		index(abrupt_acceleration(Id,_)=abrupt, 	Id).
-sDFluent(abrupt_acceleration(_,_)=very_abrupt).		inputEntity(abrupt_acceleration(_,_)=very_abrupt).	index(abrupt_acceleration(Id,_)=very_abrupt, 	Id).
-sDFluent(abrupt_deceleration(_,_)=abrupt).		inputEntity(abrupt_deceleration(_,_)=abrupt).		index(abrupt_deceleration(Id,_)=abrupt, 	Id).
-sDFluent(abrupt_deceleration(_,_)=very_abrupt).		inputEntity(abrupt_deceleration(_,_)=very_abrupt).	index(abrupt_deceleration(Id,_)=very_abrupt, 	Id).
-sDFluent(sharp_turn(_,_)=sharp).			inputEntity(sharp_turn(_,_)=sharp).			index(sharp_turn(Id,_)=sharp, 			Id).
-sDFluent(sharp_turn(_,_)=very_sharp).			inputEntity(sharp_turn(_,_)=very_sharp).		index(sharp_turn(Id,_)=very_sharp, 		Id).
 sDFluent(punctuality(_,_)=non_punctual). 	   	outputEntity(punctuality(_,_)=non_punctual).    	index(punctuality(Id,_)=non_punctual, 		Id).    
 sDFluent(driving_style(_,_)=unsafe). 			outputEntity(driving_style(_,_)=unsafe). 		index(driving_style(Id,_)=unsafe, 		Id). 
 sDFluent(driving_style(_,_)=uncomfortable). 		outputEntity(driving_style(_,_)=uncomfortable). 	index(driving_style(Id,_)=uncomfortable, 	Id).
