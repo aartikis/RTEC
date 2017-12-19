@@ -667,16 +667,16 @@ moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList)				-->	",", space, "_", mor
 	addToHead(MMArgList, "_", MArgList)
 }.
 
-forBody(FinalBodyStr, HeadDeclRepr, HeadGraphRepr)	-->	conjunction(BodyStr, _, HeadDeclRepr, HeadGraphRepr), ",", space, possibleConstraint(PCStr, _),
+forBody(FinalBodyStr, HeadDeclRepr, HeadGraphRepr)	-->	conjunction(BodyStr, _, HeadDeclRepr, HeadGraphRepr), possibleConstraint(PCStr, _),
 {
 	atomics_to_string([BodyStr, PCStr], "", FinalBodyStr)
 }.
-forBody(FinalBodyStr, HeadDeclRepr, HeadGraphRepr)	-->	disjunction(BodyStr, _, HeadDeclRepr, HeadGraphRepr), ",", space, possibleConstraint(PCStr, _),
+forBody(FinalBodyStr, HeadDeclRepr, HeadGraphRepr)	-->	disjunction(BodyStr, _, HeadDeclRepr, HeadGraphRepr), possibleConstraint(PCStr, _),
 {
 	atomics_to_string([BodyStr, PCStr], "", FinalBodyStr)
 }.
 
-possibleConstraint(Str, I)		-->		constraint(Str, I).
+possibleConstraint(Str, I)		-->		",", space, constraint(Str, I).
 possibleConstraint("", _)		-->		"".
 
 conjunction(CStr, IC, HeadDeclRepr, HeadGraphRepr)	-->	cTerm(CTStr, ICT, HeadDeclRepr, HeadGraphRepr), moreCTerms(MCTStr, IMCT, HeadDeclRepr, HeadGraphRepr),
