@@ -188,7 +188,7 @@ simplEC(InputFile, OutputFile, DeclarationsFile, GraphFile, GraphFontSize, FourA
 	% Use the mapping above to group entities of the same caching level together in the graph.
 	% Use the existing dependencies to add directed edges to the graph.
 	tell(GraphFile),
-	write("digraph\n{\n\tnode [shape=Mrecord];\n\trankdir=LR;\n\tranksep=\"1.2 equally\";\n\tfontsize="), write(GraphFontSize), write("\n\n"),
+	write("digraph\n{\n\tnode [shape=Mrecord, fontsize="), write(GraphFontSize), write("];\n\trankdir=LR;\n\tranksep=\"1.2 equally\"\n\n"),
 	forall(member((Q, L), FinalList), (findall(LabelPart, (member(Part, L), atomics_to_string(["<", Part, "> ", Part], LabelPart)), LabelParts), atomics_to_string(LabelParts, "|", Label), atomics_to_string(["\t", Q, " [label=\"", Label, "\"];\n"], Line), write(Line))),nl,
 	%findall(edge(CI, I, CJ, J), (defines(I, J, _), member((J, CJ), CachingOrdered), (member((I, CI), CachingOrdered) -> true ; CI is 0)), Edges),
 	findall(edge(CI, IG, CJ, JG), (graphines(IG, JG), matchRepr(I, IG), matchRepr(J, JG), cachingLevel(I, CI), cachingLevel(J, CJ)), Edges),
