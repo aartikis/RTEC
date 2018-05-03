@@ -135,32 +135,42 @@ holdsForSimpleFluent(U, PeriodList, InitTime, QueryTime, InitList) :-
 % the predicate below works under the assumption that the lists of 
 % initiating and terminating points are temporally sorted
 
-makeIntervalsFromSEPoints([Ts], EPoints, [Period]) :-
-	member(Tf, EPoints), 
-	Ts<Tf, !,  
-	Period = (Ts,Tf).
+% makeIntervalsFromSEPoints(+ListofStartingPoints, +ListofEndingPoints, -MaximalIntervals) 
 
-makeIntervalsFromSEPoints([Ts], _EPoints, [Period]) :- !,
-	Period = (Ts,inf).    % simpler to deal with than since(Ts).
-
-makeIntervalsFromSEPoints([Ts,Tnext|MoreTs], EPoints, [Period|MorePeriods]) :-
+% base cases: single initiation point
+makeIntervalsFromSEPoints([Ts], EPoints, Period) :-
 	member(Tf, EPoints), 
-	Ts<Tf,
+	Ts=<Tf, 
 	(
-		Tf<Tnext,
-		Period=(Ts,Tf),
-		append( _, [Tf|MoreEPoints], EPoints ), !,
-		makeIntervalsFromSEPoints([Tnext|MoreTs], MoreEPoints, MorePeriods)
-		;
-		% U is neither initiated nor terminated between Ts and Tnext
-		% need to amalgamate (Ts,Tnext) with next period found
-		% Period=(Ts,Tf)
-		% makeIntervalsFromSEPoints([Tnext|MoreTs], U, [(Tnext,Tf)|MorePeriods])	
-		Period=(Ts,Tf), 
-		MorePeriods=MoreX, 
-        	append( _, [Tf|MoreEPoints], EPoints ), !,
-		makeIntervalsFromSEPoints([Tnext|MoreTs], [Tf|MoreEPoints], [(Tnext,Tf)|MoreX])
+		Ts=Tf, !, 
+		Period=[]
+		;	
+		%Ts<Tf
+		!, Period=[(Ts,Tf)]
 	).
+makeIntervalsFromSEPoints([Ts], _EPoints, [(Ts,inf)]) :- !.   
+
+% recursion: at least two initiation points
+makeIntervalsFromSEPoints([T|MoreTs], [T|MoreTf], Periods) :-
+	!, makeIntervalsFromSEPoints(MoreTs, MoreTf, Periods).
+
+makeIntervalsFromSEPoints([Ts|MoreTs], [Tf|MoreTf], Periods) :-
+	Tf<Ts, !, 
+	makeIntervalsFromSEPoints([Ts|MoreTs], MoreTf, Periods).
+
+makeIntervalsFromSEPoints([Ts,T|MoreTs], [T|MoreTf], [(Ts,T)|MorePeriods]) :-
+	%Ts<Tf,  
+	%Tf=Tnext, 
+	!, makeIntervalsFromSEPoints([T|MoreTs], [T|MoreTf], MorePeriods).
+
+makeIntervalsFromSEPoints([Ts,Tnext|MoreTs], [Tf|MoreTf], [(Ts,Tf)|MorePeriods]) :-
+	%Ts<Tf,  
+	Tf<Tnext, !,
+	makeIntervalsFromSEPoints([Tnext|MoreTs], MoreTf, MorePeriods).
+
+makeIntervalsFromSEPoints([Ts,Tnext|MoreTs], [Tf|MoreTf], [(Ts,Tf)|MorePeriods]) :-
+	%Ts<Tnext<Tf,  
+	!, makeIntervalsFromSEPoints([Tnext|MoreTs], [Tf|MoreTf], [(Tnext,Tf)|MorePeriods]).
 
 makeIntervalsFromSEPoints([Ts,_Tnext|_MoreTs], _EPoints, [(Ts,inf)]).
 
