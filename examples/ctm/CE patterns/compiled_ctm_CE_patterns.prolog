@@ -1,5 +1,4 @@
 
-:- ['../../../src/RTEC.prolog'].
 :- ['ctm_declarations.prolog'].
 
 initially(punctuality(_131445,_131446)=punctual).

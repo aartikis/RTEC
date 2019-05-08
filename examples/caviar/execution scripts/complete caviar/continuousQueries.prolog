@@ -1,17 +1,19 @@
-:- ['../../data/complete caviar/appearance.prolog'].
-:- ['../../data/complete caviar/movementB.prolog'].
-:- ['../../data/complete caviar/list-of-ids.prolog'].
-
-:- ['../../CE patterns/compiled_caviar_CE_patterns.prolog'].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Notes: 
 % In this application, WM=Step, while the LastTime of the dataset is 1007000.
 % TimesFile records the event recognition times, 
 % while InputFile records the number of input events per window.
+% Prolog variable can be assigned with either 'yap' or 'swi' depending
+% on the prolog running.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-continuousER(TimesFile, InputFile, WM, Step, LastTime) :-
+continuousER(Prolog, TimesFile, InputFile, WM, Step, LastTime) :-
+  handleProlog(Prolog, StatisticsFlag),
+  consult('../../data/complete caviar/appearance.prolog'),
+  consult('../../data/complete caviar/movementB.prolog'),
+  consult('../../data/complete caviar/list-of-ids.prolog'),
+  consult('../../CE patterns/compiled_caviar_CE_patterns.prolog'),
   open(TimesFile, write, TimesStream),
   open(InputFile, write, InputStream),
   initialiseRecognition(ordered, preprocessing, 40),
@@ -23,10 +25,10 @@ continuousER(TimesFile, InputFile, WM, Step, LastTime) :-
   CurrentTime is WM+Step,
   updateManySDE(WM, CurrentTime), 
   write('ER: '), write(CurrentTime), write(WM), nl, 
-  statistics(cputime, [S1,T1]), 
+  statistics(StatisticsFlag, [S1,T1]), 
   eventRecognition(CurrentTime, WM), 
   findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L)), CC),  
-  statistics(cputime, [S2,T2]), T is T2-T1, S is S2-S1, %S=T2,
+  statistics(StatisticsFlag, [S2,T2]), T is T2-T1, S is S2-S1, %S=T2,
   write(TimesStream, S),
   NewCurrentTime is CurrentTime+Step,
   findall((A,B), happensAtIE(A,B), SDEList), 
@@ -35,7 +37,7 @@ continuousER(TimesFile, InputFile, WM, Step, LastTime) :-
   length(InputList, InputL),
   Input is SDEL+InputL,
   write(InputStream, Input),
-  querying(TimesStream, InputStream, WM, Step, NewCurrentTime, LastTime, [S], WorstCase, [Input], InputSum),
+  querying(StatisticsFlag, TimesStream, InputStream, WM, Step, NewCurrentTime, LastTime, [S], WorstCase, [Input], InputSum),
   % calculate average query time
   sum_list(WorstCase, Sum),
   length(WorstCase, L),
@@ -51,18 +53,18 @@ continuousER(TimesFile, InputFile, WM, Step, LastTime) :-
   close(TimesStream),
   close(InputStream), !.
 
-querying(_TimesStream, _InputStream, _WM, _Step, CurrentTime, LastTime, WorstCase, WorstCase, InputSum, InputSum) :- 
+querying(_StatisticsFlag,_TimesStream, _InputStream, _WM, _Step, CurrentTime, LastTime, WorstCase, WorstCase, InputSum, InputSum) :- 
   CurrentTime >= LastTime, !.
 
-querying(TimesStream, InputStream, WM, Step, CurrentTime, LastTime, InitWorstCase, WorstCase, InitInput, InputSum) :- 
+querying(StatisticsFlag, TimesStream, InputStream, WM, Step, CurrentTime, LastTime, InitWorstCase, WorstCase, InitInput, InputSum) :- 
   OldCurrentTime is CurrentTime-Step,
   updateManySDE(OldCurrentTime, CurrentTime), 
   Diff is CurrentTime-WM,
   write('ER: '),write(CurrentTime),write(' '),write(WM),nl,
-  statistics(cputime,[S1,T1]), 
+  statistics(StatisticsFlag, [S1,T1]), 
   eventRecognition(CurrentTime, WM), 
   findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L)), CC),  
-  statistics(cputime,[S2,T2]), 
+  statistics(StatisticsFlag, [S2,T2]), 
   T is T2-T1, S is S2-S1, %S=T2,
   writeResult(S, TimesStream),
   NewCurrentTime is CurrentTime+Step,
@@ -72,7 +74,7 @@ querying(TimesStream, InputStream, WM, Step, CurrentTime, LastTime, InitWorstCas
   length(InputList, InputL),
   Input is SDEL+InputL,
   writeResult(Input, InputStream),
-  querying(TimesStream, InputStream, WM, Step, NewCurrentTime, LastTime, [S|InitWorstCase], WorstCase, [Input|InitInput], InputSum).
+  querying(StatisticsFlag, TimesStream, InputStream, WM, Step, NewCurrentTime, LastTime, [S|InitWorstCase], WorstCase, [Input|InitInput], InputSum).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % I/O Utils
@@ -103,4 +105,15 @@ updateManySDE(Start, End) :-
 	NewStart is Start + 1000,
 	updateSDE(Start, NewStart),
 	updateManySDE(NewStart, End).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Utils
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% handleProlog(+PrologCompiler, -StatisticsFlag) 
+handleProlog(yap, cputime) :-
+	consult('../../../../src/RTEC.prolog').
+% in case of SWI load the necessary Prolog declarations 
+handleProlog(swi, runtime) :-
+    !,consult('../../../../src/RTEC-swi.prolog').
 

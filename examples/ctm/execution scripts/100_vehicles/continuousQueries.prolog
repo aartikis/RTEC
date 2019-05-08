@@ -1,14 +1,18 @@
-
-:- ['../../CE patterns/compiled_ctm_CE_patterns.prolog'].
+:- discontiguous updateSDE/2, updateSDE/4.
+:- multifile updateSDE/2, updateSDE/4.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Notes: 
 % The LastTime of the dataset is 50000.
 % TimesFile records the event recognition times, 
 % while InputFile records the number of input events per window.
+% Prolog variable can be assigned with either 'yap' or 'swi' depending
+% on the prolog running.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-continuousER(TimesFile, WM, Step, LastTime) :-
+continuousER(Prolog, TimesFile, WM, Step, LastTime) :-
+  handleProlog(Prolog, StatisticsFlag),
+  consult('../../CE patterns/compiled_ctm_CE_patterns.prolog'),
   open(TimesFile, write, TimesStream),
   initialiseRecognition(unordered, nopreprocessing, 1),
   updateManySDE( 0, WM, '1p_all' ),
@@ -19,13 +23,13 @@ continuousER(TimesFile, WM, Step, LastTime) :-
   CurrentTime is WM+Step,
   updateManySDE(WM, CurrentTime, '1p_all' ), 
   write('ER: '), write(CurrentTime), write(WM), nl, 
-  statistics(cputime, [S1,T1]), 
+  statistics(StatisticsFlag, [S1,T1]), 
   eventRecognition(CurrentTime, WM), 
   findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L)), CC),  
-  statistics(cputime, [S2,T2]), T is T2-T1, S is S2-S1, %S=T2,
+  statistics(StatisticsFlag, [S2,T2]), T is T2-T1, S is S2-S1, %S=T2,
   write(TimesStream, S),
   NewCurrentTime is CurrentTime+Step,
-  querying(TimesStream, WM, Step, NewCurrentTime, LastTime, [S], WorstCase),
+  querying(StatisticsFlag, TimesStream, WM, Step, NewCurrentTime, LastTime, [S], WorstCase),
   % calculate average query time
   sum_list(WorstCase, Sum),
   length(WorstCase, L),
@@ -36,22 +40,22 @@ continuousER(TimesFile, WM, Step, LastTime) :-
   nl(TimesStream), write(TimesStream, Max),
   close(TimesStream), !.
 
-querying(_TimesStream, _WM, _Step, CurrentTime, LastTime, WorstCase, WorstCase) :- 
+querying(_StatisticsFlag, _TimesStream, _WM, _Step, CurrentTime, LastTime, WorstCase, WorstCase) :- 
   CurrentTime >= LastTime, !.
 
-querying(TimesStream, WM, Step, CurrentTime, LastTime, InitWorstCase, WorstCase) :- 
+querying(StatisticsFlag, TimesStream, WM, Step, CurrentTime, LastTime, InitWorstCase, WorstCase) :- 
   OldCurrentTime is CurrentTime-Step,
   updateManySDE(OldCurrentTime, CurrentTime, '1p_all' ), 
   Diff is CurrentTime-WM,
   write('ER: '),write(CurrentTime),write(' '),write(WM),nl,
-  statistics(cputime,[S1,T1]), 
+  statistics(StatisticsFlag,[S1,T1]), 
   eventRecognition(CurrentTime, WM), 
   findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L)), CC),  
-  statistics(cputime,[S2,T2]), 
+  statistics(StatisticsFlag,[S2,T2]), 
   T is T2-T1, S is S2-S1, %S=T2,
   writeResult(S, TimesStream),
   NewCurrentTime is CurrentTime+Step,
-  querying(TimesStream, WM, Step, NewCurrentTime, LastTime, [S|InitWorstCase], WorstCase).
+  querying(StatisticsFlag, TimesStream, WM, Step, NewCurrentTime, LastTime, [S|InitWorstCase], WorstCase).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,6 +64,18 @@ querying(TimesStream, WM, Step, CurrentTime, LastTime, InitWorstCase, WorstCase)
 
 writeResult(Time, Stream):-
   write(Stream,'+'), write(Stream,Time).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Utils
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% handleProlog(+PrologCompiler, -StatisticsFlag) 
+handleProlog(yap, cputime) :-
+	consult('../../../../src/RTEC.prolog').
+% in case of SWI load the necessary Prolog declarations 
+handleProlog(swi, runtime) :-
+	!,consult('../../../../src/RTEC-swi.prolog').
+
 
 
 % 100 vehicles, 1 per cent each

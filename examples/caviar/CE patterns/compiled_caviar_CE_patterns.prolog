@@ -1,5 +1,4 @@
 
-:- ['../../../src/RTEC.prolog'].
 :- ['pre-processing.prolog'].
 :- ['caviar_declarations.prolog'].
 
