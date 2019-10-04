@@ -190,11 +190,11 @@ findEndofInterval([End], TemporalDistance, _LastTime, NextEnd, []) :-
 	% nextTimePoint
 	NextEnd is End+TemporalDistance-(End mod TemporalDistance). 
 
-findEndofInterval([P1,P2|Tail], TemporalDistance, LastTime, NextP1, [P2|Tail]) :-
+findEndofInterval([P1,P2|Tail], TemporalDistance, _LastTime, NextP1, [P2|Tail]) :-
 	Diff is P2-P1,
 	Diff>TemporalDistance, !, 
 	% nextTimePoint
 	NextP1 is P1+TemporalDistance-(P1 mod TemporalDistance).
 
-findEndofInterval([P1,P2|Tail], TemporalDistance, LastTime, End, Rest) :-
+findEndofInterval([_P1,P2|Tail], TemporalDistance, LastTime, End, Rest) :-
 	findEndofInterval([P2|Tail], TemporalDistance, LastTime, End, Rest).

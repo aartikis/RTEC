@@ -135,6 +135,7 @@ processEntity(Index, OE, InitTime, QueryTime) :-
 		processSimpleFluent(Index, OE, InitTime, QueryTime)
 		;
 		% compute the time-points of output entities/events
+		event(OE), 
 		processEvent(Index, OE)
 	), !.
 
