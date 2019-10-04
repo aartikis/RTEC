@@ -1,4 +1,4 @@
-# RTEC: Run-Time Event Calculus.
+# RTEC: Run-Time Event Calculus
 
 RTEC is an open-source [Event Calculus](https://en.wikipedia.org/wiki/Event_calculus) dialect optimised for stream reasoning. It is written in Prolog and has been tested under [YAP 6.2](https://en.wikipedia.org/wiki/YAP_(Prolog)).
 
