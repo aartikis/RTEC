@@ -1,35 +1,67 @@
 # Application
 
-Event recognition for public space surveillance using the [CAVIAR](http://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/) benchmark dataset.
+Activity recognition for public space surveillance using the [CAVIAR](http://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/) benchmark dataset.
 
 Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://dx.doi.org/10.1109/TKDE.2014.2356476). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
 
 # Directory Structure
-- /CE patterns. Original and compiled CE patterns along with declarations.
-- /data. The complete CAVIAR dataset in RTEC format.
-- /execution scripts. 
+- /experiments/data. The CAVIAR dataset in RTEC format.
+- /experiments/execution log files. Directory of the execution logs.
+- /patterns. Original and compiled patterns along with declarations.
 
 # Execution Instructions
 
-Unzip the compressed dataset in the /data/complete caviar/ directory.
+Go to the directory 
 
-Go to the /execution scripts/complete caviar/ directory.
+```
+../../src/execution scripts/
 
-Launch Prolog.
-
-Load continuousQueries.prolog:
-```prolog
-['continuousQueries.prolog'].
 ```
 
-Invoke continuousER(TimesFile, InputFile, Window, Step, LastTime) with appropriate values for the 4 arguments. Eg:
+Launch Prolog and load the execution script;
+for YAP type:
+
+
+```
+yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
+```
+
+while for SWI Prolog type:
+
+
+```
+swipl -L0 -G0 -T0 -l continuousQueries.prolog
+```
+
+Run the execution script; when operating in YAP type:
 
 ```prolog
-continuousER('times.txt', 'input.txt',10000,10000,1007000).
+continuousER(yap, caviar).
 ```
-instructs RTEC to perform continuous queries where window=step=10000, the event recognition times per query are recorded in times.txt, the number of input events per window are recorded in input.txt, and querying ends when time-point 1007000 is reached.
 
-To see the intervals of the fluents in the last window, type:
+while when operating in SWI Prolog type:
+
+```prolog
+continuousER(swi, caviar).
+```
+
+
+The parameters of the event recognition task may be set by editing the 
+
+```
+handleApplication.prolog
+```
+
+file, which is at the same directory as the execution script:
+
+
+```
+continuousQueries.prolog
+```
+
+
+
+To see the intervals of the fluents in the last window, type in Prolog:
 
 ```prolog
 holdsFor(U,I).
