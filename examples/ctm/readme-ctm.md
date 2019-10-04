@@ -6,31 +6,63 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 
 # Directory Structure
-- /CE patterns. Original and compiled CE patterns along with declarations.
-- /data. A sample synthetic dataset concerning 100 public transport vehicles from the [PRONTO](http://www.ict-pronto.org/) project.
-- /execution scripts. 
+- /experiments/data. A sample synthetic dataset concerning 100 public transport vehicles from the [PRONTO](http://www.ict-pronto.org/) project.
+- /experiments/execution log files. Directory of the execution logs.
+- /patterns. Original and compiled patterns along with declarations.
 
 # Execution Instructions
 
-Unzip the compressed dataset in the /data/100_vehicles/ directory.
+Go to the directory 
 
-Go to the /execution scripts/100_vehicles/ directory.
+```
+../../src/execution scripts/
 
-Launch Prolog.
-
-Load continuousQueries.prolog:
-```prolog
-['continuousQueries.prolog'].
 ```
 
-Invoke continuousER(TimesFile, Window, Step, LastTime) with appropriate values for the 3 arguments. Eg:
+Launch Prolog and load the execution script;
+for YAP type:
+
+
+```
+yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
+```
+
+while for SWI Prolog type:
+
+
+```
+swipl -L0 -G0 -T0 -l continuousQueries.prolog
+```
+
+Run the execution script; when operating in YAP type:
 
 ```prolog
-continuousER('times.txt', 10000, 1000, 50000).
+continuousER(yap, ctm).
 ```
-instructs RTEC to perform continuous queries where window=10000, step=1000, the event recognition times per query are recorded in times.txt, and querying ends when time-point 50000 is reached.
 
-To see the intervals of the fluents in the last window, type:
+while when operating in SWI Prolog type:
+
+```prolog
+continuousER(swi, ctm).
+```
+
+
+The parameters of the event recognition task may be set by editing the 
+
+```
+handleApplication.prolog
+```
+
+file, which is at the same directory as the execution script:
+
+
+```
+continuousQueries.prolog
+```
+
+
+
+To see the intervals of the fluents in the last window, type in Prolog:
 
 ```prolog
 holdsFor(U,I).

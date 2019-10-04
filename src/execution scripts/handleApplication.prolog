@@ -1,5 +1,5 @@
 
-% handleApplication(+Prolog, +ApplicationName, -LogFile, -WM, -Step, -LastTime, -StreamOrderFlag, -DynamicGroundingFlag, -PreprocessingFlag, -ClockTick)
+% handleApplication(+Prolog, +ApplicationName, -LogFile, -WM, -Step, -LastTime, -StreamOrderFlag, -PreprocessingFlag, -ClockTick)
 
 % This is a predicate for setting the appropriate parameters for executing an application (see +ApplicationName),
 % and consulting the relevant compiled event description, declarations and dataset. 
