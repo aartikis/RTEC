@@ -6,7 +6,7 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 
 # Directory Structure
-- /experiments/data. A sample synthetic dataset concerning 100 public transport vehicles from the [PRONTO](http://www.ict-pronto.org/) project.
+- /experiments/data. A sample synthetic dataset concerning 100 public transport vehicles from the EU-funded PRONTO project.
 - /experiments/execution log files. Directory of the execution logs.
 - /patterns. Original and compiled patterns along with declarations.
 
