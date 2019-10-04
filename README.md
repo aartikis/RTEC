@@ -1,5 +1,4 @@
-# RTEC
-RTEC: Run-Time Event Calculus.
+# RTEC: Run-Time Event Calculus.
 
 RTEC is an open-source [Event Calculus](https://en.wikipedia.org/wiki/Event_calculus) dialect optimised for stream reasoning. It is written in Prolog and has been tested under [YAP 6.2](https://en.wikipedia.org/wiki/YAP_(Prolog)).
 
@@ -24,12 +23,12 @@ The /examples directory is **optional** and includes patterns and sample dataset
 # Documentation
 
 - Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://dx.doi.org/10.1109/TKDE.2014.2356476). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
-- User manual of RTEC.
+- [User manual of RTEC](https://github.com/aartikis/RTEC/blob/master/RTEC_manual.pdf).
 
 # Applications
 
-RTEC has been used for event recogniton for:
-- [Maritime surveillance.](http://cer.iit.demokritos.gr/cermm)
+RTEC has been used for:
+- [Maritime monitoring.](http://cer.iit.demokritos.gr/cermm)
 - [Activity recognition.](http://cer.iit.demokritos.gr/cerar)
 - [Fleet management.](http://cer.iit.demokritos.gr/fleet-management)
 - City transport & traffic management.
