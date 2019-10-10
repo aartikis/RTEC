@@ -133,7 +133,7 @@ compileHoldsFor :-
 % compile holdsAt/2 rules
 
 compileHoldsAt :-
-    clause(holdsAt(F=V,T), Body),	
+    clause(holdsAt(F=V,_T), Body),	
 	% the condition below makes sure that we do not compile rules from RTEC.prolog 
 	% or any other domain-independent code
 	\+ var(F),
@@ -248,11 +248,11 @@ gatherChildrenBodyIntervals([HeadChild|TailChildren],InitChildrenBIs,ChildrenBIs
 	gatherChildrenBodyIntervals(TailChildren,NewInitChildrenBIs,ChildrenBIs).
 	
 % simple fluent
-compileHoldsAtTree(holdsAt(U,T), holdsForProcessedSimpleFluent(Index,U,I), I) :-
+compileHoldsAtTree(holdsAt(U,_T), holdsForProcessedSimpleFluent(Index,U,I), I) :-
 	simpleFluent(U), indexOf(Index, U), !.
 	
 % output entity/statically determined fluent
-compileHoldsAtTree(holdsAt(U,T), holdsForProcessedSDFluent(Index,U,I), I) :-
+compileHoldsAtTree(holdsAt(U,_T), holdsForProcessedSDFluent(Index,U,I), I) :-
 	sDFluent(U), indexOf(Index, U), !.
 	
 findChildren(Body,Children,Operation) :-
@@ -304,7 +304,7 @@ findChildren1((Head;Rest), InitChildren, Children, union) :-
 	!, append(InitChildren,[Head],NewInitChildren),
 	findChildren1(Rest, NewInitChildren, Children, union).
 
-findChildren1(Body, InitChildren, Children, Operation) :-
+findChildren1(Body, InitChildren, Children, _Operation) :-
 	append(InitChildren, [Body], Children).
 	
 completeBody(ChildrenBIs,intersection,(Head,Rest),Interval) :-
@@ -337,7 +337,7 @@ completeBody1([H|T],(Head,Rest),InitIntervals,Intervals) :-
 %%% happensAt
 
 % special event: start of simple fluent
-compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(start(U),T), NewBody, Timespan, _Cyclic) :-
 	simpleFluent(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -349,7 +349,7 @@ compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: start of input entity/statically determined fluent
-compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(start(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U), inputEntity(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -361,7 +361,7 @@ compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: start of internal entity/statically determined fluent
-compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(start(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U), internalEntity(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -373,7 +373,7 @@ compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: start of output entity/statically determined fluent
-compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(start(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U), outputEntity(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -385,7 +385,7 @@ compileConditions1(happensAt(start(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 
 % special event: end of simple fluent
-compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(end(U),T), NewBody, Timespan, _Cyclic) :-
 	simpleFluent(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -397,7 +397,7 @@ compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: end of input entity/statically determined fluent
-compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(end(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U), inputEntity(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -409,7 +409,7 @@ compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: end of internal entity/statically determined fluent
-compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(end(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U), internalEntity(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -421,7 +421,7 @@ compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: end of output entity/statically determined fluent
-compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(end(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U), outputEntity(U), indexOf(Index, U),
 	(
 	Timespan = [],
@@ -433,7 +433,7 @@ compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % special event: end of statically determined fluent that is neither an input nor an output entity
-compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(end(U),T), NewBody, Timespan, _Cyclic) :-
 	sDFluent(U),
 	(
 	Timespan = [],
@@ -446,7 +446,7 @@ compileConditions1(happensAt(end(U),T), NewBody, Timespan, Cyclic) :-
 	
 
 % input entity/event
-compileConditions1(happensAt(E,T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(E,T), NewBody, Timespan, _Cyclic) :-
 	inputEntity(E),
 	(
 	Timespan = [],
@@ -458,7 +458,7 @@ compileConditions1(happensAt(E,T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % output entity/event
-compileConditions1(happensAt(E,T), NewBody, Timespan, Cyclic) :-
+compileConditions1(happensAt(E,T), NewBody, Timespan, _Cyclic) :-
 	outputEntity(E), indexOf(Index, E),
 	(
 	Timespan = [],
@@ -472,7 +472,7 @@ compileConditions1(happensAt(E,T), NewBody, Timespan, Cyclic) :-
 	
 %%% initiatedAt/2
 
-compileConditions1(initiatedAt(U,T), NewBody, Timespan, Cyclic) :-
+compileConditions1(initiatedAt(U,T), NewBody, Timespan, _Cyclic) :-
 	(
 	Timespan = [],
 	NewBody = initiatedAt(U,T)
@@ -484,7 +484,7 @@ compileConditions1(initiatedAt(U,T), NewBody, Timespan, Cyclic) :-
 	
 %%% terminatedAt/2
 
-compileConditions1(terminatedAt(U,T), NewBody, Timespan, Cyclic) :-
+compileConditions1(terminatedAt(U,T), NewBody, Timespan, _Cyclic) :-
 	(
 	Timespan = [],
 	NewBody = terminatedAt(U,T)
@@ -498,7 +498,7 @@ compileConditions1(terminatedAt(U,T), NewBody, Timespan, Cyclic) :-
 %%% holdsAt
 
 % simple fluent
-compileConditions1(holdsAt(U,T), NewBody, Timespan, Cyclic) :-
+compileConditions1(holdsAt(U,T), NewBody, _Timespan, Cyclic) :-
 	simpleFluent(U), indexOf(Index, U),
 	(
 	Cyclic,
@@ -509,7 +509,7 @@ compileConditions1(holdsAt(U,T), NewBody, Timespan, Cyclic) :-
 	), 
 	!.
 	
-compileConditions1(holdsAt(I,U,T), NewBody, Timespan, Cyclic) :-
+compileConditions1(holdsAt(I,U,T), NewBody, _Timespan, Cyclic) :-
 	simpleFluent(U), indexOf(I, U),
 	(
 	Cyclic,
@@ -521,42 +521,42 @@ compileConditions1(holdsAt(I,U,T), NewBody, Timespan, Cyclic) :-
 	!.
 	
 % input entity/statically determined fluent
-compileConditions1(holdsAt(U,T), holdsAtProcessedIE(Index,U,T), Timespan, Cyclic) :-
+compileConditions1(holdsAt(U,T), holdsAtProcessedIE(Index,U,T), _Timespan, _Cyclic) :-
 	sDFluent(U), inputEntity(U), indexOf(Index, U), !.
 
 % internal entity/statically determined fluent
-compileConditions1(holdsAt(U,T), holdsAtProcessedIE(Index,U,T), Timespan, Cyclic) :-
+compileConditions1(holdsAt(U,T), holdsAtProcessedIE(Index,U,T), _Timespan, _Cyclic) :-
 	sDFluent(U), internalEntity(U), indexOf(Index, U), !.
 
 % output entity/statically determined fluent
-compileConditions1(holdsAt(U,T), holdsAtProcessedSDFluent(Index,U,T), Timespan, Cyclic) :-
+compileConditions1(holdsAt(U,T), holdsAtProcessedSDFluent(Index,U,T), _Timespan, _Cyclic) :-
 	sDFluent(U), outputEntity(U), indexOf(Index, U), !.
 
 % statically determined fluent that is neither input nor output entity
-compileConditions1(holdsAt(U,T), holdsAtSDFluent(U,T), Timespan, Cyclic) :-
+compileConditions1(holdsAt(U,T), holdsAtSDFluent(U,T), _Timespan, _Cyclic) :-
 	sDFluent(U), !.
 
 
 %%% holdsFor
 
 % simple fluent
-compileConditions1(holdsFor(U,I), holdsForProcessedSimpleFluent(Index,U,I), Timespan, Cyclic) :-
+compileConditions1(holdsFor(U,I), holdsForProcessedSimpleFluent(Index,U,I), _Timespan, _Cyclic) :-
 	simpleFluent(U), indexOf(Index, U), !.
 
 % input entity/statically determined fluent
-compileConditions1(holdsFor(U,I), holdsForProcessedIE(Index,U,I), Timespan, Cyclic) :-
+compileConditions1(holdsFor(U,I), holdsForProcessedIE(Index,U,I), _Timespan, _Cyclic) :-
 	sDFluent(U), inputEntity(U), indexOf(Index, U), !.
 
 % internal entity/statically determined fluent
-compileConditions1(holdsFor(U,I), holdsForProcessedIE(Index,U,I), Timespan, Cyclic) :-
+compileConditions1(holdsFor(U,I), holdsForProcessedIE(Index,U,I), _Timespan, _Cyclic) :-
 	sDFluent(U), internalEntity(U), indexOf(Index, U), !.
 
 % output entity/statically determined fluent
-compileConditions1(holdsFor(U,I), holdsForProcessedSDFluent(Index,U,I), Timespan, Cyclic) :-
+compileConditions1(holdsFor(U,I), holdsForProcessedSDFluent(Index,U,I), _Timespan, _Cyclic) :-
 	sDFluent(U), outputEntity(U), indexOf(Index, U), !.
 
 % statically determined fluent that is neither input nor output entity
-compileConditions1(holdsFor(U,I), holdsForSDFluent(U,I), Timespan, Cyclic) :-
+compileConditions1(holdsFor(U,I), holdsForSDFluent(U,I), _Timespan, _Cyclic) :-
 	sDFluent(U), !.
 
 
@@ -570,9 +570,9 @@ compileConditions1(findall(Targets,user:ECPred,List),findall(Targets,NewECPred,L
 compileConditions1(findall(Targets,ECPred,List),findall(Targets,NewECPred,List), Timespan, Cyclic) :-
 	compileConditions(ECPred, NewECPred, Timespan, Cyclic), !.
 
-compileConditions1(Something, Something, Timespan, Cyclic).
+compileConditions1(Something, Something, _Timespan, _Cyclic).
 
-compileConditions1(Something, T1, T2, Something).
+compileConditions1(Something, _T1, _T2, Something).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
