@@ -156,10 +156,10 @@ querying(StatisticsFlag, LogFileS, WM, Step, CurrentTime, LastTime, InitRecTime,
 
 % handleProlog(+PrologCompiler, -StatisticsFlag) 
 handleProlog(yap, cputime) :-
-	consult('../RTEC.prolog').
+	consult('../src/RTEC.prolog').
 % in case of SWI load the necessary Prolog declarations 
 handleProlog(swi, runtime) :-
-	!, consult('../RTEC-swi.prolog').
+	!, consult('../src/RTEC-swi.prolog').
 
 % write(+RecognitionTime, +LogFile)
 writeResult(Time, LogFileS):-

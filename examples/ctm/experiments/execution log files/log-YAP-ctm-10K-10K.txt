@@ -1,8 +1,8 @@
-59+240+92+101+97
+60+237+93+101+98
 
 Recognition Time average (ms)		: 117.8
-Recognition Time standard deviation (ms): 62.8821119238214
-Recognition Time worst (ms)		: 240
+Recognition Time standard deviation (ms): 61.3820820761238
+Recognition Time worst (ms)		: 237
 
 Input Entities average			: 6250.0
 Input Entities standard deviation	: 0.0
