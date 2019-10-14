@@ -30,7 +30,7 @@ The /examples directory is **optional** and includes patterns and sample dataset
 RTEC has been used for:
 - [Maritime monitoring.](http://cer.iit.demokritos.gr/cermm)
 - [Activity recognition.](http://cer.iit.demokritos.gr/cerar)
-- [Fleet management.](http://cer.iit.demokritos.gr/fleet-management)
+- [Fleet management.](http://cer.iit.demokritos.gr/cerfm)
 - City transport & traffic management.
 
 
