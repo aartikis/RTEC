@@ -37,5 +37,6 @@ RTEC has been used for:
 # Related Software
 - [OLED](https://github.com/nkatzz/OLED): Online Learning of Event Definitions. OLED automatically constructs Event Calculus rules, such as complex event patterns, from annotated data streams.
 - [LoMRF](https://github.com/anskarl/LoMRF):  Library for Markov Logic Networks. LoMRF supports Event Calculus reasoning under uncertainty.
+- [Wayeb](https://github.com/ElAlev/Wayeb): Wayeb is a Complex Event Processing and Forecasting (CEP/F) engine written in Scala. It is based on symbolic automata and Markov models.
 
 
