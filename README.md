@@ -2,7 +2,7 @@
 
 RTEC is an open-source [Event Calculus](https://en.wikipedia.org/wiki/Event_calculus) dialect optimised for data stream reasoning. It is written in Prolog and has been tested under [YAP](https://en.wikipedia.org/wiki/YAP_(Prolog)) and [SWI Prolog](https://www.swi-prolog.org/).
 
-## YAP Installation Instructions
+### YAP Installation Instructions
 
 [YAP 6.3](https://github.com/vscosta/yap-6.3) is the latest stable version of YAP; installation and execution instructions may be found in this [manual](https://www.dcc.fc.up.pt/~vsc/yap/index.html).
 
