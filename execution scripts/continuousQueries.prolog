@@ -1,24 +1,32 @@
 
-:- ['handleApplication.prolog'].
+/**********************************************************************************
 
-%%%%%% RUN YAP: yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
-%%%%%% RUN SWI: swipl -L0 -G0 -T0 -l continuousQueries.prolog
+ Script for running RTEC.
+ Authors: Alexander Artikis and Manos Pitsikalis.
+
+ Run in YAP: yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
+ Run in SWI: swipl -L0 -G0 -T0 -l continuousQueries.prolog
+
+ **********************************************************************************/
+
+
+% load RTEC
+:- ['../src/RTEC.prolog'].
+
+% handleApplication includes hard-coded execution parameters, such as 
+% window and step sizes, for certain applications
+:- ['handleApplication.prolog'].
 
 
 % continuousER(+PrologCompiler, +ApplicationName)
 
-% eg: continuousER(yap, toy).
-% eg: continuousER(swi, toy).
+% eg: continuousER(toy).
+% eg: continuousER(caviar).
+% eg: continuousER(ctm).
 
-% eg: continuousER(yap, caviar).
-% eg: continuousER(swi, caviar).
 
-% eg: continuousER(yap, ctm).
-% eg: continuousER(swi, ctm).
-
-continuousER(Prolog, App) :-
-  % load RTEC according to the requested Prolog compiler
-  % also return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)
+continuousER(App) :-
+  % return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)
   handleProlog(Prolog, StatisticsFlag),
   % load the requested event description, declarations, data; 
   % return the parameters of the application: WM, Step, LastTime of the dataset, 
@@ -154,12 +162,12 @@ querying(StatisticsFlag, LogFileS, WM, Step, CurrentTime, LastTime, InitRecTime,
 % Utils
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% handleProlog(+PrologCompiler, -StatisticsFlag) 
+% handleProlog(-PrologCompiler, -StatisticsFlag) 
 handleProlog(yap, cputime) :-
-	consult('../src/RTEC.prolog').
-% in case of SWI load the necessary Prolog declarations 
+	current_prolog_flag(dialect, yap).
 handleProlog(swi, runtime) :-
-	!, consult('../src/RTEC-swi.prolog').
+	current_prolog_flag(dialect, swi).
+
 
 % write(+RecognitionTime, +LogFile)
 writeResult(Time, LogFileS):-

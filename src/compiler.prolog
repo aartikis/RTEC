@@ -10,6 +10,9 @@
  produced by this compiler, along with the declarations.
  ***************************************************************************************************/
 
+% these predicates are defined in this file
+:- discontiguous compileHoldsAtTree/3, findChildren/3. 
+
 :- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1.
 
 

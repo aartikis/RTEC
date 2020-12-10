@@ -88,7 +88,22 @@ DECLARATIONS:
 :- ['utilities/interval-manipulation.prolog'].
 :- ['utilities/amalgamate-periods.prolog'].
 
-:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, cyclic/1, temporalDistance/1, input/1, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2.
+
+/***** dynamic predicates *****/
+
+% The predicates below are asserted/retracted
+
+:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, temporalDistance/1, input/1, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2.
+
+/***** multifile predicates *****/
+
+% updateSDE are application-specific predicates loading datasets
+:- multifile holdsFor/2, initiatedAt/4, terminatedAt/4, maxDuration/3, updateSDE/2, updateSDE/3, updateSDE/4.
+
+/***** discontiguous predicates *****/
+
+:- discontiguous updateSDE/4, happensAtProcessedIE/3, happensAtProcessedIE/3, happensAtProcessedSDFluent/3, event/1, inputEntity/1, index/2, outputEntity/1, simpleFluent/1, sDFluent/1, happensAtProcessedSimpleFluent/3, deadlines1/3, initiatedAt/2, terminatedAt/2, initiatedAt/4, terminatedAt/4, compileHoldsAtTree/3, findChildren/3, maxDuration/3, maxDurationUE/3. 
+
 
 
 /********************************** INITIALISE RECOGNITION ***********************************/
