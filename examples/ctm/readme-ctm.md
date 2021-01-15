@@ -16,7 +16,6 @@ Go to the directory
 
 ```
 ../../src/execution scripts/
-
 ```
 
 Launch Prolog and load the execution script;
@@ -34,18 +33,12 @@ while for SWI Prolog type:
 swipl -L0 -G0 -T0 -l continuousQueries.prolog
 ```
 
-Run the execution script; when operating in YAP type:
+Run the execution script; type:
+
 
 ```prolog
-continuousER(yap, ctm).
+continuousER(ctm).
 ```
-
-while when operating in SWI Prolog type:
-
-```prolog
-continuousER(swi, ctm).
-```
-
 
 The parameters of the event recognition task may be set by editing the 
 
