@@ -47,7 +47,7 @@ RTEC has been used for:
 
 
 # Related Software
-- [iRTEC_{ggg}](https://github.com/Periklismant/oPIEC): Incremental RTEC. iRTEC supports incremental reasoning, handling efficiently the delays and retractions of data streams.
+- [iRTEC](https://github.com/eftsilio/Incremental_RTEC): Incremental RTEC. iRTEC supports incremental reasoning, handling efficiently the delays and retractions in data streams.
 - [oPIEC](https://github.com/Periklismant/oPIEC): Online Probabilistic Interval-Based Event Calculus. oPIEC supports Event Calculus reasoning over data streams under uncertainty.
 - [OLED](https://github.com/nkatzz/OLED): Online Learning of Event Definitions. OLED is a supervised machine learning tool for constructing Event Calculus rules, such as complex event patterns, from annotated data streams.
 - [LoMRF](https://github.com/anskarl/LoMRF):  Library for Markov Logic Networks. LoMRF supports Event Calculus reasoning and learning under uncertainty.
