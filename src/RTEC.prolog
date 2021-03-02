@@ -93,7 +93,7 @@ DECLARATIONS:
 
 % The predicates below are asserted/retracted
 
-:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, temporalDistance/1, input/1, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2.
+:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, temporalDistance/1, input/1, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, cyclic/1.
 
 /***** multifile predicates *****/
 
