@@ -1,0 +1,17 @@
+.DS_Store*
+._*
+examples/Maritime-Monitoring/Brest/experiments/data/dynamic/*.csv
+examples/Maritime-Monitoring/Brest/experiments/execution log files/*
+examples/voting/experiments/execution log files/*.txt
+examples/negotiation/experiments/execution log files/*.txt
+examples/caviar/experiments/execution log files/*.txt
+examples/ctm/experiments/execution log files/*.txt
+examples/voting/experiments/data/csv/voting-*-*.csv
+examples/negotiation/experiments/data/csv/negotiation-*-*.csv
+ehthumbs.db
+Icon?
+Thumbs.db
+.directory
+*-
+\#*
+

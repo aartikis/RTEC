@@ -1,0 +1,2 @@
+Download link: https://owncloud.skel.iit.demokritos.gr/index.php/s/dqyfKnho6UOlvco
+"votingDatasets.zip" includes 5 different datasets for each of the selected number of agents values.  
