@@ -128,10 +128,11 @@ nextTimePoint(T, NextT) :-
 
 prevTimePoint(inf, inf) :- !.
 
-prevTimePoint(T, T) :-
-	temporalDistance(TD),
-	% test if T is a 'legal' time-point
-	Temp is T mod TD, Temp=0, !. 
+prevTimePoint(T, PrevT) :-
+    temporalDistance(TD),
+    % test if T is a 'legal' time-point
+    Temp is T mod TD, Temp=0, !,
+    PrevT is T-TD. 
 
 prevTimePoint(T, PrevT) :-
 	temporalDistance(TD),
