@@ -2,6 +2,7 @@
 /**********************************************************************************
 
  Script for running RTEC.
+ Authors: Alexander Artikis and Manos Pitsikalis.
 
  Run in YAP: yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
  Run in SWI: swipl -L0 -G0 -T0 -l continuousQueries.prolog
@@ -20,6 +21,7 @@
 % handleApplication includes hard-coded execution parameters, such as 
 % window and step sizes, for certain applications
 :- ['handleApplication.prolog'].
+:- ['../src/timeoutTreatment.prolog'].
 
 % continuousQueries(+ApplicationName)
 
@@ -40,6 +42,88 @@
 % eg: continuousQueries(brest-enriched).
 % eg: continuousQueries(europeIMIS-critical).
 % eg: continuousQueries(europeIMIS-enriched).
+
+continuousQueriesCLI(App, StartReasoningTime, EndReasoningTime, WM, Step, AgentsNo, DynamicGroundingFlag, ResultsPath, PrologFiles, InputCSVFiles) :-
+	% return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)	
+	% handleProlog(-Prolog, -StatisticsFlag)
+	handleProlog(Prolog, StatisticsFlag),
+	% load the requested event description, declarations, data; 
+	% return the parameters of the application: WM, Step; 
+	% continuous queries take place in (StartReasoningTime, EndReasoningTime]
+	% StreamOrderFlag (ordered or unordered), 
+	% DynamicGroundingFlag (dynamicgrounding or nodynamicgrounding),
+	% PreprocessingFlag (preprocessing or nopreprocessing), 
+	% ClockTick: temporal distance between two consecutive time-points
+	% SDEBatch: the input narrative size asserted in a single batch
+	% handleApplication(+Prolog, +App, +WM, +Step, -InputMode, -LogFile, -ResultsFile, -StartReasoningTime, -EndReasoningTime, -StreamOrderFlag, -PreprocessingFlag, -ForgetThreshold, -DynamicGroundingThreshold, -ClockTick, -SDEBatch),
+	consultInputFiles(PrologFiles),
+	handleApplication(Prolog, App, InputMode, LogFile, ResultsFile, WM, Step, AgentsNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputCSVFiles, ResultsPath),
+	format("                                                                 
+	8 888888888o. 8888888 8888888888 8 8888888888       ,o888888o.    
+	8 8888    `88.      8 8888       8 8888            8888     `88.  
+	8 8888     `88      8 8888       8 8888         ,8 8888       `8. 
+	8 8888     ,88      8 8888       8 8888         88 8888           
+	8 8888.   ,88'      8 8888       8 888888888888 88 8888           
+	8 888888888P'       8 8888       8 8888         88 8888           
+	8 8888`8b           8 8888       8 8888         88 8888           
+	8 8888 `8b.         8 8888       8 8888         `8 8888       .8' 
+	8 8888   `8b.       8 8888       8 8888            8888     ,88'  
+	8 8888     `88.     8 8888       8 888888888888     `8888888P'   
+	"), nl,
+	% openFiles(+datasetfiles, -datasetstreams, -datasetpointerpositions, +logfile, -logfilestream, +resultsfile, -resultsfilestream)
+	openFiles(InputMode, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream), 
+	% initialise RTEC
+	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
+	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
+	QueryTime is StartReasoningTime+WM,
+	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
+	querying(InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), (OutputListOutFVpairs,OutputListOutLI,OutputListOutLD), SDEBatch),
+	% calculate and record the recognition time statistics
+	list_stats(RecTimes,_,_,AvgTime,_,DevTime),
+	nl(LogFileStream), nl(LogFileStream),
+	write(LogFileStream, 'Recognition Time average (ms)		: '), 
+	write(LogFileStream, AvgTime), nl(LogFileStream),
+	write(LogFileStream, 'Recognition Time standard deviation (ms): '), 
+	write(LogFileStream, DevTime), nl(LogFileStream),
+	write('Recognition Time average (ms)			: '), 
+	writeln(AvgTime),
+	% calculate and record the max query time
+	max_list(RecTimes, Max),
+	write(LogFileStream, 'Recognition Time worst (ms)		: '), 
+	write(LogFileStream, Max), nl(LogFileStream), nl(LogFileStream),
+	% calculate and record the average number of input entities per window
+	list_stats(InputList,_,_,AvgSDEs,_,DevSDEs),
+	write(LogFileStream, 'Input Entities average			: '), 
+	write(LogFileStream, AvgSDEs), nl(LogFileStream),
+	write(LogFileStream, 'Input Entities standard deviation	: '), 
+	write(LogFileStream, DevSDEs), nl(LogFileStream), nl(LogFileStream),
+	write('Input Entities average				: '), 
+	writeln(AvgSDEs),
+	% calculate and record the average and standard deviation of output entity fluent-value pairs per window
+	list_stats(OutputListOutFVpairs,_,_,AvgOutFVpairs,_,DevOutFVpairs),
+	write(LogFileStream, 'Output Entities (average number of fluent-value pairs)	: '), 
+	write(LogFileStream, AvgOutFVpairs), nl(LogFileStream),
+	write(LogFileStream, 'Output Entities (standard deviation)	  		: '), 
+	write(LogFileStream, DevOutFVpairs), nl(LogFileStream),
+	write('Output Entities (average # fluent-value pairs)	: '), writeln(AvgOutFVpairs),
+	% calculate and record the average and standard deviation of output entity intervals per window
+	list_stats(OutputListOutLI,_,_,AvgOutL,_,DevOutL),
+	write(LogFileStream, 'Output Entities (average number of intervals)	: '), 
+	write(LogFileStream, AvgOutL), nl(LogFileStream),
+	write(LogFileStream, 'Output Entities (standard deviation)	  	: '), 
+	write(LogFileStream, DevOutL), nl(LogFileStream),
+	write('Output Entities (average # intervals)		: '), 
+	writeln(AvgOutL),
+	% calculate and record the average and standard deviation of output entity duration per window
+	list_stats(OutputListOutLD,_,_,AvgOutLD,_,DevOutLD),
+	write(LogFileStream, 'Output Entities (average number of timepoints)	: '), 
+	write(LogFileStream, AvgOutLD),nl(LogFileStream),
+	write(LogFileStream, 'Output Entities (standard deviation)	 	: '), 
+	write(LogFileStream, DevOutLD),nl(LogFileStream),
+	write('Output Entities (average # timepoints)		: '), 
+	writeln(AvgOutLD),
+	writeln('========================================================='),
+	closeFiles(InputStreams, LogFileStream, ResultsFileStream), !.
 
 continuousQueries(App) :-
 	% return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)	
@@ -174,7 +258,7 @@ querying(InputStreams, InputPointerPositions, StatisticsFlag, LogFileStream, Res
 	write('Output Entities (# timepoints)		: '), writeln(OutLD),
 	writeln('========================================================='),
 	% move to the next query-time
-	NextQueryTime is QueryTime+Step,
+	NextQueryTime is QueryTime+Step, !,
 	querying(InputStreams, NewInputPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch).
 
 
@@ -379,4 +463,3 @@ writeCEs(ResultStream,[(F=V,L)|OtherCCs]) :-
     	write(ResultStream,').'),
     	nl(ResultStream),
     	writeCEs(ResultStream,OtherCCs).
-

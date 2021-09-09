@@ -1,9 +1,0 @@
-bigAreaType(anchorage_27008,anchorage).
-bigAreaType(anchorage_27009,anchorage).
-bigAreaType(anchorage_27006,anchorage).
-bigAreaType(anchorage_27007,anchorage).
-bigAreaType(anchorage_27004,anchorage).
-bigAreaType(anchorage_27005,anchorage).
-bigAreaType(anchorage_27002,anchorage).
-bigAreaType(anchorage_27003,anchorage).
-bigAreaType(anchorage_27001,anchorage).

@@ -19,6 +19,7 @@ forget(InitTime) :-
 	findall(E, (holdsForIESI(E, (Start,End)), dealWithInputFluents(E, Start, End, InitTime, NewInitTime)), _).
 
 % the rule below deals with the case in which the input stream is temporally sorted
+
 forget(InitTime) :-
 	nextTimePoint(InitTime, NewInitTime),
 	% forget input entities/events

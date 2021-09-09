@@ -10,11 +10,18 @@
  produced by this compiler, along with the declarations.
  ***************************************************************************************************/
 
+:- use_module(library(lists)). % needed to use member/2 in YAP.
+
 % these predicates are defined in this file
 :- discontiguous compileHoldsAtTree/3, findChildren/3. 
 
-:- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1.
+:- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, 
+	   happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1.
 
+:- multifile indexOf/2.
+
+indexOf(Index, Entity):-
+	index(Entity, Index).
 
 compileEventDescription(Declarations, InputDescription, OutputDescription) :- 
 	consult(Declarations),

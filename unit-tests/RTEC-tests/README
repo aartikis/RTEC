@@ -1,0 +1,8 @@
+
+
+To run the unit tests of RTEC, run the runallRTECtests-YAP.sh script (which uses YAP); eg:
+
+> ./runallRTECtests-YAP.sh
+
+
+The runallRTECtests-SWI.sh script does not seem to work.

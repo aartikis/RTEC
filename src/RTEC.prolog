@@ -80,7 +80,7 @@ DECLARATIONS:
 :- set_prolog_flag(toplevel_print_options, [max_depth(400)]).
 :- use_module(library(lists)).
 
-:- ['compiler.prolog'].
+%:- ['compiler.prolog']. %% After adding indexOf in compiler, some unit tests fail... so comment it for now...
 :- ['inputModule.prolog'].
 :- ['processSimpleFluents.prolog'].
 :- ['processSDFluents.prolog'].
@@ -97,7 +97,7 @@ DECLARATIONS:
 
 % The predicates below may or may not appear in the declarations of an application;
 % thus they must be declared dynamic
-:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, cyclic/1, maxDuration/3, maxDurationUE/3, internalEntity/1, simpleFluent/1, sDFluent/1, inputEntity/1.
+:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, cyclic/1, maxDuration/3, maxDurationUE/3, internalEntity/1, sDFluent/1.	%simpleFluent/1,  inputEntity/1.
 
 /***** multifile predicates *****/
 

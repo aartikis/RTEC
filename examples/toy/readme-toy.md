@@ -12,7 +12,7 @@ This example is illustrated in the [manual of RTEC](https://github.com/aartikis/
 Go to the directory 
 
 ```
-../../execution scripts/
+../../src/execution scripts/
 
 ```
 
@@ -31,11 +31,18 @@ while for SWI Prolog type:
 swipl -L0 -G0 -T0 -l continuousQueries.prolog
 ```
 
-Run the execution script; type:
+Run the execution script; when operating in YAP type:
 
 ```prolog
-continuousQueries(toy).
+continuousER(yap, toy).
 ```
+
+while when operating in SWI Prolog type:
+
+```prolog
+continuousER(swi, toy).
+```
+
 
 The parameters of the event recognition task may be set by editing the 
 

@@ -1,2 +1,0 @@
-portStatus(nearPorts).
-portStatus(farFromPorts).

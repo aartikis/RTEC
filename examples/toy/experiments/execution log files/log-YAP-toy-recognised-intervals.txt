@@ -1,6 +1,0 @@
-recognitions(predictions,location,[[chris],home],[(22,30)]).
-recognitions(predictions,location,[[chris],pub],[(18,22)]).
-recognitions(predictions,location,[[chris],work],[(10,18)]).
-recognitions(predictions,rich,[[chris],true],[(14,20)]).
-recognitions(predictions,happy,[[chris],true],[(14,22)]).
-

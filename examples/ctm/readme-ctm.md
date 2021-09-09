@@ -15,7 +15,7 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 Go to the directory 
 
 ```
-../../execution scripts/
+../../src/execution scripts/
 
 ```
 
@@ -34,11 +34,18 @@ while for SWI Prolog type:
 swipl -L0 -G0 -T0 -l continuousQueries.prolog
 ```
 
-Run the execution script; type:
+Run the execution script; when operating in YAP type:
 
 ```prolog
-continuousQueries(ctm).
+continuousER(yap, ctm).
 ```
+
+while when operating in SWI Prolog type:
+
+```prolog
+continuousER(swi, ctm).
+```
+
 
 The parameters of the event recognition task may be set by editing the 
 
