@@ -13,17 +13,12 @@ RTEC comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welco
 - Caching for hierarchical knowledge bases.
 - Support for out-of-order data streams.
 - Indexing for handling efficiently irrelevant data.
-- Support for events with delayed effects.
-- Efficient handling of cyclic dependencies among fluents.
 
 # Applications
 
 RTEC has been used for:
-- [Maritime monitoring.](http://cer.iit.demokritos.gr/blog/applications/maritime_surveillance/)
 - [Activity recognition.](http://cer.iit.demokritos.gr/blog/applications/activity_recognition/)
-- [Fleet management.](http://cer.iit.demokritos.gr/blog/applications/fleet_management/)
 - [City transport & traffic management.](http://cer.iit.demokritos.gr/publications/papers/2013/artikis-BG.pdf)
-- Multi-Agent Systems: [Voting](https://doi.org/10.1093/comjnl/bxh164) & [NetBill](http://cer.iit.demokritos.gr/publications/papers/2010/artikis-IGPL.pdf).
 
 Links for downloading datasets for each application are provided in this repository under /examples.
 
@@ -53,9 +48,9 @@ We encourage the use of a [virtual environment](https://docs.python.org/3/tutori
 
 Open a terminal and type:
 
-1. ``` git clone -b cli https://gitlab.skel.iit.demokritos.gr/a.artikis/RTEC2 ``` in the folder of your preference. 
+1. ``` git clone https://github.com/aartikis/RTEC``` in the folder of your preference. 
 
-2. ``` cd RTEC2 ```
+2. ``` cd RTEC ```
 
 Set up and activate a virtual environment for installing the required Python packages as follows:
 
@@ -69,9 +64,7 @@ Set up and activate a virtual environment for installing the required Python pac
 
 - ``` RTEC ``` or ``` RTEC --help ``` prints the usage instructions for RTEC.
 
-- ``` RTEC --use-case voting --path ./examples/voting continuouscer ``` runs RTEC on a dataset concerning a multi-agent voting precedure. The folder specified with the "path" argument, "./examples/voting", contains a collection of ".csv" and ".prolog" files. The former contain the input data streams of RTEC, while the latter include the event description of the application, declarations which assist the caching and indexing of RTEC and possibly auxiliary knowledege which describes the domain of interest. Examples of such files are provided for various applications under "/examples".
-
-- ``` RTEC --use-case maritime --path ./examples/maritime --window 86400 --step 86400 continuouscer ``` runs RTEC for maritime situational awareness. In this example, the window and the step of RTEC have been set to 86400 seconds (1 day). For more information on these parameters, as well as the remaining arguments of the CLI, consult the [user manual of RTEC](RTEC_manual.pdf).
+- ``` RTEC --use-case caviar --path ./examples/caviar continuouscer ``` runs RTEC on [CAVIAR](https://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/), a dataset used for human activity recognition. The folder specified with the "path" argument, "./examples/caviar", contains a collection of ".prolog" files. These files contain the event description of the application, declarations which assist the caching and indexing of RTEC and possibly auxiliary knowledege which describes the domain of interest. Examples of such files are provided for various applications under "/examples". Apart from "use-case" and "path", RTEC uses some additional execution parameters, like the size its temporal windows, which are optional. For more information on the remaining arguments of the CLI, consult the [user manual of RTEC](RTEC_manual.pdf).
 
 7. After you finish experimenting, do not forget to ``` deactivate ``` the virtual environment.
 
@@ -79,7 +72,7 @@ After experimenting with RTEC in a virtual environment, you may consider install
 
 ## Running RTEC on Custom Applications
 
-In order to create a new application for RTEC, you need to construct at least two ".prolog" files: the former is the event description expressing the domain of interest, while the latter is a set of declarations which aid the compilation. For more information on creating custom patterns and declarations for an application, consult the [manual of RTEC](RTEC_manual.pdf). Furthermore, please refer to the pattern and declaration files under "/examples/". Apart from the pattern and declaration files, additional ".prolog" files which include contextual information describing the domain of interest, may be included.
+In order to create a new application for RTEC, you need to construct at least two ".prolog" files: the former is the event description expressing the domain of interest, while the latter is a set of declarations which aid the compilation. For more information on creating custom patterns and declarations for an application, consult the [manual of RTEC](RTEC_manual.pdf). Furthermore, please refer to the pattern and declaration files under "/examples/". Apart from the pattern and declaration files, additional ".prolog" files which include input event narratives and contextual information describing the domain of interest, may be included.
 
 To run RTEC on a custom application, follow these steps: 
 
@@ -89,21 +82,17 @@ To run RTEC on a custom application, follow these steps:
 
     - "resources" contains the ".prolog" files of the application. The files containing the patterns and the declarations of the domain must be included in this folder.
 
-    - "dataset" contains the input dataset of the application in possibly multiple ".csv" files. RTEC processes this information as a data stream, according to the parameters specified by the user.
-
     - "results" is the folder in which RTEC stores the output files containing the computed intervals of fluents and the log files which include useful information about each execution.
 
 3. Write the ".prolog" files of the application and store them in the "resources" folder. Remember that the file containing the patterns of the domain needs to compiled, as described in the [manual of RTEC](RTEC_manual.pdf). In brief, go to "/src", open a terminal and type ``` swipl -l compiler.prolog ``` for SWI-Prolog or ``` yap -l compiler.prolog ``` for YAP. Then, run ``` compileEventDescription('../examples/customApplicationName/resources/declarations.prolog', '../examples/customApplicationName/resources/rules.pl', '../examples/customApplicationName/resources/compiled_rules.prolog'). ```. Check if the file was compiled successful. Note the different extension of the original rules file is intentional and is employed because RTEC consults every ".prolog" under "/resources" &mdash; the pre-compiled version of the rules file should be ignored.  
 
-4. Add the ".csv" files containing the input data stream in the "dataset" folder of your application.
+4. Go to "/execution scripts" and edit the "handleApplication.prolog" file by adding a rule with handleApplication/10 as its head which sets the parameters of your experiment. The second argument of handleApplication/10 serves as the name of your experimental setup. The body conditions specify the event description of the application, the source files for the input event streams and the parameters of RTEC (e.g. window size). We suggest following the structure of the provided rules for handleApplication/10 when constructing your own, to minimise errors. The execution parameters which are set by handleApplication/10 are described at the top of the "handleApplication.prolog" file. 
 
-5. Go to "/execution scripts" and edit the "handleApplication.prolog" file by adding a rule with handleApplication/16 as its head which sets the parameters of your experiment. The second argument of handleApplication/16 serves as the name of your experimental setup. The body conditions specify the event description of the application, the source files for the input event streams and the parameters of RTEC (e.g. window size). We suggest following the structure of the provided rules for handleApplication/16 when constructing your own, to minimise errors. The execution parameters which are set by handleApplication/16 are described at the top of the "handleApplication.prolog" file. 
+5. In "/execution scripts", run ``` swipl -l continuousQueries.prolog ```  or ``` yap -l continuousQueries.prolog ``` depending on the Prolog distribution installed in your system.
 
-6. In "/execution scripts", run ``` swipl -l continuousQueries.prolog ```  or ``` yap -l continuousQueries.prolog ``` depending on the Prolog distribution installed in your system.
+6. ``` continuousQueries(applicationName). ```, where "applicationName" matches with the second argument of the head of the rule you added in "handleApplication.prolog". "continuousQueries.prolog" invokes handleApplication/10, using the application name specified by the user, to fetch the parameters of the experiment and consult the necessary files. Afterwards, the script executes RTEC to perform continuous stream reasoning on the input event streams specified in the application's definition (handleApplication rule).
 
-7. ``` continuousQueries(applicationName). ```, where "applicationName" matches with the second argument of the head of the rule you added in "handleApplication.prolog". "continuousQueries.prolog" invokes handleApplication/16, using the application name specified by the user, to fetch the parameters of the experiment and consult the necessary files. Afterwards, the script executes RTEC to perform continuous stream reasoning on the input event streams specified in the application's definition (handleApplication rule).
-
-8. Go to "examples/customApplicationName/results" and see the output files of the execution.
+7. Go to "examples/customApplicationName/results" and see the output files of the execution.
 
 # Feedback 
 
@@ -111,10 +100,8 @@ For more information and feedback, do not hesitate sending us an [email](mailto:
 
 # Documentation
 
-- Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://dx.doi.org/10.1109/TKDE.2014.2356476). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
-- Pitsikalis M., Artikis A., Dreo R., Ray C., Camossi E., and Jousselme A., [Composite Event Recognition for Maritime Monitoring.](http://cer.iit.demokritos.gr/publications/papers/2019/pitsikalis-CERMM.pdf)
-In 13th International Conference on Distributed and Event-Based Systems (DEBS), pp. 163–174, 2019.
-- [User manual of RTEC](https://github.com/aartikis/RTEC/blob/master/RTEC_manual.pdf)
+- Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://cer.iit.demokritos.gr/publications/papers/2015/artikis-TKDE14.pdf). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
+- [User manual of RTEC](https://github.com/aartikis/RTEC/blob/master/RTEC_manual.pdf).
 
 # Related Software
 - [iRTEC](https://github.com/eftsilio/Incremental_RTEC): Incremental RTEC. iRTEC supports incremental reasoning, handling efficiently the delays and retractions in data streams.
