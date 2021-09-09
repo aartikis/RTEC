@@ -330,7 +330,7 @@ handleApplication(Prolog, votingBigDG, InputMode, LogFile, ResultsFile, WM, Step
 handleApplication(Prolog, votingBigDGcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	WM = 10,
 	Step = 10, 
-	AgentNo = 2000,
+	AgentNo = 1000,
 	Seed = 1,
 	add_info('../examples/voting/results/log-votingBigDGcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
 	add_info('../examples/voting/results/log-votingBigDGcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
