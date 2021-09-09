@@ -1,8 +1,20 @@
 .DS_Store*
 ._*
+execution scripts/*.log
+examples/caviar/results/*.txt
+examples/ctm/results/*.txt
+examples/maritime/results/*.txt
+examples/netbill/results/*.txt
+examples/toy/results/*.txt
+examples/voting/results/*.txt
+examples/maritime/dataset/*.csv
+examples/maritime-imis/*
 ehthumbs.db
 Icon?
 Thumbs.db
 .directory
 *~
 \#*
+RTEC.egg-info/*
+venv/*
+testsFolder/*
