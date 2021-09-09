@@ -53,9 +53,9 @@ We encourage the use of a [virtual environment](https://docs.python.org/3/tutori
 
 Open a terminal and type:
 
-1. ``` git clone -b cli https://gitlab.skel.iit.demokritos.gr/a.artikis/RTEC2 ``` in the folder of your preference. 
+1. ``` git clone -b RTECv2 https://github.com/aartikis/RTEC ``` in the folder of your preference. 
 
-2. ``` cd RTEC2 ```
+2. ``` cd RTEC ```
 
 Set up and activate a virtual environment for installing the required Python packages as follows:
 
