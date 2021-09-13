@@ -14,4 +14,4 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 
 # Execution Instructions
 
-To run RTEC on maritime situational awareness using the command line interface or by manually setting up a "handleApplication" rule, follow the instruction described [here](../../README.md).
+To run RTEC on maritime situational awareness using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).

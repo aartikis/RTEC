@@ -1,9 +1,9 @@
 from setuptools import setup #, find_packages
 
 setup(
-	name='RTEC',
-	version='2.0',
-	py_modules=['RTEC'],
+	name='RTEC2',
+	version='1.0',
+	py_modules=['RTEC2'],
 	install_requires=[
 		'Click',
 	],
@@ -11,7 +11,7 @@ setup(
 	scripts=['execution scripts/RTEC_cli.py'], #, 'execution scripts/continuousQueries.prolog', 
 			#'execution scripts/handleApplication.prolog', 'src/*.prolog'],
 	entry_points={
-		'console_scripts':['RTEC=RTEC_cli:cli'],
+		'console_scripts':['RTEC2=RTEC_cli:cli'],
      },
      data_files=[('bin/src', ['src/RTEC.prolog']),
      			 ('bin/src', ['src/compiler.prolog']),

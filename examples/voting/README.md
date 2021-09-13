@@ -14,4 +14,4 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Execution Instructions
 
-To run RTEC on voting using the command line interface or by manually setting up a "handleApplication" rule, follow the instruction described [here](../../README.md).
+To run RTEC on voting using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).

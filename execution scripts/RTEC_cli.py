@@ -46,6 +46,15 @@ def FilesToList(path, files):
 	listStr += "]"
 	return listStr
 
+def PathsToList(paths):
+	listStr = "["
+	for path in paths:
+		listStr += "'" + path + "'"
+		if path!=paths[-1]:
+			listStr += ","
+	listStr += "]"
+	return listStr
+
 ### CLI ###
 class Config(object):
 	# Parameters of general group are passed to subgroups via the config object
@@ -109,12 +118,30 @@ def continuousCER(config):
 	
 	prologFiles=list() 
 	csvFiles=list()
-	for file in os.listdir(config.filesPath + doubleSep + 'resources'):
+
+	# Collect ".prolog" files from the subfolders of resources\
+	consultPath = config.filesPath + doubleSep + 'resources' + doubleSep + 'patterns'
+	for file in os.listdir(consultPath):
 		if file.endswith(".prolog"):
-			prologFiles.append(file)
-	for file in os.listdir(config.filesPath + doubleSep + 'dataset'): # There may only be one ".csv" file in the input folder.
+			prologFiles.append(consultPath + doubleSep + file)
+
+	consultPath = config.filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary'
+	if os.path.exists(consultPath):
+		for file in os.listdir(consultPath):
+			if file.endswith(".prolog"):
+				prologFiles.append(consultPath + doubleSep + file)
+
+	consultPath = config.filesPath + doubleSep + 'dataset' + doubleSep + 'auxiliary'
+	if os.path.exists(consultPath):
+		for file in os.listdir(consultPath):
+			if file.endswith(".prolog"):
+				prologFiles.append(consultPath + doubleSep + file)
+
+	# Collect csv files from dataset/csv
+	consultPath = config.filesPath + doubleSep + 'dataset' + doubleSep + 'csv' #These files are not directly "consulted"
+	for file in os.listdir(consultPath): # There may only be one ".csv" file in the input folder.
 		if file.endswith(".csv"):
-			csvFiles.append(file)
+			csvFiles.append(consultPath + doubleSep + file)
 
 	#print(prologFiles)	
 	#print(csvFiles)
@@ -122,8 +149,8 @@ def continuousCER(config):
 
 	folderPath = doubleSeperate(config.filesPath)
 	resultsPath = folderPath + doubleSep + 'results' 
-	resourcesPath = folderPath + doubleSep + 'resources'
-	datasetPath = folderPath + doubleSep + 'dataset'
+	#resourcesPath = folderPath + doubleSep + 'resources'
+	#datasetPath = folderPath + doubleSep + 'dataset'
 	safe_mkdir(resultsPath)
 									
 	prolog = config.prolog
@@ -132,13 +159,13 @@ def continuousCER(config):
 		prologCommand = config.prolog + " -l " + '"'+ script_folder + doubleSep + \
 				'continuousQueries.prolog" -g "continuousQueriesCLI(' + config.use_case + "CLI" + "," + \
 				str(config.start) + "," + str(config.end) + "," + str(config.window) + "," + str(config.step) + "," + \
-				 str(config.agents) + "," + dgString + ",'" + resultsPath + "'," + FilesToList(resourcesPath, prologFiles) + "," + \
-				 FilesToList(datasetPath, csvFiles) + '),halt."'
+				 str(config.agents) + "," + dgString + ",'" + resultsPath + "'," + PathsToList(prologFiles) + "," + \
+				 PathsToList(csvFiles) + '),halt."'
 	elif prolog=="yap":
 		prologCommand = config.prolog + " -s 0 -h 0 -t 0 -l " + '"'+ script_folder + doubleSep + \
 				'continuousQueries.prolog" -g "continuousQueriesCLI(' + config.use_case + "CLI" + "," + \
 				str(config.start) + "," + str(config.end) + "," + str(config.window) + "," + str(config.step) + "," + \
-				 str(config.agents) + "," + dgString + ",'" + resultsPath + "'," + FilesToList(resourcesPath, prologFiles) + "," + \
-				 FilesToList(datasetPath, csvFiles) + '),halt."'
+				 str(config.agents) + "," + dgString + ",'" + resultsPath + "'," + PathsToList(prologFiles) + "," + \
+				 PathsToList(csvFiles) + '),halt."'
 	print(prologCommand)
 	os.system(prologCommand)
