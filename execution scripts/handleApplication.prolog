@@ -405,8 +405,8 @@ handleApplication(Prolog, caviar, InputMode, LogFile, ResultsFile, WM, Step, Sta
 	consult('../examples/caviar/resources/pre-processing.prolog'),
 	consult('../examples/caviar/resources/caviar_declarations.prolog'),
 	consult('../examples/caviar/resources/compiled_caviar_patterns.prolog'),
-	consult('../examples/caviar/resources/updateSDE-caviar.prolog'),
-	InputMode = dynamic_predicates(['../examples/caviar/resources/appearance.prolog', '../examples/caviar/resources/movementB.prolog']), 
+	consult('../examples/caviar/aux/updateSDE-caviar.prolog'),
+	InputMode = dynamic_predicates(['../examples/caviar/aux/appearance.prolog', '../examples/caviar/aux/movementB.prolog']), 
 	consult('../examples/caviar/resources/list-of-ids.prolog'), !.
 
 

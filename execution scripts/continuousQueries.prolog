@@ -258,7 +258,7 @@ querying(InputStreams, InputPointerPositions, StatisticsFlag, LogFileStream, Res
 	write('Output Entities (# timepoints)		: '), writeln(OutLD),
 	writeln('========================================================='),
 	% move to the next query-time
-	NextQueryTime is QueryTime+Step, !,
+	NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
 	querying(InputStreams, NewInputPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch).
 
 
