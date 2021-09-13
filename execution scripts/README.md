@@ -10,4 +10,4 @@ This directory contains executions scripts which provide a quick and intuitive w
 
 # Execution Instructions
 
-For more information on run RTEC using the command line interface or by manually setting up a "handleApplication" rule, please refer to these [instructions](../readme.md) and the [manual of RTEC](RTEC_manual.pdf).
+For more information on run RTEC using the command line interface or by manually setting up a "handleApplication" rule, please refer to these [instructions](../README.md) and the [manual of RTEC](../RTEC_manual.pdf).
