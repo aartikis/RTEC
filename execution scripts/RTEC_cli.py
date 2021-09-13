@@ -45,6 +45,16 @@ def FilesToList(path, files):
 	listStr += "]"
 	return listStr
 
+def PathsToList(paths):
+	listStr = "["
+	for path in paths:
+		listStr += "'" + path + "'"
+		if path!=paths[-1]:
+			listStr += ","
+	listStr += "]"
+	return listStr
+
+
 ### CLI ###
 class Config(object):
 	# Parameters of general group are passed to subgroups via the config object
@@ -89,31 +99,42 @@ def cli(config, use_case, path, prolog, end, window, step):
 def continuousCER(config):
 	"""Run continuousQueries with the given parameters."""
 	prologFiles=list() 
-	#csvFiles=list()
-	for file in os.listdir(config.filesPath + doubleSep + 'resources'):
+	
+	# Consult ".prolog" files from the resources/ folder
+	consultPath = config.filesPath + doubleSep + 'resources' + doubleSep + 'patterns'
+	for file in os.listdir(consultPath):
 		if file.endswith(".prolog"):
-			prologFiles.append(file)
-	'''for file in os.listdir(config.filesPath + doubleSep + 'dataset'): # There may only be one ".csv" file in the input folder.
-		if file.endswith(".csv"):
-			csvFiles.append(file)'''
+			prologFiles.append(consultPath + doubleSep + file)
+
+	consultPath = config.filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary'
+	if os.path.exists(consultPath):
+		for file in os.listdir(consultPath):
+			if file.endswith(".prolog"):
+				prologFiles.append(consultPath + doubleSep + file)
+
+	# Consult ".prolog" files from the dataset/ folder. 
+	consultPath = config.filesPath + doubleSep + 'dataset'
+	for file in os.listdir(consultPath):
+		if file.endswith(".prolog"):
+			prologFiles.append(consultPath + doubleSep + file)
 
 	folderPath = doubleSeperate(config.filesPath)
 	resultsPath = folderPath + doubleSep + 'results' 
-	resourcesPath = folderPath + doubleSep + 'resources'
-	datasetPath = folderPath + doubleSep + 'dataset'
+	#resourcesPath = folderPath + doubleSep + 'resources'
+	#datasetPath = folderPath + doubleSep + 'dataset'
 	safe_mkdir(resultsPath)
-									
+
 	prolog = config.prolog
 	print("Execution Command: ")
 	if prolog=="swipl":
 		prologCommand = config.prolog + " -l " + '"' + script_folder + doubleSep + \
 				'continuousQueries.prolog" -g "continuousER(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
-				 resultsPath + "'," + FilesToList(resourcesPath, prologFiles) + '),halt."'
+				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	elif prolog=="yap":
 		prologCommand = config.prolog + " -s 0 -h 0 -t 0 -l " + '"' + script_folder + doubleSep + \
 				'continuousQueries.prolog" -g "continuousER(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
-				 resultsPath + "'," + FilesToList(resourcesPath, prologFiles) + '),halt."'
+				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	print(prologCommand)
 	os.system(prologCommand)
