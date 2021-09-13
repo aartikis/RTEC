@@ -71,6 +71,35 @@ handleApplication(Prolog, ctm, LogFile, WM, Step, LastTime, StreamOrderFlag, Pre
 	consult('../examples/ctm/resources/load-ctm-data.prolog'),
 	consult('../examples/ctm/resources/vehicles.prolog'), !.
 
+handleApplication(Prolog, brest-critical, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, _SDEBatch) :-
+	(Prolog=yap,
+ 	 LogFile = '../examples/maritime/results/log-Brest-critical-yap-1day-1day.txt',
+	 ResultsFile = '../examples/maritime/results/log-Brest-critical-yap-1day-1day-recognised-intervals-critical-yap.txt'
+	 ;
+	 Prolog=swi,
+	 LogFile = '../examples/maritime/results/log-Brest-critical-SWI-1day-1day.txt',
+	 ResultsFile = '../examples/maritime/results/log-Brest-critical-SWI-1day-1day-recognised-intervals-critical-SWI.txt'
+	),
+	WM = 7200,
+	Step = 7200, 
+	% start of the dataset:
+	StartReasoningTime = 1443650400,
+	EndReasoningTime = 1448834400,
+	% end of dataset:
+	% EndReasoningTime = 1459548000,
+	StreamOrderFlag = unordered,
+	PreprocessingFlag = nopreprocessing, 
+	ClockTick = 1,
+	% load the patterns:
+	consult('../examples/maritime/resources/Maritime_Patterns_Compiled.prolog'),
+	% these are auxiliary predicates used in the maritime patterns
+	consult('../examples/maritime/resources/compare.prolog'),	
+	consult('../examples/maritime/resources/Maritime_Patterns_Declarations.prolog'),
+	% load the dynamic data:
+	InputMode = csv(['../examples/maritime/dataset/preprocessed_dataset_RTEC_critical_nd.csv']),
+	% load the static data
+	consult('../examples/maritime/resources/loadStaticData.prolog'), !.
+
 handleApplication(Prolog, toyCLI, LogFile, WM, Step, LastTime, StreamOrderFlag, PreprocessingFlag, ClockTick, SDEBatch, ResultsPath) :- 
 	atom_concat(ResultsPath, '/log-toyCLI', LogsPath),
 	add_info(LogsPath, '.txt', [Prolog, WM, Step, LastTime], LogFile),

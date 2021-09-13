@@ -248,7 +248,7 @@ querying(StatisticsFlag, LogFileS, WM, Step, CurrentTime, LastTime, InitRecTime,
   writeln('========================================================='),
   % move to the next query-time
   NewCurrentTime is CurrentTime+Step,
-  updateManySDE(CurrentTime, NewCurrentTime, SDEBatch), !,
+  updateManySDE(CurrentTime, NewCurrentTime, SDEBatch), !,  %% This cut is necessary to prevent the local stack from exploding.
   querying(StatisticsFlag, LogFileS, WM, Step, NewCurrentTime, LastTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch).
 
 
