@@ -2,6 +2,9 @@
 
 This application describes a voting prodecure for multi-agent systems. The task of RTEC is to compute the maximal intervals during which a set of normative positions, e.g., institutionalised power, obligation, etc., of agents hold.
 
+Pitt J., Kamara L., Sergot M. and Artikis A. [
+Voting in Multi-Agent Systems](https://doi.org/10.1093/comjnl/bxh164). The Computer Journal, 49(2):156-170, 2006.
+
 Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://cer.iit.demokritos.gr/publications/papers/2015/artikis-TKDE14.pdf). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
 
 # Directory Structure
