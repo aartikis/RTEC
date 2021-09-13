@@ -1,6 +1,6 @@
 # Execution Scripts
 
-This directory contains executions scripts which provide a quick and intuitive way of running RTEC for continuous query processing. The files included in this directory are described in the following. 
+This directory contains execution scripts which provide a quick and intuitive way of running RTEC for continuous query processing. The files included in this directory are described below.
 
 
 # Directory Structure
