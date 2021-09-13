@@ -11,4 +11,4 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Execution Instructions
 
-To run RTEC on CTM using the command line interface or by manually setting up a "handleApplication" rule, follow the instruction described [here](../../readme.md).
+To run RTEC on CTM using the command line interface or by manually setting up a "handleApplication" rule, follow the instruction described [here](../../README.md).
