@@ -9,4 +9,4 @@ This example is illustrated in the [manual of RTEC](https://github.com/aartikis/
 
 # Execution Instructions
 
-To run RTEC on activity recognition using the command line interface or by manually setting up a "handleApplication" rule, follow the instruction described [here](../../README.md).
+To run RTEC on activity recognition using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).
