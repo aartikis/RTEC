@@ -4,8 +4,8 @@ This directory contains execution scripts which provide a quick and intuitive wa
 
 
 # Directory Structure
-- "handleApplication.prolog". In this file, the user of RTEC may provide the required domain knowledge for his/her experiment, as well as set up the parameters of RTEC, e.g. window size.   
-- "continuousQueries.prolog" is a script which employs the information provided by the user in "handleApplication.prolog" to run RTEC in the task of continuous query processing. 
+- "handleApplication.prolog". In this file, the user of RTEC may provide the required domain knowledge for his/her experiments, as well as set up the parameters of RTEC, e.g. window size.   
+- "continuousQueries.prolog" is a script which employs the information provided by the user in "handleApplication.prolog" to run RTEC for continuous query processing. 
 - "RTEC_cli.py". This file contains code which is required for the command line interface of RTEC.  
 
 # Execution Instructions
