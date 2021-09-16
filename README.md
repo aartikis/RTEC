@@ -40,7 +40,7 @@ RTEC can be executed using our command line interface (CLI), which has the follo
 
 - [SWI-Prolog 8.2+](https://www.swi-prolog.org/download/stable) (default option) or [YAP 6.3](docs/yap_installation.md).
 
-- [Virtual environment](https://docs.python.org/3/tutorial/venv.html) is optional, but very useful for testing. We describe the process of executing RTEC in a virtual environment in the instructions below.
+- [Virtual environment](https://docs.python.org/3/tutorial/venv.html) is optional, but very useful for testing. We describe how to acquire virtual environment support and execute RTEC in a virtual environment in the instructions below.
 
 The CLI also requires the [Click](https://click.palletsprojects.com/en/8.0.x/) package which is installed automatically via setuptools (see the instructions below). 
 
