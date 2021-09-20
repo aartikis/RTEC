@@ -23,10 +23,10 @@ handleApplication(Prolog, toy, LogFile, WM, Step, LastTime, StreamOrderFlag, Pre
 	PreprocessingFlag = nopreprocessing, 
 	ClockTick = 1,
 	SDEBatch = 10,
-	consult('../examples/toy/resources/toy_rules_compiled.prolog'),
-	consult('../examples/toy/resources/toy_declarations.prolog'),
-	consult('../examples/toy/resources/toy_data.prolog'),
-	consult('../examples/toy/resources/toy_var_domain.prolog'), !.
+	consult('../examples/toy/resources/patterns/toy_rules_compiled.prolog'),
+	consult('../examples/toy/resources/patterns/toy_declarations.prolog'),
+	consult('../examples/toy/dataset/toy_data.prolog'),
+	consult('../examples/toy/dataset/toy_var_domain.prolog'), !.
 
 handleApplication(Prolog, caviar, LogFile, WM, Step, LastTime, StreamOrderFlag, PreprocessingFlag, ClockTick, SDEBatch) :-
 	(Prolog=yap,
@@ -43,13 +43,13 @@ handleApplication(Prolog, caviar, LogFile, WM, Step, LastTime, StreamOrderFlag, 
 	ClockTick = 40,
 	SDEBatch = 1000,
 	%%%%%%%% LOAD THE APPLICATION-SPECIFIC PRE-PROCESSING MODULE %%%%%%%%
-	consult('../examples/caviar/resources/pre-processing.prolog'),
-	consult('../examples/caviar/resources/caviar_declarations.prolog'),
-	consult('../examples/caviar/resources/compiled_caviar_patterns.prolog'),
-	consult('../examples/caviar/resources/updateSDE-caviar.prolog'),
-	consult('../examples/caviar/resources/appearance.prolog'),
-	consult('../examples/caviar/resources/movementB.prolog'), 
-	consult('../examples/caviar/resources/list-of-ids.prolog'), !.
+	consult('../examples/caviar/resources/auxiliary/pre-processing.prolog'),
+	consult('../examples/caviar/resources/patterns/caviar_declarations.prolog'),
+	consult('../examples/caviar/resources/patterns/compiled_caviar_patterns.prolog'),
+	consult('../examples/caviar/dataset/updateSDE-caviar.prolog'),
+	consult('../examples/caviar/dataset/appearance.prolog'),
+	consult('../examples/caviar/dataset/movementB.prolog'), 
+	consult('../examples/caviar/dataset/list-of-ids.prolog'), !.
 
 handleApplication(Prolog, ctm, LogFile, WM, Step, LastTime, StreamOrderFlag, PreprocessingFlag, ClockTick, SDEBatch) :-
 	(Prolog=yap,
@@ -65,40 +65,11 @@ handleApplication(Prolog, ctm, LogFile, WM, Step, LastTime, StreamOrderFlag, Pre
 	PreprocessingFlag = nopreprocessing, 
 	ClockTick = 1,
 	SDEBatch = 1000,
-	consult('../examples/ctm/resources/ctm_declarations.prolog'),
-	consult('../examples/ctm/resources/compiled_ctm_patterns.prolog'),
-	consult('../examples/ctm/resources/updateSDE-ctm.prolog'),
-	consult('../examples/ctm/resources/load-ctm-data.prolog'),
-	consult('../examples/ctm/resources/vehicles.prolog'), !.
-
-handleApplication(Prolog, brest-critical, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, _SDEBatch) :-
-	(Prolog=yap,
- 	 LogFile = '../examples/maritime/results/log-Brest-critical-yap-1day-1day.txt',
-	 ResultsFile = '../examples/maritime/results/log-Brest-critical-yap-1day-1day-recognised-intervals-critical-yap.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/maritime/results/log-Brest-critical-SWI-1day-1day.txt',
-	 ResultsFile = '../examples/maritime/results/log-Brest-critical-SWI-1day-1day-recognised-intervals-critical-SWI.txt'
-	),
-	WM = 7200,
-	Step = 7200, 
-	% start of the dataset:
-	StartReasoningTime = 1443650400,
-	EndReasoningTime = 1448834400,
-	% end of dataset:
-	% EndReasoningTime = 1459548000,
-	StreamOrderFlag = unordered,
-	PreprocessingFlag = nopreprocessing, 
-	ClockTick = 1,
-	% load the patterns:
-	consult('../examples/maritime/resources/Maritime_Patterns_Compiled.prolog'),
-	% these are auxiliary predicates used in the maritime patterns
-	consult('../examples/maritime/resources/compare.prolog'),	
-	consult('../examples/maritime/resources/Maritime_Patterns_Declarations.prolog'),
-	% load the dynamic data:
-	InputMode = csv(['../examples/maritime/dataset/preprocessed_dataset_RTEC_critical_nd.csv']),
-	% load the static data
-	consult('../examples/maritime/resources/loadStaticData.prolog'), !.
+	consult('../examples/ctm/resources/patterns/ctm_declarations.prolog'),
+	consult('../examples/ctm/resources/patterns/compiled_ctm_patterns.prolog'),
+	consult('../examples/ctm/dataset/updateSDE-ctm.prolog'),
+	consult('../examples/ctm/dataset/load-ctm-data.prolog'),
+	consult('../examples/ctm/dataset/vehicles.prolog'), !.
 
 handleApplication(Prolog, toyCLI, LogFile, WM, Step, LastTime, StreamOrderFlag, PreprocessingFlag, ClockTick, SDEBatch, ResultsPath) :- 
 	atom_concat(ResultsPath, '/log-toyCLI', LogsPath),
