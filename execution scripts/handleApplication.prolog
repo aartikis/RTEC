@@ -50,11 +50,11 @@ handleApplication(Prolog, toycsv, InputMode, LogFile, ResultsFile, WM, Step, Sta
 	DynamicGroundingThreshold = -1, 
 	ClockTick = 1,
 	SDEBatch = 10,
-	consult('../examples/toy/resources/toy_rules_compiled.prolog'),
-	consult('../examples/toy/resources/toy_declarations.prolog'),
+	consult('../examples/toy/resources/patterns/toy_rules_compiled.prolog'),
+	consult('../examples/toy/resources/patterns/toy_declarations.prolog'),
 	% load the csv file with input data stream	
-	InputMode = csv(['../examples/toy/dataset/toy_data.csv']), 
-	consult('../examples/toy/resources/toy_var_domain.prolog'), !.
+	InputMode = csv(['../examples/toy/dataset/csv/toy_data.csv']), 
+	consult('../examples/toy/dataset/auxiliary/toy_var_domain.prolog'), !.
 
 handleApplication(Prolog, toy, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
 	(Prolog=yap, 
@@ -76,101 +76,21 @@ handleApplication(Prolog, toy, InputMode, LogFile, ResultsFile, WM, Step, StartR
 	DynamicGroundingThreshold = -1, 
 	ClockTick = 1,
 	SDEBatch = 10,
-	consult('../examples/toy/resources/toy_rules_compiled.prolog'),
-	consult('../examples/toy/resources/toy_declarations.prolog'),
-	InputMode = dynamic_predicates(['../examples/toy/resources/toy_data.prolog']), 
-	consult('../examples/toy/resources/toy_data.prolog'),
-	consult('../examples/toy/resources/toy_var_domain.prolog'), !.
+	consult('../examples/toy/resources/patterns/toy_rules_compiled.prolog'),
+	consult('../examples/toy/resources/patterns/toy_declarations.prolog'),
+	InputMode = dynamic_predicates(['../examples/toy/dataset/prolog/toy_data.prolog']), 
+	consult('../examples/toy/dataset/auxiliary/toy_var_domain.prolog'), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%% NETBILL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Run Netbill for a small (example) event narrative stored in a csv file. %%
-handleApplication(Prolog, netbillSmallcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
-	(Prolog=yap, 
-	 LogFile = '../examples/netbill/results/log-YAP-netbill-csv-small-20-10.txt',
-	 ResultsFile = '../examples/netbill/results/log-YAP-netbill-csv-small-20-10-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/netbill/results/log-SWI-netbill-csv-small-20-10.txt',
-	 ResultsFile = '../examples/netbill/results/log-SWI-netbill-csv-small-20-10-recognised-intervals.txt'
-	),
-	WM = 20,
-	Step = 10, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 20,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/netbill/resources/netbill_RTEC_compiled.prolog'),
-	consult('../examples/netbill/resources/netbill_RTEC_declarations.prolog'),
-	consult('../examples/netbill/resources/negotiation-static_test.prolog'),
-	InputMode = csv(['../examples/netbill/dataset/negotiation-test_stream.csv']), !.
-
-%% Generate a small (example) event narrative for Netbill and process it with RTEC. %%
-handleApplication(Prolog, netbillSmall, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
-	(Prolog=yap, 
-	 LogFile = '../examples/netbill/results/log-YAP-netbill-small-20-10.txt',
-	 ResultsFile = '../examples/netbill/results/log-YAP-netbill-small-20-10-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/netbill/results/log-SWI-netbill-small-20-10.txt',
-	 ResultsFile = '../examples/netbill/results/log-SWI-netbill-small-20-10-recognised-intervals.txt'
-	),
-	WM = 20,
-	Step = 10, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 20,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/netbill/resources/netbill_RTEC_compiled.prolog'),
-	consult('../examples/netbill/resources/netbill_RTEC_declarations.prolog'),
-	consult('../examples/netbill/resources/negotiation-static_test.prolog'),
-	InputMode = dynamic_predicates(['../examples/netbill/resources/negotiation-test_stream.prolog']), !.
-
-%% Generate an event narrative for Netbill using our synthetic dataset generator and process it with RTEC. %%
-handleApplication(Prolog, netbillBig, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	AgentNo = 4000,
-	Seed = 1, 
-	add_info('../examples/netbill/experiments/results/log-netbillBig', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/netbill/experiments/results/log-netbillBig', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	(Prolog=yap, 
-	 srandom(Seed) ;
-	 Prolog=swi,
-	 set_random(seed(Seed))),
-	consult('../examples/netbill/resources/netbill_RTEC_compiled.prolog'),
-	consult('../examples/netbill/resources/netbill_RTEC_declarations.prolog'),
-	consult('../examples/netbill/resources/negotiation-static_generator.prolog'),
-	assert_n_agents(AgentNo),
-	InputMode = dynamic_predicates(['../examples/netbill/resources/negotiation-data_generator.prolog']), !.
-
 %% Generate an event narrative for Netbill using our synthetic dataset generator and process it with RTEC. Uses dynamic grounding. %%
-handleApplication(Prolog, netbillBigDG, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
+handleApplication(Prolog, netbill, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	WM = 10,
 	Step = 10, 
-	AgentNo = 4000,
+	AgentNo = 1000,
 	Seed = 1, 
-	add_info('../examples/netbill/results/log-netbillBigDG', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/netbill/results/log-netbillBigDG', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
+	add_info('../examples/netbill/results/log-netbill', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
+	add_info('../examples/netbill/results/log-netbill', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
 	StartReasoningTime = 0,
 	EndReasoningTime = 100,
 	StreamOrderFlag = unordered,
@@ -184,20 +104,20 @@ handleApplication(Prolog, netbillBigDG, InputMode, LogFile, ResultsFile, WM, Ste
 	 srandom(Seed) ;
 	 Prolog=swi,
 	 set_random(seed(Seed))),
-	consult('../examples/netbill/resources/netbill_RTEC_compiled_dg.prolog'),
-	consult('../examples/netbill/resources/netbill_RTEC_declarations_dg.prolog'),
-	consult('../examples/netbill/resources/negotiation-static_generator.prolog'),
+	consult('../examples/netbill/resources/patterns/netbill_RTEC_compiled_dg.prolog'),
+	consult('../examples/netbill/resources/patterns/netbill_RTEC_declarations_dg.prolog'),
+	consult('../examples/netbill/dataset/auxiliary/negotiation-static_generator.prolog'),
 	assert_n_agents(AgentNo),
-	InputMode = dynamic_predicates(['../examples/netbill/resources/negotiation-data_generator.prolog']), !.
+	InputMode = dynamic_predicates(['../examples/netbill/dataset/prolog/negotiation-data_generator.prolog']), !.
 
 %% Run Netbill for an event narrative stored in a csv file. Uses dynamic grounding. %%
-handleApplication(Prolog, netbillBigDGcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
+handleApplication(Prolog, netbillcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	WM = 10,
 	Step = 10, 
-	AgentNo = 4000,
+	AgentNo = 1000,
 	Seed = 1, 
-	add_info('../examples/netbill/results/log-netbillBigDGcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/netbill/results/log-netbillBigDGcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
+	add_info('../examples/netbill/results/log-netbillcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
+	add_info('../examples/netbill/results/log-netbillcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
 	StartReasoningTime = 0,
 	EndReasoningTime = 100,
 	StreamOrderFlag = unordered,
@@ -211,102 +131,23 @@ handleApplication(Prolog, netbillBigDGcsv, InputMode, LogFile, ResultsFile, WM, 
 	 srandom(Seed) ;
 	 Prolog=swi,
 	 set_random(seed(Seed))),
-	consult('../examples/netbill/resources/netbill_RTEC_compiled_dg.prolog'),
-	consult('../examples/netbill/resources/netbill_RTEC_declarations_dg.prolog'),
-	consult('../examples/netbill/resources/negotiation-static_generator.prolog'),
+	consult('../examples/netbill/resources/patterns/netbill_RTEC_compiled_dg.prolog'),
+	consult('../examples/netbill/resources/patterns/netbill_RTEC_declarations_dg.prolog'),
+	consult('../examples/netbill/dataset/auxiliary/negotiation-static_generator.prolog'),
 	assert_n_agents(AgentNo),
-	add_info('../examples/netbill/dataset/negotiation', '.csv', [AgentNo ,Seed], InputFile),
+	add_info('../examples/netbill/dataset/csv/negotiation', '.csv', [AgentNo ,Seed], InputFile),
 	InputMode = csv([InputFile]), !.
 
 %%%%%%%%%%%%%%%%%%%%%%%% VOTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% Run voting for a small (example) event narrative stored in a csv file. %%
-handleApplication(Prolog, votingSmallcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
-	(Prolog=yap,
-	 LogFile = '../examples/voting/results/log-YAP-voting-small-csv-20-10.txt',
-	 ResultsFile = '../examples/voting/results/log-YAP-voting-small-csv-20-10-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/voting/results/log-SWI-voting-small-csv-20-10.txt',
-	 ResultsFile = '../examples/voting/results/log-SWI-voting-small-csv-20-10-recognised-intervals.txt'
-	),
-	WM = 30,
-	Step = 10, 
-	StartReasoningTime = -1,
-	EndReasoningTime = 20,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/voting/resources/vopr_RTEC_compiled.prolog'),
-	consult('../examples/voting/resources/vopr_RTEC_declarations.prolog'),
-	consult('../examples/voting/resources/voting-static_test.prolog'),
-	InputMode = csv(['../examples/voting/dataset/voting-test_stream.csv']), !.
-
-%% Generate a small (example) event narrative for voting and process it with RTEC. %%
-handleApplication(Prolog, votingSmall, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
-	(Prolog=yap,
-	 LogFile = '../examples/voting/results/log-YAP-voting-small-20-10.txt',
-	 ResultsFile = '../examples/voting/results/log-YAP-voting-small-20-10-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/voting/results/log-SWI-voting-small-20-10.txt',
-	 ResultsFile = '../examples/voting/results/log-SWI-voting-small-20-10-recognised-intervals.txt'
-	),
-	WM = 20,
-	Step = 10, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 20,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/voting/resources/vopr_RTEC_compiled.prolog'),
-	consult('../examples/voting/resources/vopr_RTEC_declarations.prolog'),
-	consult('../examples/voting/resources/voting-static_test.prolog'),
-	InputMode = dynamic_predicates(['../examples/voting/resources/voting-test_stream.prolog']), !.
-
-%% Generate an event narrative for voting using our synthetic dataset generator and process it with RTEC. %%
-handleApplication(Prolog, votingBig, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	AgentNo = 4000,
-	Seed = 1,
-	add_info('../examples/voting/results/log-votingBig', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/voting/results/log-votingBig', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	(Prolog=yap, 
-	 srandom(Seed) ;
-	 Prolog=swi,
-	 set_random(seed(Seed))),
-	consult('../examples/voting/resources/vopr_RTEC_compiled.prolog'),
-	consult('../examples/voting/resources/vopr_RTEC_declarations.prolog'),
-	consult('../examples/voting/resources/voting-static_generator.prolog'),
-	assert_n_agents(AgentNo),
-	InputMode = dynamic_predicates(['../examples/voting/resources/voting-data_generator.prolog']), !.
-
 %% Generate an event narrative for voting using our synthetic dataset generator and process it with RTEC. Uses dynamic grounding. %%
-handleApplication(Prolog, votingBigDG, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
+handleApplication(Prolog, voting, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	WM = 10,
 	Step = 10, 
 	AgentNo = 4000,
 	Seed = 1,
-	add_info('../examples/voting/results/log-votingBigDG', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/voting/results/log-votingBigDG', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
+	add_info('../examples/voting/results/log-voting', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
+	add_info('../examples/voting/results/log-voting', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
 	StartReasoningTime = 0,
 	EndReasoningTime = 100,
 	StreamOrderFlag = unordered,
@@ -320,20 +161,20 @@ handleApplication(Prolog, votingBigDG, InputMode, LogFile, ResultsFile, WM, Step
 	 srandom(Seed) ;
 	 Prolog=swi,
 	 set_random(seed(Seed))),
-	consult('../examples/voting/resources/vopr_RTEC_compiled_dg.prolog'),
-	consult('../examples/voting/resources/vopr_RTEC_declarations_dg.prolog'),
-	consult('../examples/voting/resources/voting-static_generator.prolog'),
+	consult('../examples/voting/resources/patterns/vopr_RTEC_compiled_dg.prolog'),
+	consult('../examples/voting/resources/patterns/vopr_RTEC_declarations_dg.prolog'),
+	consult('../examples/voting/dataset/auxiliary/voting-static_generator.prolog'),
 	assert_n_agents(AgentNo),
-	InputMode = dynamic_predicates(['../examples/voting/resources/voting-data_generator.prolog']), !.
+	InputMode = dynamic_predicates(['../examples/voting/dataset/prolog/voting-data_generator.prolog']), !.
 
 %% Run voting for an event narrative stored in a csv file. Uses dynamic grounding. %%
-handleApplication(Prolog, votingBigDGcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
+handleApplication(Prolog, votingcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	WM = 10,
 	Step = 10, 
 	AgentNo = 1000,
 	Seed = 1,
-	add_info('../examples/voting/results/log-votingBigDGcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/voting/results/log-votingBigDGcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
+	add_info('../examples/voting/results/log-votingcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
+	add_info('../examples/voting/results/log-votingcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
 	StartReasoningTime = 0,
 	EndReasoningTime = 100,
 	StreamOrderFlag = unordered,
@@ -343,11 +184,11 @@ handleApplication(Prolog, votingBigDGcsv, InputMode, LogFile, ResultsFile, WM, S
 	DynamicGroundingThreshold = 0.8, 
 	ClockTick = 1,
 	SDEBatch = 10,
-	consult('../examples/voting/resources/vopr_RTEC_compiled_dg.prolog'),
-	consult('../examples/voting/resources/vopr_RTEC_declarations_dg.prolog'),
-	consult('../examples/voting/resources/voting-static_generator.prolog'),
+	consult('../examples/voting/resources/patterns/vopr_RTEC_compiled_dg.prolog'),
+	consult('../examples/voting/resources/patterns/vopr_RTEC_declarations_dg.prolog'),
+	consult('../examples/voting/dataset/auxiliary/voting-static_generator.prolog'),
 	assert_n_agents(AgentNo),
-	add_info('../examples/voting/dataset/voting', '.csv', [AgentNo, Seed], InputFile),
+	add_info('../examples/voting/dataset/csv/voting', '.csv', [AgentNo, Seed], InputFile),
 	InputMode = csv([InputFile]), !.
 
 
@@ -374,12 +215,12 @@ handleApplication(Prolog, caviarcsv, InputMode, LogFile, ResultsFile, WM, Step, 
 	ClockTick = 40,
 	SDEBatch = 1000,
 	%%%%%%%% LOAD THE APPLICATION-SPECIFIC PRE-PROCESSING MODULE %%%%%%%%
-	consult('../examples/caviar/resources/pre-processing.prolog'),
-	consult('../examples/caviar/resources/caviar_declarations.prolog'),
-	consult('../examples/caviar/resources/compiled_caviar_patterns.prolog'),
+	consult('../examples/caviar/resources/auxiliary/pre-processing.prolog'),
+	consult('../examples/caviar/resources/patterns/caviar_declarations.prolog'),
+	consult('../examples/caviar/resources/patterns/compiled_caviar_patterns.prolog'),
 	% load the csv file with input data stream	
-	InputMode = csv(['../examples/caviar/dataset/appearance.csv', '../examples/caviar/dataset/movementB.csv']), 
-	consult('../examples/caviar/resources/list-of-ids.prolog'), !.
+	InputMode = csv(['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']), 
+	consult('../examples/caviar/dataset/auxiliary/list-of-ids.prolog'), !.
 
 handleApplication(Prolog, caviar, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	(Prolog=yap,
@@ -402,12 +243,12 @@ handleApplication(Prolog, caviar, InputMode, LogFile, ResultsFile, WM, Step, Sta
 	ClockTick = 40,
 	SDEBatch = 1000,
 	%%%%%%%% LOAD THE APPLICATION-SPECIFIC PRE-PROCESSING MODULE %%%%%%%%
-	consult('../examples/caviar/resources/pre-processing.prolog'),
-	consult('../examples/caviar/resources/caviar_declarations.prolog'),
-	consult('../examples/caviar/resources/compiled_caviar_patterns.prolog'),
-	consult('../examples/caviar/aux/updateSDE-caviar.prolog'),
-	InputMode = dynamic_predicates(['../examples/caviar/aux/appearance.prolog', '../examples/caviar/aux/movementB.prolog']), 
-	consult('../examples/caviar/resources/list-of-ids.prolog'), !.
+	consult('../examples/caviar/resources/auxiliary/pre-processing.prolog'),
+	consult('../examples/caviar/resources/patterns/caviar_declarations.prolog'),
+	consult('../examples/caviar/resources/patterns/compiled_caviar_patterns.prolog'),
+	consult('../examples/caviar/dataset/prolog/updateSDE-caviar.prolog'),
+	InputMode = dynamic_predicates(['../examples/caviar/dataset/prolog/appearance.prolog', '../examples/caviar/dataset/prolog/movementB.prolog']), 
+	consult('../examples/caviar/dataset/auxiliary/list-of-ids.prolog'), !.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%% CTM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -432,10 +273,10 @@ handleApplication(Prolog, ctmcsv, InputMode, LogFile, ResultsFile, WM, Step, Sta
 	DynamicGroundingThreshold = -1, 
 	ClockTick = 1,
 	SDEBatch = 1000,
-	consult('../examples/ctm/resources/ctm_declarations.prolog'),
-	consult('../examples/ctm/resources/compiled_ctm_patterns.prolog'),
-	InputMode = csv(['../examples/ctm/dataset/abrupt_acceleration.csv', '../examples/ctm/dataset/abrupt_deceleration.csv', '../examples/ctm/dataset/internal_temperature_change.csv', '../examples/ctm/dataset/noise_level_change.csv', '../examples/ctm/dataset/passenger_density_change.csv', '../examples/ctm/dataset/sharp_turn.csv', '../examples/ctm/dataset/stop_enter_leave.csv']),
-	consult('../examples/ctm/resources/vehicles.prolog'), !.
+	consult('../examples/ctm/resources/patterns/ctm_declarations.prolog'),
+	consult('../examples/ctm/resources/patterns/compiled_ctm_patterns.prolog'),
+	InputMode = csv(['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv', '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']),
+	consult('../examples/ctm/dataset/auxiliary/vehicles.prolog'), !.
 
 handleApplication(Prolog, ctm, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
 	(Prolog=yap,
@@ -457,11 +298,12 @@ handleApplication(Prolog, ctm, InputMode, LogFile, ResultsFile, WM, Step, StartR
 	DynamicGroundingThreshold = -1, 
 	ClockTick = 1,
 	SDEBatch = 1000,
-	consult('../examples/ctm/resources/ctm_declarations.prolog'),
-	consult('../examples/ctm/resources/compiled_ctm_patterns.prolog'),
-	consult('../examples/ctm/resources/updateSDE-ctm.prolog'),
-	InputMode = dynamic_predicates(['../examples/ctm/resources/abrupt_acceleration.prolog', '../examples/ctm/resources/abrupt_deceleration.prolog', '../examples/ctm/resources/internal_temperature_change.prolog', '../examples/ctm/resources/noise_level_change.prolog', '../examples/ctm/resources/passenger_density_change.prolog', '../examples/ctm/resources/sharp_turn.prolog', '../examples/ctm/resources/stop_enter_leave.prolog']),
-	consult('../examples/ctm/resources/vehicles.prolog'), !.
+	consult('../examples/ctm/resources/patterns/ctm_declarations.prolog'),
+	consult('../examples/ctm/resources/patterns/compiled_ctm_patterns.prolog'),
+	consult('../examples/ctm/dataset/prolog/updateSDE-ctm.prolog'),
+	consult('../examples/ctm/dataset/prolog/load-ctm-data.prolog'),
+	%InputMode = dynamic_predicates(['../examples/ctm/resources/abrupt_acceleration.prolog', '../examples/ctm/resources/abrupt_deceleration.prolog', '../examples/ctm/resources/internal_temperature_change.prolog', '../examples/ctm/resources/noise_level_change.prolog', '../examples/ctm/resources/passenger_density_change.prolog', '../examples/ctm/resources/sharp_turn.prolog', '../examples/ctm/resources/stop_enter_leave.prolog']),
+	consult('../examples/ctm/dataset/auxiliary/vehicles.prolog'), !.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%% Maritime-Brest %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -493,14 +335,14 @@ handleApplication(Prolog, brest-critical, InputMode, LogFile, ResultsFile, WM, S
 	DynamicGroundingThreshold = -1, 
 	ClockTick = 1,
 	% load the patterns:
-	consult('../examples/maritime/resources/Maritime_Patterns_Compiled.prolog'),
+	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Compiled.prolog'),
 	% these are auxiliary predicates used in the maritime patterns
-	consult('../examples/maritime/resources/compare.prolog'),	
-	consult('../examples/maritime/resources/Maritime_Patterns_Declarations.prolog'),
+	consult('../examples/maritime/resources/auxiliary/compare.prolog'),	
+	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Declarations.prolog'),
 	% load the dynamic data:
-	InputMode = csv(['../examples/maritime/dataset/preprocessed_dataset_RTEC_critical_nd.csv']),
+	InputMode = csv(['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']),
 	% load the static data
-	consult('../examples/maritime/resources/loadStaticData.prolog'), !.
+	consult('../examples/maritime/resources/auxiliary/loadStaticData.prolog'), !.
 
 
 %%%%% enriched points
@@ -530,16 +372,16 @@ handleApplication(Prolog, brest-enriched, InputMode, LogFile, ResultsFile, WM, S
 	DynamicGroundingThreshold = -1, 
 	ClockTick = 1,
 	% load the patterns:
-	consult('../examples/maritime/resources/Maritime_Patterns_Compiled.prolog'),
+	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Compiled.prolog'),
 	% these are auxiliary predicates used in the maritime patterns
-	consult('../examples/maritime/resources/compare.prolog'),	
-	consult('../examples/maritime/resources/Maritime_Patterns_Declarations.prolog'),
+	consult('../examples/maritime/resources/auxiliary/compare.prolog'),	
+	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Declarations.prolog'),
 	% load the dynamic data:
-	InputMode = csv(['../examples/maritime/dataset/preprocessed_dataset_RTEC_enriched_nd.csv']),
+	InputMode = csv(['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_enriched_nd.csv']),
 	%%% Important: instruct the execution script that the recognitions on this dataset will be treated as the ground truth
 	assert( datasetType(ground_truth) ),
 	% load the static data
-	consult('../examples/maritime/resources/loadStaticData.prolog'), !.
+	consult('../examples/maritime/resources/auxiliary/loadStaticData.prolog'), !.
 
 
 %%%% Execution scripts for CLIs 
