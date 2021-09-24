@@ -15,9 +15,6 @@ default_step_values = default_window_values
 default_start_values = {"ctm": 0, "caviar": 0, "toy": 0}
 default_end_values = {"ctm": 50000, "caviar": 1007000, "toy": 30}
 
-script_folder = os.path.dirname(__file__) + doubleSep + 'execution scripts'
-print(script_folder)
-
 ### Helper functions ###
 
 def safe_mkdir(directory):
@@ -54,6 +51,9 @@ def PathsToList(paths):
 	listStr += "]"
 	return listStr
 
+## Script Path ## 
+script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+print(script_folder)
 
 ### CLI ###
 class Config(object):
@@ -85,7 +85,7 @@ def cli(config, use_case, path, prolog, end, window, step):
 		print("The available use-cases are: " + str(use_case_enum))
 		exit(1)
 	config.use_case=use_case
-	filesPath = os.path.abspath(path)
+	filesPath = doubleSeperate(os.path.abspath(path))
 	print('Reading files from path: ' + filesPath)
 	config.filesPath=filesPath
 	config.prolog=prolog
