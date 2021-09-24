@@ -22,7 +22,7 @@ setup(
                  ('bin/src/utilities', ['src/utilities/amalgamate-periods.prolog']),
                  ('bin/src/utilities', ['src/utilities/interval-manipulation.prolog']),
                  ('bin/execution scripts', ['execution scripts/continuousQueries.prolog']),
-                 ('bin/execution scripts', ['execution scripts/handleApplication.prolog']), 
-                 ('bin/execution scripts', ['execution scripts/RTEC_cli.py'])]
+                 ('bin/execution scripts', ['execution scripts/handleApplication.prolog'])]
+                 #('bin/execution scripts', ['execution scripts/RTEC_cli.py'])]
 )
 

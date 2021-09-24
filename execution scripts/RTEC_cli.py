@@ -1,6 +1,7 @@
 import click
 import os
 import sys
+from zipfile import ZipFile
 
 if sys.platform=="win32":
 	sep = "\\"
@@ -52,8 +53,22 @@ def PathsToList(paths):
 	return listStr
 
 ## Script Path ## 
-script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+if sys.platform=="win32":
+	egg_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+	print(egg_folder.split(doubleSep)[-1])
+	if "egg"==egg_folder.split(doubleSep)[-1].split('.')[-1]: ## Compare suffix
+		zip = ZipFile(egg_folder, 'r')
+		zip.printdir()
+		# extracting all the files
+		print('Extracting all the files now...')
+		zip.extractall(doubleSeperate(os.path.dirname(egg_folder)))
+		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + 'execution scripts') ##
+	else:
+		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + 'execution scripts') ##
+else:
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
 print(script_folder)
+os.system("ls " + script_folder)
 
 ### CLI ###
 class Config(object):
@@ -118,7 +133,7 @@ def continuousCER(config):
 		if file.endswith(".prolog"):
 			prologFiles.append(consultPath + doubleSep + file)
 
-	folderPath = doubleSeperate(config.filesPath)
+	folderPath = config.filesPath
 	resultsPath = folderPath + doubleSep + 'results' 
 	#resourcesPath = folderPath + doubleSep + 'resources'
 	#datasetPath = folderPath + doubleSep + 'dataset'
