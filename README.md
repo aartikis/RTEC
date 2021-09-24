@@ -25,7 +25,7 @@ RTEC comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welco
 
    3. [Running an Existing Application](docs/prolog-existing-apps.md) 
 
-      \(Note: the patterns are already compiled; for the compilation process see Section 4.i.c\)
+      \(Note: the patterns are already compiled; for the compilation process see Section 4.iv\)
 
    4. [Running a New Application](docs/prolog-new-apps.md) 
 
