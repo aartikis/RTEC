@@ -68,7 +68,6 @@ if sys.platform=="win32":
 else:
 	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
 print(script_folder)
-os.system("ls " + script_folder)
 
 ### CLI ###
 class Config(object):
