@@ -11,7 +11,24 @@
  3. Save your changes and close "handleApplication.prolog".
 
 ### Running an Existing Application
- 
+
  1. While in /execution scripts, run ``` swipl -l continuousQueries.prolog ```  or ``` yap -l continuousQueries.prolog ```, depending on the Prolog distribution installed in your system.
  2. ``` continuousQueries(applicationName). ```, where "applicationName" is the name of an existing application, under /examples, and may either be "caviar", "ctm" or "toy".
  3. ``` cd ../examples/applicationName/results ```, using the same "applicationName" as in the previous step. This folder should contain the output file of the execution.
+
+### Running a New Application
+
+In order to create a new application for RTEC, you need to construct a ".patterns" file, which contains the event description expressing the domain of interest, and a ".prolog" file, which includes a set of declarations which aid the compilation of the patterns and the indexing of predicates during execution. For more information on creating custom patterns and declarations for an application, consult the [manual of RTEC](RTEC_manual.pdf). Furthermore, please refer to the pattern and declaration files under "/examples/", for some useful templates . Apart from the pattern and declaration files, additional ".prolog" files which include input event narratives and contextual information describing the domain of interest, may be included.
+
+To run RTEC on a new application, follow these steps: 
+
+1. ``` cd examples && mkdir newApplicationName ```. Create a folder under "/examples" for your custom application. 
+2. ``` cd newApplicationName && mkdir resources dataset results ```. Create the following sub-directories under "/examples/newApplicationName":
+   - "resources" contains the ".prolog" files which define the entities of the application domain. The files containing the patterns and the declarations of the domain must be included in this folder. Note that the extension of the pre-compiled patterns file is ".patterns".
+   - "dataset" contains the ".prolog" files which provide the input data streams for experimenting on the new application.
+   - "results" is the folder in which RTEC stores the output files containing the computed intervals of fluents and the log files which include useful information about each execution.
+3. Write the ".prolog" files of the application and store them in the "resources" folder. Remember that the file containing the patterns of the domain needs to compiled, as described in the [manual of RTEC](RTEC_manual.pdf). In brief, go to "/src", open a terminal and type ``` swipl -l compiler.prolog ``` for SWI-Prolog or ``` yap -l compiler.prolog ``` for YAP. Then, run ``` compileEventDescription('../examples/customApplicationName/resources/declarations.prolog', '../examples/customApplicationName/resources/rules.patterns', '../examples/customApplicationName/resources/compiled_rules.prolog'). ```. Check if the file was compiled successful. Note the different extension of the original rules file is intentional and is employed because RTEC consults every ".prolog" under "/resources" &mdash; the pre-compiled version of the rules file should be ignored. 
+4. Go to "/execution scripts" and edit the "handleApplication.prolog" file by adding a rule with handleApplication/10 as its head which sets the parameters of your experiment. The second argument of handleApplication/10 serves as the name of your experimental setup. The body conditions specify the event description of the application, the source files for the input event streams and the parameters of RTEC (e.g. window size). We suggest following the structure of the provided rules for handleApplication/10 when constructing your own, to minimise errors. The execution parameters which are set by handleApplication/10 are described at the top of the "handleApplication.prolog" file. 
+5. In "/execution scripts", run ``` swipl -l continuousQueries.prolog ```  or ``` yap -l continuousQueries.prolog ``` depending on the Prolog distribution installed in your system.
+6. ``` continuousQueries(applicationName). ```, where "applicationName" matches with the second argument of the head of the rule you added in "handleApplication.prolog". "continuousQueries.prolog" invokes handleApplication/10, using the application name specified by the user, to fetch the parameters of the experiment and consult the necessary files. Afterwards, the script executes RTEC to perform continuous stream reasoning on the input event streams specified in the application's definition (handleApplication rule).
+7. Go to "examples/customApplicationName/results" and see the output files of the execution.
