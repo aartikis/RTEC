@@ -16,18 +16,18 @@ RTEC comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welco
    2. [City Transport & Traffic Management.](examples/ctm/README.md)
    3. [A Toy Example](examples/toy/README.md) 
 
-3. [File Description](file-description.md)
+3. [File Description](docs/file-description.md)
 
-4. Running RTEC
-   1. [Execution in Prolog](docs/prolog-execution.md)
-      
-      1. Requirements
-      
-      2. Running an Existing Application 
-      
-         \(Note: the patterns are already compiled; for the compilation process see Section 4.i.c\)
-      
-      3. Running a New Application 
+4. Running RTEC in Prolog
+   1. [Requirements](docs/prolog-requirements.md)
+
+   2. [Parameter Tuning](docs/prolog-parameters.md)
+
+   3. [Running an Existing Application](docs/prolog-existing-apps.md) 
+
+      \(Note: the patterns are already compiled; for the compilation process see Section 4.i.c\)
+
+   4. [Running a New Application](docs/prolog-new-apps.md) 
 
 5. [Feedback](docs/feedback.md)
 
