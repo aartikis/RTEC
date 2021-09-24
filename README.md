@@ -32,6 +32,14 @@ Scripts for executing RTEC on data streams of the aforementioned applications ar
 
 # Running RTEC
 
+## Execution Scripts
+
+RTEC can be executed using the scripts under /execution scripts. Requirements:
+
+- [SWI-Prolog 8.2+](https://www.swi-prolog.org/download/stable) or [YAP 6.3](docs/yap_installation.md).
+
+Discuss execution scripts here...
+
 ## Command Line Interface
 
 RTEC can be executed using our command line interface (CLI), which has the following requirements:
@@ -46,7 +54,7 @@ The CLI also requires the [Click](https://click.palletsprojects.com/en/8.0.x/) p
 
 ### Installation and Usage Instructions
 
-We encourage the use of a [virtual environment](https://docs.python.org/3/tutorial/venv.html) to avoid potential conflicts with the packages installed in your system. Install virtual environment support with ``` pip install virtualenv ```. Note that, when installing Python packages, you may need to substitute ``` pip ``` with ``` pip3 ```, depending on the package installer of your system. To install and run RTEC, please follow the steps below:
+We encourage the use of a [virtual environment](https://docs.python.org/3/tutorial/venv.html) to avoid potential conflicts with the packages installed in your system. Install virtual environment support with ``` pip3 install virtualenv ```. Note that, when installing Python packages, you may need to substitute ``` pip3 ``` with ``` pip ```, depending on the package installer of your system. To install and run RTEC, please follow the steps below:
 
 Open a terminal and type:
 
@@ -56,11 +64,11 @@ Open a terminal and type:
 
 Set up and activate a virtual environment for installing the required Python packages as follows:
 
-3. ``` virtualenv venv ``` creates a virtual environment named "venv". In Windows, run ``` python -m venv ./venv ```.
+3. ``` virtualenv venv ``` creates a virtual environment named "venv". In Windows, run ``` python3 -m venv ./venv ```.
 
-4. ``` . venv/bin/activate ``` activates "venv". You may check the Python version used by venv with ``` python --version ```. Also, the output of ``` pip freeze ```, which prints the list of installed python packages, should be an empty list. In Windows, run ``` venv\Scripts\activate.bat ``` instead. 
+4. ``` . venv/bin/activate ``` activates "venv". You may check the Python version used by venv with ``` python3 --version ```. Also, the output of ``` pip3 freeze ```, which prints the list of installed python packages, should be an empty list. In Windows, run ``` venv\Scripts\activate.bat ``` instead. 
 
-5. ``` pip install . ``` installs the python packages specified in the setup.py file. Now, the output of ``` pip freeze ``` should include these packages. 
+5. ``` pip3 install . ``` installs the python packages specified in the setup.py file. Now, the output of ``` pip3 freeze ``` should include these packages.  In Windows, run ``` python3 setup.py install ```
 
 6. The CLI of RTEC has been installed. Some usage examples follow. Open a terminal and type: 
 
