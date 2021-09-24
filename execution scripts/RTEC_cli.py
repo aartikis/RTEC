@@ -68,8 +68,8 @@ if sys.platform=="win32":
 elif "linux" in sys.platform:
 	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
 elif sys.platform=="darwin":
-	script_folder = 
-print(script_folder)
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+#print(script_folder)
 
 ### CLI ###
 class Config(object):
@@ -102,7 +102,7 @@ def cli(config, use_case, path, prolog, end, window, step):
 		exit(1)
 	config.use_case=use_case
 	filesPath = doubleSeperate(os.path.abspath(path))
-	print('Reading files from path: ' + filesPath)
+	#print('Reading files from path: ' + filesPath)
 	config.filesPath=filesPath
 	config.prolog=prolog
 	## If the following parameters are not given by the user, fetch their application-specific default value.
@@ -141,7 +141,7 @@ def continuousCER(config):
 	safe_mkdir(resultsPath)
 
 	prolog = config.prolog
-	print("Execution Command: ")
+	#print("Execution Command: ")
 	if prolog=="swipl":
 		prologCommand = config.prolog + " -l " + '"' + script_folder + doubleSep + \
 				'continuousQueries.prolog" -g "continuousER(' + config.use_case + "CLI" + "," + \
@@ -152,5 +152,5 @@ def continuousCER(config):
 				'continuousQueries.prolog" -g "continuousER(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
-	print(prologCommand)
+	#print(prologCommand)
 	os.system(prologCommand)
