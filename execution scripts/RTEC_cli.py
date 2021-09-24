@@ -65,8 +65,10 @@ if sys.platform=="win32":
 		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + 'execution scripts') ##
 	else:
 		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + 'execution scripts') ##
-else:
+elif "linux" in sys.platform:
 	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+elif sys.platform=="darwin":
+	script_folder = 
 print(script_folder)
 
 ### CLI ###
