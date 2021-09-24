@@ -1,8 +1,3 @@
-# Features
+# Feedback
 
-- Interval-based.
-- Sliding window reasoning.
-- Interval manipulation constructs for non-inertial fluents.
-- Caching for hierarchical knowledge bases.
-- Support for out-of-order data streams.
-- Indexing for handling efficiently irrelevant data.
+For more information and feedback, do not hesitate sending us an [email](mailto:a.artikis@gmail.com,periklismant1@gmail.com?subject=[GitHub] RTEC Feedback) or adding an issue in this repository.
