@@ -11,4 +11,4 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Execution Instructions
 
-To run RTEC on activity recognition using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).
+To run RTEC on activity recognition, follow the instructions described [here](../../docs/prolog-execution.md).
