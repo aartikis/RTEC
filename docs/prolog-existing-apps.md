@@ -1,5 +1,7 @@
 ## Execution in Prolog
 
+For existing applications, the patterns are already compiled. The compilation process is described Section 4.iv. of the documentation.
+
 ### Running an Existing Application
 
   1. While in /execution scripts, run ``` swipl -l continuousQueries.prolog ```  or ``` yap -l continuousQueries.prolog ```, depending on the Prolog distribution installed in your system.
