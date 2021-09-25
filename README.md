@@ -6,6 +6,7 @@ RTEC is an open-source [Event Calculus](https://en.wikipedia.org/wiki/Event_calc
 
 RTEC comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the [GNU Lesser General Public License v3 for more details](http://www.gnu.org/licenses/lgpl-3.0.html).
 
+<<<<<<< HEAD
 # Documentation
 
 Latest [documentation](docs/contents.md).
