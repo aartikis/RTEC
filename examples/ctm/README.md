@@ -11,4 +11,6 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Execution Instructions
 
-To run RTEC on CTM, follow the instructions described [here](../../docs/prolog-execution.md).
+1. [Requirements](https://github.com/aartikis/RTEC/blob/master/docs/prolog-requirements.md)
+2. Optional: [Setting Execution Parameters](https://github.com/aartikis/RTEC/blob/master/docs/prolog-parameters.md)
+3. [Running an Existing Application](https://github.com/aartikis/RTEC/blob/master/docs/prolog-existing-apps.md)
