@@ -6,14 +6,13 @@ RTEC is an open-source [Event Calculus](https://en.wikipedia.org/wiki/Event_calc
 
 RTEC comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; see the [GNU Lesser General Public License v3 for more details](http://www.gnu.org/licenses/lgpl-3.0.html).
 
-<<<<<<< HEAD
 # Documentation
 
 Latest [documentation](docs/contents.md).
 
 # Feedback
 
-For more information and feedback, do not hesitate sending us an [email](mailto:a.artikis@gmail.com,periklismant1@gmail.com?subject=[GitHub] RTEC Feedback) or adding an issue in this repository.
+For more information and feedback, do not hesitate sending us an [email](mailto:a.artikis@gmail.com,periklismant1@gmail.com) or adding an issue in this repository.
 
 # Related Software
 - [iRTEC](https://github.com/eftsilio/Incremental_RTEC): Incremental RTEC. iRTEC supports incremental reasoning, handling efficiently the delays and retractions in data streams.
