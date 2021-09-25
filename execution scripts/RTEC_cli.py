@@ -55,12 +55,12 @@ def PathsToList(paths):
 ## Script Path ## 
 if sys.platform=="win32":
 	egg_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-	print(egg_folder.split(doubleSep)[-1])
+	#print(egg_folder.split(doubleSep)[-1])
 	if "egg"==egg_folder.split(doubleSep)[-1].split('.')[-1]: ## Compare suffix
 		zip = ZipFile(egg_folder, 'r')
-		zip.printdir()
+		#zip.printdir()
 		# extracting all the files
-		print('Extracting all the files now...')
+		#print('Extracting all the files now...')
 		zip.extractall(doubleSeperate(os.path.dirname(egg_folder)))
 		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + 'execution scripts') ##
 	else:
@@ -144,12 +144,12 @@ def continuousCER(config):
 	#print("Execution Command: ")
 	if prolog=="swipl":
 		prologCommand = config.prolog + " -l " + '"' + script_folder + doubleSep + \
-				'continuousQueries.prolog" -g "continuousER(' + config.use_case + "CLI" + "," + \
+				'continuousQueries.prolog" -g "continuousQueries(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	elif prolog=="yap":
 		prologCommand = config.prolog + " -s 0 -h 0 -t 0 -l " + '"' + script_folder + doubleSep + \
-				'continuousQueries.prolog" -g "continuousER(' + config.use_case + "CLI" + "," + \
+				'continuousQueries.prolog" -g "continuousQueries(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	#print(prologCommand)

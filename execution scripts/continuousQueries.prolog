@@ -20,12 +20,12 @@
 
 % continuousER(+PrologCompiler, +ApplicationName)
 
-% eg: continuousER(toy).
-% eg: continuousER(caviar).
-% eg: continuousER(ctm).
+% eg: continuousQueries(toy).
+% eg: continuousQueries(caviar).
+% eg: continuousQueries(ctm).
 
 
-continuousER(App) :-
+continuousQueries(App) :-
   % return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)
   handleProlog(Prolog, StatisticsFlag),
   % load the requested event description, declarations, data; 
@@ -118,7 +118,7 @@ continuousER(App) :-
   writeln('========================================================='),
   close(LogFileS), !.
 
-continuousER(App, LastTime, WM, Step, ResultsPath, PrologFiles) :-
+continuousQueries(App, LastTime, WM, Step, ResultsPath, PrologFiles) :-
   % return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)
   handleProlog(Prolog, StatisticsFlag),
   % load the requested event description, declarations, data; 
