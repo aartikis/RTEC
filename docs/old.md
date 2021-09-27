@@ -36,7 +36,7 @@ Set up and activate a virtual environment for installing the required Python pac
 
 - ``` RTEC2 --use-case voting --path ./examples/voting continuouscer ``` runs RTEC on a dataset concerning a multi-agent voting precedure. The folder specified with the "path" argument, "./examples/voting", contains a collection of ".csv" and ".prolog" files. The former contain the input data streams of RTEC, while the latter include the event description of the application, declarations which assist the caching and indexing of RTEC and possibly auxiliary knowledege which describes the domain of interest. Examples of such files are provided for various applications under "/examples".
 
-- ``` RTEC2 --use-case maritime --path ./examples/maritime --window 86400 --step 86400 continuouscer ``` runs RTEC for maritime situational awareness. In this example, the window and the step of RTEC have been set to 86400 seconds (1 day). For more information on these parameters, as well as the remaining arguments of the CLI, consult the [user manual of RTEC](RTEC_manual.pdf).
+- ``` RTEC2 --use-case maritime --path ./examples/maritime --window 86400 --step 86400 continuouscer ``` runs RTEC for maritime situational awareness. In this example, the window and the step of RTEC have been set to 86400 seconds (1 day). For more information on these parameters, as well as the remaining arguments of the CLI, consult the [user manual of RTEC](https://github.com/aartikis/RTEC/blob/RTECv2/RTEC_manual.pdf).
 
 7. After you finish experimenting, do not forget to ``` deactivate ``` the virtual environment.
 
@@ -44,7 +44,7 @@ After experimenting with RTEC in a virtual environment, you may consider install
 
 ## Running RTEC on Custom Applications
 
-In order to create a new application for RTEC, you need to construct at least two ".prolog" files: the former is the event description expressing the domain of interest, while the latter is a set of declarations which aid the compilation. For more information on creating custom patterns and declarations for an application, consult the [manual of RTEC](RTEC_manual.pdf). Furthermore, please refer to the pattern and declaration files under "/examples/". Apart from the pattern and declaration files, additional ".prolog" files which include contextual information describing the domain of interest, may be included.
+In order to create a new application for RTEC, you need to construct at least two ".prolog" files: the former is the event description expressing the domain of interest, while the latter is a set of declarations which aid the compilation. For more information on creating custom patterns and declarations for an application, consult the [manual of RTEC](https://github.com/aartikis/RTEC/blob/RTECv2/RTEC_manual.pdf). Furthermore, please refer to the pattern and declaration files under "/examples/". Apart from the pattern and declaration files, additional ".prolog" files which include contextual information describing the domain of interest, may be included.
 
 To run RTEC on a custom application, follow these steps: 
 
@@ -58,7 +58,7 @@ To run RTEC on a custom application, follow these steps:
 
    - "results" is the folder in which RTEC stores the output files containing the computed intervals of fluents and the log files which include useful information about each execution.
 
-3. Write the ".prolog" files of the application and store them in the "resources" folder under "patterns" or "auxiliary". Remember that the file containing the patterns of the domain needs to compiled, as described in the [manual of RTEC](RTEC_manual.pdf). In brief, go to "/src", open a terminal and type ``` swipl -l compiler.prolog ``` for SWI-Prolog or ``` yap -l compiler.prolog ``` for YAP. Then, run ``` compileEventDescription('../examples/customApplicationName/resources/declarations.prolog', '../examples/customApplicationName/resources/rules.patterns', '../examples/customApplicationName/resources/compiled_rules.prolog'). ```. Check if the file was compiled successful. Note the different extension of the original rules file is intentional and is employed because RTEC consults every ".prolog" under "/resources" &mdash; the pre-compiled version of the rules file should be ignored.  
+3. Write the ".prolog" files of the application and store them in the "resources" folder under "patterns" or "auxiliary". Remember that the file containing the patterns of the domain needs to compiled, as described in the [manual of RTEC](https://github.com/aartikis/RTEC/blob/RTECv2/RTEC_manual.pdf). In brief, go to "/src", open a terminal and type ``` swipl -l compiler.prolog ``` for SWI-Prolog or ``` yap -l compiler.prolog ``` for YAP. Then, run ``` compileEventDescription('../examples/customApplicationName/resources/declarations.prolog', '../examples/customApplicationName/resources/rules.patterns', '../examples/customApplicationName/resources/compiled_rules.prolog'). ```. Check if the file was compiled successful. Note the different extension of the original rules file is intentional and is employed because RTEC consults every ".prolog" under "/resources" &mdash; the pre-compiled version of the rules file should be ignored.  
 
 4. Add the ".csv" files containing the input data stream in the "dataset/csv" folder of your application.
 
