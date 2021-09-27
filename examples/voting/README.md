@@ -14,4 +14,6 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Execution Instructions
 
-To run RTEC on voting using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).
+1. [Requirements](https://github.com/aartikis/RTEC/blob/master/docs/prolog-requirements.md)
+2. Optional: [Setting Execution Parameters](https://github.com/aartikis/RTEC/blob/master/docs/prolog-parameters.md)
+3. [Running an Existing Application](https://github.com/aartikis/RTEC/blob/master/docs/prolog-existing-apps.md)

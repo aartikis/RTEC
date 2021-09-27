@@ -9,4 +9,6 @@ This example is illustrated in the [manual of RTEC](https://github.com/aartikis/
 
 # Execution Instructions
 
-To run RTEC on activity recognition using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).
+1. [Requirements](https://github.com/aartikis/RTEC/blob/master/docs/prolog-requirements.md)
+2. Optional: [Setting Execution Parameters](https://github.com/aartikis/RTEC/blob/master/docs/prolog-parameters.md)
+3. [Running an Existing Application](https://github.com/aartikis/RTEC/blob/master/docs/prolog-existing-apps.md)

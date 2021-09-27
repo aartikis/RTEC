@@ -14,4 +14,6 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 
 # Execution Instructions
 
-To run RTEC on maritime situational awareness using the command line interface or by manually setting up a "handleApplication" rule, follow the instructions described [here](../../README.md).
+1. [Requirements](https://github.com/aartikis/RTEC/blob/master/docs/prolog-requirements.md)
+2. Optional: [Setting Execution Parameters](https://github.com/aartikis/RTEC/blob/master/docs/prolog-parameters.md)
+3. [Running an Existing Application](https://github.com/aartikis/RTEC/blob/master/docs/prolog-existing-apps.md)
