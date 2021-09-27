@@ -1,6 +1,7 @@
 import click
 import os
 import sys
+from zipfile import ZipFile
 
 if sys.platform=="win32":
 	sep = "\\"
@@ -15,9 +16,6 @@ default_step_values = default_window_values
 default_dynamic_grounding_values = {"voting": True, "netbill": True, "maritime": True, "ctm": False, "caviar": False, "toy": False}
 default_start_values = {"voting": 0, "netbill": 0, "maritime": 1443650400, "ctm": 0, "caviar": 0, "toy": 0}
 default_end_values = {"voting": 100, "netbill": 100, "maritime": 1448834400, "ctm": 50000, "caviar": 1007000, "toy": 30}
-
-script_folder = os.path.dirname(__file__) + doubleSep + 'execution scripts'
-print(script_folder)
 
 ### Helper functions ###
 
@@ -54,6 +52,25 @@ def PathsToList(paths):
 			listStr += ","
 	listStr += "]"
 	return listStr
+
+## Script Path ## 
+if sys.platform=="win32":
+	egg_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+	#print(egg_folder.split(doubleSep)[-1])
+	if "egg"==egg_folder.split(doubleSep)[-1].split('.')[-1]: ## Compare suffix
+		zip = ZipFile(egg_folder, 'r')
+		#zip.printdir()
+		# extracting all the files
+		#print('Extracting all the files now...')
+		zip.extractall(doubleSeperate(os.path.dirname(egg_folder)))
+		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + 'execution scripts') ##
+	else:
+		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + 'execution scripts') ##
+elif "linux" in sys.platform:
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+elif sys.platform=="darwin":
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+#print(script_folder)
 
 ### CLI ###
 class Config(object):
@@ -93,7 +110,7 @@ def cli(config, use_case, path, prolog, start, end, window, step, agents):
 		print("The available use-cases are: " + str(use_case_enum))
 		exit(1)
 	config.use_case=use_case
-	filesPath = os.path.abspath(path)
+	filesPath = doubleSeperate(os.path.abspath(path))
 	print('Reading files from path: ' + filesPath)
 	config.filesPath=filesPath
 	config.prolog=prolog
@@ -147,14 +164,14 @@ def continuousCER(config):
 	#print(csvFiles)
 	#print(script_folder)
 
-	folderPath = doubleSeperate(config.filesPath)
+	folderPath = config.filesPath
 	resultsPath = folderPath + doubleSep + 'results' 
 	#resourcesPath = folderPath + doubleSep + 'resources'
 	#datasetPath = folderPath + doubleSep + 'dataset'
 	safe_mkdir(resultsPath)
 									
 	prolog = config.prolog
-	print("Execution Command: ")
+	#print("Execution Command: ")
 	if prolog=="swipl":
 		prologCommand = config.prolog + " -l " + '"'+ script_folder + doubleSep + \
 				'continuousQueries.prolog" -g "continuousQueriesCLI(' + config.use_case + "CLI" + "," + \
@@ -167,5 +184,5 @@ def continuousCER(config):
 				str(config.start) + "," + str(config.end) + "," + str(config.window) + "," + str(config.step) + "," + \
 				 str(config.agents) + "," + dgString + ",'" + resultsPath + "'," + PathsToList(prologFiles) + "," + \
 				 PathsToList(csvFiles) + '),halt."'
-	print(prologCommand)
+	#print(prologCommand)
 	os.system(prologCommand)

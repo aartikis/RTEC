@@ -5,7 +5,7 @@
  Authors: Alexander Artikis and Manos Pitsikalis.
 
  Run in YAP: yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
- Run in SWI: swipl -L0 -G0 -T0 -l continuousQueries.prolog
+ Run in SWI: swipl -l continuousQueries.prolog
 
  **********************************************************************************/
 
@@ -27,21 +27,16 @@
 
 % eg: continuousQueries(toy).
 % eg: continuousQueries(toycsv).
+% eg: continuousQueries(netbill).
+% eg: continuousQueries(netbillcsv).
+% eg: continuousQueries(voting).
+% eg: continuousQueries(votingcsv).
 % eg: continuousQueries(caviar).
 % eg: continuousQueries(caviarcsv).
 % eg: continuousQueries(ctm).
 % eg: continuousQueries(ctmcsv).
-% eg: continuousQueries(netbillSmall).
-% eg: continuousQueries(netbillSmallcsv).
-% eg: continuousQueries(netbillBig).
-% eg: continuousQueries(netbillBigDG).
-% eg: continuousQueries(votingSmall).
-% eg: continuousQueries(votingSmallcsv).
-% eg: continuousQueries(votingBig).
 % eg: continuousQueries(brest-critical).
 % eg: continuousQueries(brest-enriched).
-% eg: continuousQueries(europeIMIS-critical).
-% eg: continuousQueries(europeIMIS-enriched).
 
 continuousQueriesCLI(App, StartReasoningTime, EndReasoningTime, WM, Step, AgentsNo, DynamicGroundingFlag, ResultsPath, PrologFiles, InputCSVFiles) :-
 	% return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)	

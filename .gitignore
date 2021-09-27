@@ -16,5 +16,7 @@ Thumbs.db
 *~
 \#*
 RTEC.egg-info/*
+RTEC2.egg-info/*
 venv/*
-testsFolder/*
+build/*
+dist/*
