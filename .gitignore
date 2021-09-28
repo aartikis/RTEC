@@ -18,6 +18,5 @@ Thumbs.db
 \#*
 RTEC.egg-info/*
 venv/*
-testsFolder/*
 build/*
 dist/*

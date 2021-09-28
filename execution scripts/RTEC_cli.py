@@ -13,7 +13,7 @@ else:
 use_case_enum = ['caviar','ctm', 'toy']
 default_window_values = {"ctm": 10000, "caviar": 100000, "toy": 30}
 default_step_values = default_window_values
-default_start_values = {"ctm": 0, "caviar": 0, "toy": 0}
+#default_start_values = {"ctm": 0, "caviar": 0, "toy": 0}
 default_end_values = {"ctm": 50000, "caviar": 1007000, "toy": 30}
 
 ### Helper functions ###
