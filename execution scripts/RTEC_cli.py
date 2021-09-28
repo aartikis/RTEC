@@ -62,14 +62,14 @@ if sys.platform=="win32":
 		# extracting all the files
 		#print('Extracting all the files now...')
 		zip.extractall(doubleSeperate(os.path.dirname(egg_folder)))
-		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + 'execution scripts') ##
+		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + "RTEC-files" + sep + 'execution scripts') ##
 	else:
-		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + 'execution scripts') ##
+		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + "RTEC-files" + sep + 'execution scripts') ##
 elif "linux" in sys.platform:
-	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
 elif sys.platform=="darwin":
-	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
-#print(script_folder)
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
+print(script_folder)
 
 ### CLI ###
 class Config(object):
