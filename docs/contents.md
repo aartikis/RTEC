@@ -6,6 +6,9 @@
    1. [A Toy Example](../examples/toy/README.md) 
    2. [Activity Recognition](../examples/caviar/README.md)
    3. [City Transport & Traffic Management](../examples/ctm/README.md)
+   4. [Voting in Multi-Agent Systems](../examples/voting/README.md)
+   5. [NetBill: An E-commerce Protocol](../examples/netbill/README.md)
+   6. [Maritime Situational Awareness](../examples/maritime/README.md)
 4. Running RTEC in Prolog
    1. [Requirements](prolog-requirements.md)
    2. Optional: [Setting Execution Parameters](prolog-parameters.md)
