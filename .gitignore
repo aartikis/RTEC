@@ -21,5 +21,3 @@ venv/*
 build/*
 dist/*
 docs/old.md
-setup.py
-execution scripts/RTEC_cli.py
