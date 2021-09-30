@@ -2,6 +2,7 @@ import click
 import os
 import sys
 from zipfile import ZipFile
+import pkg_resources
 
 if sys.platform=="win32":
 	sep = "\\"
@@ -16,6 +17,9 @@ default_step_values = default_window_values
 #default_start_values = {"ctm": 0, "caviar": 0, "toy": 0}
 default_end_values = {"ctm": 50000, "caviar": 1007000, "toy": 30}
 
+print(pkg_resources.resource_filename("execution scripts", "continuousQueries.prolog"))
+print(pkg_resources.resource_filename("src", "utilities/continuousQueries.prolog"))
+
 ### Helper functions ###
 
 def safe_mkdir(directory):
@@ -26,7 +30,6 @@ def safe_mkdir(directory):
 def doubleSeperate(path):
 	pathNew = path.replace(sep, doubleSep)
 	return pathNew
-
 
 def prologFilesStr(path, prologFiles):
 	prologStr = ""
@@ -66,8 +69,8 @@ if sys.platform=="win32":
 	else:
 		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + "RTEC-files" + sep + 'execution scripts') ##
 elif "linux" in sys.platform:
-	#script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
-	script_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + sep + 'execution scripts')
+	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + 'execution scripts')
+	#script_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + sep + 'execution scripts')
 elif sys.platform=="darwin":
 	#script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
 	script_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + sep + 'execution scripts')
@@ -142,16 +145,17 @@ def continuousCER(config):
 	#datasetPath = folderPath + doubleSep + 'dataset'
 	safe_mkdir(resultsPath)
 
+	continuousQueriesPath = pkg_resources.resource_filename("execution scripts", "continuousQueries.prolog").replace(' ','\ ')
 	prolog = config.prolog
 	#print("Execution Command: ")
 	if prolog=="swipl":
-		prologCommand = config.prolog + " -l " + '"' + script_folder + doubleSep + \
-				'continuousQueries.prolog" -g "continuousQueries(' + config.use_case + "CLI" + "," + \
+		prologCommand = config.prolog + " -l " + continuousQueriesPath + \
+				' -g "continuousQueries(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	elif prolog=="yap":
-		prologCommand = config.prolog + " -s 0 -h 0 -t 0 -l " + '"' + script_folder + doubleSep + \
-				'continuousQueries.prolog" -g "continuousQueries(' + config.use_case + "CLI" + "," + \
+		prologCommand = config.prolog + " -s 0 -h 0 -t 0 -l " + continuousQueriesPath + \
+				 ' -g "continuousQueries(' + config.use_case + "CLI" + "," + \
 				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	#print(prologCommand)
