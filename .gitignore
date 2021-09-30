@@ -20,6 +20,4 @@ RTEC2.egg-info/*
 venv/*
 build/*
 dist/*
-setup.py
-execution scripts/RTEC2_cli.py
 docs/old.md
