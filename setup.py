@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
-from setuptools.command.install import install as _install
-from setuptools.command.develop import develop
-from setuptools.command.egg_info import egg_info
+#from setuptools.command.install import install as _install
+#from setuptools.command.develop import develop
+#from setuptools.command.egg_info import egg_info
 import os
 
 '''
@@ -46,21 +46,5 @@ setup(
     #    'install': CustomInstallCommand,
     #    'develop': CustomDevelopCommand,
     #    'egg_info': CustomEggInfoCommand,
-    #},
-	#data_files=[('bin/RTEC-files/src', ['src/RTEC.prolog',
-	#									'src/compiler.prolog',
-	# 									'src/inputModule.prolog',
-	# 									'src/processEvents.prolog',
-	# 									'src/processSDFluents.prolog',
-	# 									'src/processSimpleFluents.prolog']),
-	#             ('bin/RTEC-files/src/utilities', ['src/utilities/amalgamate-periods.prolog',
-	#             									'src/utilities/interval-manipulation.prolog']),
-	#             ('bin/RTEC-files/execution scripts', ['execution scripts/continuousQueries.prolog',
-	#             										'execution scripts/handleApplication.prolog'])]
+    #}
 )
-
-#temp = os.system("$(which pip3)")
-#print(temp)
-#print('No errors!')
-#os.system("PATH=$PATH:/usr/local/bin")
-#os.system("echo Hi!")
