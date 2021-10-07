@@ -55,6 +55,7 @@ def PathsToList(paths):
 	listStr += "]"
 	return listStr
 
+'''
 ## Script Path THIS IS NOT USED ##
 if sys.platform=="win32":
 	egg_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -74,6 +75,7 @@ elif "linux" in sys.platform:
 elif sys.platform=="darwin":
 	#script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
 	script_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + sep + 'execution scripts')
+'''
 
 '''
 ### CLI ###
