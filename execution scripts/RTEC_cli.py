@@ -75,6 +75,7 @@ elif sys.platform=="darwin":
 	#script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
 	script_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + sep + 'execution scripts')
 
+'''
 ### CLI ###
 class Config(object):
 	# Parameters of general group are passed to subgroups via the config object
@@ -85,7 +86,7 @@ class Config(object):
 		self.end=0
 		self.window=0
 		self.step=0
-
+'''
 
 #pass_config = click.make_pass_decorator(Config, ensure=True)
 
