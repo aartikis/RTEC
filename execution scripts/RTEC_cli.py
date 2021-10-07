@@ -17,8 +17,8 @@ default_step_values = default_window_values
 #default_start_values = {"ctm": 0, "caviar": 0, "toy": 0}
 default_end_values = {"ctm": 50000, "caviar": 1007000, "toy": 30}
 
-print(pkg_resources.resource_filename("execution scripts", "continuousQueries.prolog"))
-print(pkg_resources.resource_filename("src", "utilities/continuousQueries.prolog"))
+print(pkg_resources.resource_filename("RTECv1", "execution scripts/continuousQueries.prolog"))
+print(pkg_resources.resource_filename("RTECv1", "src/utilities/continuousQueries.prolog"))
 
 ### Helper functions ###
 
@@ -55,7 +55,7 @@ def PathsToList(paths):
 	listStr += "]"
 	return listStr
 
-## Script Path ## 
+## Script Path THIS IS NOT USED ##
 if sys.platform=="win32":
 	egg_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 	#print(egg_folder.split(doubleSep)[-1])
@@ -74,7 +74,6 @@ elif "linux" in sys.platform:
 elif sys.platform=="darwin":
 	#script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC-files" + sep + 'execution scripts')
 	script_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))) + sep + 'execution scripts')
-print(script_folder)
 
 ### CLI ###
 class Config(object):
@@ -88,75 +87,75 @@ class Config(object):
 		self.step=0
 
 
-pass_config = click.make_pass_decorator(Config, ensure=True)
+#pass_config = click.make_pass_decorator(Config, ensure=True)
 
-@click.group() # The cli passes the usecase and dataset parameters to the specified subgroup.
+@click.group(invoke_without_command=True, no_args_is_help=True) 
 @click.option('--use-case', required=True, help='The supported use cases are: "caviar", "ctm" and "toy".')
 @click.option('--path', required=True, help='The relative path to the folder containing the event description and domain knowledge (".prolog" files).') #Folder must be in RTEC repo.
 @click.option('--prolog', default="swipl", help='Select the Prolog language for running RTEC. The available options are: "swipl" (default) and "yap".')
 @click.option('--end', default=-1, help='The timestamp of the stream at which reasoning ends.')
 @click.option('--window', default=-1, help='The time period before the current query time on which RTEC operates.') # Default should vary in the real-data applications
 @click.option('--step', default=-1, help='The size of the data batches processed by oPIEC.')
-@pass_config
-def cli(config, use_case, path, prolog, end, window, step):
+#@pass_config
+def cli(use_case, path, prolog, end, window, step):
 	print()
 	print('Selected use case: ' + use_case)
 	if use_case not in use_case_enum:
 		print("Error: Invalid use-case/application name.")
 		print("The available use-cases are: " + str(use_case_enum))
 		exit(1)
-	config.use_case=use_case
+	#config.use_case=use_case
 	filesPath = doubleSeperate(os.path.abspath(path))
 	#print('Reading files from path: ' + filesPath)
-	config.filesPath=filesPath
-	config.prolog=prolog
+	#config.filesPath=filesPath
+	#config.prolog=prolog
 	## If the following parameters are not given by the user, fetch their application-specific default value.
-	config.end=end if end>-1 else default_end_values[use_case]
-	config.window=window if window>-1 else default_window_values[use_case]
-	config.step=step if step>-1 else default_step_values[use_case]
+	end=end if end>-1 else default_end_values[use_case]
+	window=window if window>-1 else default_window_values[use_case]
+	step=step if step>-1 else default_step_values[use_case]
 
-@cli.command()
-@pass_config
-def continuousCER(config):
+#@cli.command()
+#@pass_config
+#def continuousCER(config):
 	"""Run continuousQueries with the given parameters."""
 	prologFiles=list() 
 	
 	# Consult ".prolog" files from the resources/ folder
-	consultPath = config.filesPath + doubleSep + 'resources' + doubleSep + 'patterns'
+	consultPath = filesPath + doubleSep + 'resources' + doubleSep + 'patterns'
 	for file in os.listdir(consultPath):
 		if file.endswith(".prolog"):
 			prologFiles.append(consultPath + doubleSep + file)
 
-	consultPath = config.filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary'
+	consultPath = filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary'
 	if os.path.exists(consultPath):
 		for file in os.listdir(consultPath):
 			if file.endswith(".prolog"):
 				prologFiles.append(consultPath + doubleSep + file)
 
 	# Consult ".prolog" files from the dataset/ folder. 
-	consultPath = config.filesPath + doubleSep + 'dataset'
+	consultPath = filesPath + doubleSep + 'dataset'
 	for file in os.listdir(consultPath):
 		if file.endswith(".prolog"):
 			prologFiles.append(consultPath + doubleSep + file)
 
-	folderPath = config.filesPath
+	folderPath = filesPath
 	resultsPath = folderPath + doubleSep + 'results' 
 	#resourcesPath = folderPath + doubleSep + 'resources'
 	#datasetPath = folderPath + doubleSep + 'dataset'
 	safe_mkdir(resultsPath)
 
-	continuousQueriesPath = pkg_resources.resource_filename("execution scripts", "continuousQueries.prolog").replace(' ','\ ')
-	prolog = config.prolog
+	continuousQueriesPath = pkg_resources.resource_filename("RTECv1", "execution scripts/continuousQueries.prolog").replace(' ','\ ')
+	#prolog = config.prolog
 	#print("Execution Command: ")
 	if prolog=="swipl":
-		prologCommand = config.prolog + " -l " + continuousQueriesPath + \
-				' -g "continuousQueries(' + config.use_case + "CLI" + "," + \
-				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
+		prologCommand = prolog + " -l " + continuousQueriesPath + \
+				' -g "continuousQueries(' + use_case + "CLI" + "," + \
+				 str(end) + "," + str(window) + "," + str(step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	elif prolog=="yap":
-		prologCommand = config.prolog + " -s 0 -h 0 -t 0 -l " + continuousQueriesPath + \
-				 ' -g "continuousQueries(' + config.use_case + "CLI" + "," + \
-				 str(config.end) + "," + str(config.window) + "," + str(config.step) + ",'" + \
+		prologCommand = prolog + " -s 0 -h 0 -t 0 -l " + continuousQueriesPath + \
+				 ' -g "continuousQueries(' + use_case + "CLI" + "," + \
+				 str(end) + "," + str(window) + "," + str(step) + ",'" + \
 				 resultsPath + "'," + PathsToList(prologFiles) + '),halt."'
 	#print(prologCommand)
 	os.system(prologCommand)

@@ -31,15 +31,14 @@ setup(
     #  'RTEC-execution scripts': 'execution scripts', 
     #  'RTEC-src': 'src'
    #},
-   packages=['src', 'execution scripts'],
+   packages=['RTECv1'],
    #package_dir={"RTEC": "../RTEC"},
    package_data={
-      'src': ['*.prolog', 'utilities/*.prolog'],
-      'execution scripts': ['*.prolog'] 
+      'RTECv1': ['src/*.prolog', 'src/utilities/*.prolog', 'execution scripts/*.prolog']
    },
    #include_package_data=True,
    #package_data = { 'src': ['./*'] },
-   scripts=['execution scripts/RTEC_cli.py'],
+   scripts=['RTECv1/execution scripts/RTEC_cli.py'],
    entry_points={
 		'console_scripts':['RTEC=RTEC_cli:cli'],
      },
