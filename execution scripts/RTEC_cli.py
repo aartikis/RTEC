@@ -147,9 +147,8 @@ def cli(use_case, path, prolog, end, window, step):
 	#datasetPath = folderPath + doubleSep + 'dataset'
 	safe_mkdir(resultsPath)
 
-	continuousQueriesPath = pkg_resources.resource_filename("RTECv1", "execution scripts/continuousQueries.prolog").replace(' ','\ ')
-	#prolog = config.prolog
-	#print("Execution Command: ")
+	continuousQueriesPath = '"' + doubleSeperate(pkg_resources.resource_filename("RTECv1", "execution scripts/continuousQueries.prolog")) + '"'
+	print(continuousQueriesPath)
 	if prolog=="swipl":
 		prologCommand = prolog + " -l " + continuousQueriesPath + \
 				' -g "continuousQueries(' + use_case + "CLI" + "," + \
