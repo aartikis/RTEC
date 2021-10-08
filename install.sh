@@ -9,12 +9,23 @@ mv src RTECv2
 mv execution\ scripts RTECv2
 
 ## Install RTEC via setuptools.
-pip3 install .
+machine="$(uname -s)"
+if [[ "$machine" == "Linux"* ]] || [[ "$machine" == "Darwin"* ]]; then
+	pip3 install .
+elif [[ "$machine" == "CYGWIN"* ]] || [[ "$machine" == "MINGW"* ]]; then
+	py -m pip install .
+fi
 
 ## Add the installation path of RTEC to $PATH. 
-echo $PATH
-NewPath=`python3 -m site --user-base`/bin #$(dirname $(which RTEC))
-echo $NewPath
+#echo $PATH
+#NewPath=`python3 -m site --user-base`/bin
+if [[ "$machine" == "Linux"* ]] || [[ "$machine" == "Darwin"* ]];  then
+	NewPath=`python3 -m site --user-base`/bin
+elif [[ "$machine" == "CYGWIN"* ]] || [[ "$machine" == "MINGW"* ]]; then
+	NewPath=`py -m site --user-base`/bin
+fi
+
+#echo $NewPath
 case :$PATH:
 	in *:$NewPath:*) ;;
 		*) export PATH=$PATH:$NewPath;;
@@ -25,7 +36,7 @@ esac
 #	export PATH=$PATH:$NewPath
 #	echo "Path updated."
 #fi
-echo $PATH
+#echo $PATH
 
 ## Revert the changes in the file structure.
 mv RTECv2/src .
