@@ -24,8 +24,8 @@ esac
 #else
 #	export PATH=$PATH:$NewPath
 #	echo "Path updated."
-#fi
-echo $PATH
+fi
+#echo $PATH
 
 ## Revert the changes in the file structure.
 mv RTECv2/src .
