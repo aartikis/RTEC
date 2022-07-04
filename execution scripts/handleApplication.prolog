@@ -138,33 +138,6 @@ handleApplication(Prolog, netbillcsv, InputMode, LogFile, ResultsFile, WM, Step,
 	add_info('../examples/netbill/dataset/csv/negotiation', '.csv', [AgentNo ,Seed], InputFile),
 	InputMode = csv([InputFile]), !.
 
-%%%%%%%%%%%%%%%%%%%%%%%% NETBILL-QUOTE EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Generate an event narrative for Netbill using our synthetic dataset generator and process it with RTEC. Uses dynamic grounding. %%
-handleApplication(Prolog, netbill-quote, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	Seed = 1, 
-	add_info('../examples/netbill-quote/results/log-netbill-quote', '.txt', [Prolog, WM, Step, Seed], LogFile),
-	add_info('../examples/netbill-quote/results/log-netbill-quote', '-recognised-intervals.txt', [Prolog, WM, Step, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 20,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	(Prolog=yap, 
-	 srandom(Seed) ;
-	 Prolog=swi,
-	 set_random(seed(Seed))),
-	consult('../examples/netbill-quote/resources/patterns/quote-rules-compiled.prolog'),
-	consult('../examples/netbill-quote/resources/patterns/quote-declarations.prolog'),
-	consult('../examples/netbill-quote/dataset/auxiliary/static-information.prolog'),
-	InputMode = csv(['../examples/netbill-quote/dataset/csv/quote-event-narrative.csv']), !.
-
 %%%%%%%%%%%%%%%%%%%%%%%% VOTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Generate an event narrative for voting using our synthetic dataset generator and process it with RTEC. Uses dynamic grounding. %%
