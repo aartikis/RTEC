@@ -142,7 +142,7 @@ cachingOrder2(_131123, voted(_131123,_131124)=aye) :-
 cachingOrder2(_131123, voted(_131123,_131124)=nay) :-
      person(_131123), role_of(_131123,voter),queryMotion(_131124).
 
-cachingOrder2(M, auxMotionOutcomeEvent(M, Outcome)):-
+cachingOrder2(M, auxMotionOutcomeEvent(M, _Outcome)):-
      queryMotion(M).
 
 cachingOrder2(_131123, outcome(_131123)=carried) :-

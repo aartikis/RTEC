@@ -11,13 +11,8 @@
    6. [Maritime Situational Awareness](../examples/maritime/README.md)
 4. Running RTEC in Prolog
    1. [Requirements](prolog-requirements.md)
-   
-   2. Optional: [Setting Execution Parameters](prolog-parameters.md)
-   
-   3. [Running an Existing Application](prolog-existing-apps.md) 
-   
-   4. [Running a New Application](prolog-new-apps.md)
-   
+   2. [Running an Existing Application](prolog-existing-apps.md) 
+   3. [Running a New Application](prolog-new-apps.md)
 5. CLI Tools
    1. [Requirements](cli-requirements.md)
    2. [Running an Existing Application](cli-existing-apps.md)

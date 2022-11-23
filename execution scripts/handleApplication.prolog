@@ -19,501 +19,276 @@
 %				Set to '-1' to avoid using retractall.   
 % ClockTick: temporal distance between two consecutive time-points, SDEBatch: the input narrative size asserted in a single batch
 
-
-/*
-datasetType/1 is used for logging the recognised intervals in continuousQueries.prolog
-datasetType/1 is asserted in this file, and checked in continuousQueries.prolog
-datasetType(ground_truth) denotes that the recognitions on the corresponding dataset will be used as ground truth
-*/
-:- dynamic datasetType/1.
+%% Default values for Biological Feedback Loops application.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%% TOY EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-handleApplication(Prolog, toycsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
-	(Prolog=yap, 
-	 LogFile = '../examples/toy/results/log-YAP-toy-csv.txt',
-	 ResultsFile = '../examples/toy/results/log-YAP-toy-csv-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/toy/results/log-SWI-toy-csv.txt',
-	 ResultsFile = '../examples/toy/results/log-SWI-toy-csv-recognised-intervals.txt'
-	),
-	WM = 30,
-	Step = 30, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 30,
-	StreamOrderFlag = ordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/toy/resources/patterns/toy_rules_compiled.prolog'),
-	consult('../examples/toy/resources/patterns/toy_declarations.prolog'),
-	% load the csv file with input data stream	
-	InputMode = csv(['../examples/toy/dataset/csv/toy_data.csv']), 
-	consult('../examples/toy/dataset/auxiliary/toy_var_domain.prolog'), !.
+% Default window size for supported applications.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [window_size=WindowSize]).
+% For example: 
+% 	continuousQueries(toy, [window_size=20]).
+default(window_size, toy, 10).
+default(window_size, maritime, 10).
+default(window_size, caviar, 100000).
+default(window_size, voting, 10).
+default(window_size, netbill, 10).
+default(window_size, ctm, 10000).
+default(window_size, feedback_loops, 10).
 
-handleApplication(Prolog, toy, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :- 
-	(Prolog=yap, 
-	 LogFile = '../examples/toy/results/log-YAP-toy.txt',
-  	 ResultsFile = '../examples/toy/results/log-YAP-toy-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/toy/results/log-SWI-toy.txt',
-	 ResultsFile = '../examples/toy/results/log-SWI-toy-recognised-intervals.txt'
-	),
-	WM = 30,
-	Step = 30, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 30,
-	StreamOrderFlag = ordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/toy/resources/patterns/toy_rules_compiled.prolog'),
-	consult('../examples/toy/resources/patterns/toy_declarations.prolog'),
-	InputMode = dynamic_predicates(['../examples/toy/dataset/prolog/toy_data.prolog']), 
-	consult('../examples/toy/dataset/auxiliary/toy_var_domain.prolog'), !.
+% Default step size for supported applications.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [step=Step]).
+% For example: 
+% 	continuousQueries(toy, [step=5]).
+default(step, toy, 10).
+default(step, maritime, 10).
+default(step, caviar, 100000).
+default(step, voting, 10).
+default(step, netbill, 10).
+default(step, ctm, 10000).
+default(step, feedback_loops, 10).
 
-%%%%%%%%%%%%%%%%%%%%%%%% NETBILL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Default start time of reasoning for supported applications.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [start_time=StartTime]).
+% For example: 
+% 	continuousQueries(toy, [start_time=10]).
+default(start_time, toy, 0).
+default(start_time, maritime, 1443650400).
+default(start_time, caviar, 0).
+default(start_time, voting, 0).
+default(start_time, netbill, 0).
+default(start_time, ctm, 0).
+default(start_time, feedback_loops, 0).
 
-%% Generate an event narrative for Netbill using our synthetic dataset generator and process it with RTEC. Uses dynamic grounding. %%
-handleApplication(Prolog, netbill, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	AgentNo = 1000,
-	Seed = 1, 
-	add_info('../examples/netbill/results/log-netbill', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/netbill/results/log-netbill', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	(Prolog=yap, 
-	 srandom(Seed) ;
-	 Prolog=swi,
-	 set_random(seed(Seed))),
-	consult('../examples/netbill/resources/patterns/netbill_RTEC_compiled_dg.prolog'),
-	consult('../examples/netbill/resources/patterns/netbill_RTEC_declarations_dg.prolog'),
-	consult('../examples/netbill/dataset/auxiliary/negotiation-static_generator.prolog'),
-	assert_n_agents(AgentNo),
-	InputMode = dynamic_predicates(['../examples/netbill/dataset/prolog/negotiation-data_generator.prolog']), !.
+% Default end time of reasoning for supported applications.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [end_time=EndTime]).
+% For example: 
+% 	continuousQueries(toy, [end_time=30]).
+default(end_time, toy, 50).
+default(end_time, maritime, 1448834400).
+default(end_time, caviar, 1007000).
+default(end_time, voting, 100).
+default(end_time, netbill, 100).
+default(end_time, ctm, 50000).
+default(end_time, feedback_loops, 100).
 
-%% Run Netbill for an event narrative stored in a csv file. Uses dynamic grounding. %%
-handleApplication(Prolog, netbillcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	AgentNo = 1000,
-	Seed = 1, 
-	add_info('../examples/netbill/results/log-netbillcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/netbill/results/log-netbillcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	(Prolog=yap, 
-	 srandom(Seed) ;
-	 Prolog=swi,
-	 set_random(seed(Seed))),
-	consult('../examples/netbill/resources/patterns/netbill_RTEC_compiled_dg.prolog'),
-	consult('../examples/netbill/resources/patterns/netbill_RTEC_declarations_dg.prolog'),
-	consult('../examples/netbill/dataset/auxiliary/negotiation-static_generator.prolog'),
-	assert_n_agents(AgentNo),
-	add_info('../examples/netbill/dataset/csv/negotiation', '.csv', [AgentNo ,Seed], InputFile),
-	InputMode = csv([InputFile]), !.
-
-%%%%%%%%%%%%%%%%%%%%%%%% VOTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Generate an event narrative for voting using our synthetic dataset generator and process it with RTEC. Uses dynamic grounding. %%
-handleApplication(Prolog, voting, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	AgentNo = 4000,
-	Seed = 1,
-	add_info('../examples/voting/results/log-voting', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/voting/results/log-voting', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	(Prolog=yap, 
-	 srandom(Seed) ;
-	 Prolog=swi,
-	 set_random(seed(Seed))),
-	consult('../examples/voting/resources/patterns/vopr_RTEC_compiled_dg.prolog'),
-	consult('../examples/voting/resources/patterns/vopr_RTEC_declarations_dg.prolog'),
-	consult('../examples/voting/dataset/auxiliary/voting-static_generator.prolog'),
-	assert_n_agents(AgentNo),
-	InputMode = dynamic_predicates(['../examples/voting/dataset/prolog/voting-data_generator.prolog']), !.
-
-%% Run voting for an event narrative stored in a csv file. Uses dynamic grounding. %%
-handleApplication(Prolog, votingcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	WM = 10,
-	Step = 10, 
-	AgentNo = 1000,
-	Seed = 1,
-	add_info('../examples/voting/results/log-votingcsv', '.txt', [Prolog, WM, Step, AgentNo, Seed], LogFile),
-	add_info('../examples/voting/results/log-votingcsv', '-recognised-intervals.txt', [Prolog, WM, Step, AgentNo, Seed], ResultsFile),
-	StartReasoningTime = 0,
-	EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	consult('../examples/voting/resources/patterns/vopr_RTEC_compiled_dg.prolog'),
-	consult('../examples/voting/resources/patterns/vopr_RTEC_declarations_dg.prolog'),
-	consult('../examples/voting/dataset/auxiliary/voting-static_generator.prolog'),
-	assert_n_agents(AgentNo),
-	add_info('../examples/voting/dataset/csv/voting', '.csv', [AgentNo, Seed], InputFile),
-	InputMode = csv([InputFile]), !.
+% Default clock tick, i.e., temporal distance between consecutive time-points, for supported applications.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [clock_tick=ClockTick]).
+% WARNING: Changing the value of clock_tick in existing applications may affect the 
+% 		   correctness of the results.
+default(clock_tick, toy, 1).
+default(clock_tick, maritime, 1).
+default(clock_tick, caviar, 40).
+default(clock_tick, voting, 1).
+default(clock_tick, netbill, 1).
+default(clock_tick, ctm, 1).
+default(clock_tick, feedback_loops, 1).
 
 
-%%%%%%%%%%%%%%%%%%%%%%%% CAVIAR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The default results directory for each application. 
+% In order to run an application for a different value of this parameter, run:
+%   continuousQueries(ApplicationName, [results_directory=ResultsDirectory]).
+% For example: 
+%   continuousQueries(toy, [results_directory=/home/chris/myresults]).
 
-handleApplication(Prolog, caviarcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	(Prolog=yap,
-	 LogFile = '../examples/caviar/results/log-YAP-csv-caviar-100K-100K.txt',
-	 ResultsFile = '../examples/caviar/results/log-YAP-csv-caviar-100K-100K-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/caviar/results/log-SWI-csv-caviar-100K-100K.txt',
-	 ResultsFile = '../examples/caviar/results/log-SWI-csv-caviar-100K-100K-recognised-intervals.txt'
-	),
-	WM = 100000,
-	Step = 100000, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 1007000,
-	StreamOrderFlag = ordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = preprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 40,
-	SDEBatch = 1000,
-	%%%%%%%% LOAD THE APPLICATION-SPECIFIC PRE-PROCESSING MODULE %%%%%%%%
-	consult('../examples/caviar/resources/auxiliary/pre-processing.prolog'),
-	consult('../examples/caviar/resources/patterns/caviar_declarations.prolog'),
-	consult('../examples/caviar/resources/patterns/compiled_caviar_patterns.prolog'),
-	% load the csv file with input data stream	
-	InputMode = csv(['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']), 
-	consult('../examples/caviar/dataset/auxiliary/list-of-ids.prolog'), !.
+default(results_directory, Application, Directory):-
+	atom_concat('../examples/', Application, Dir0),
+	atom_concat(Dir0, '/results/', Directory).
 
-handleApplication(Prolog, caviar, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	(Prolog=yap,
-	 LogFile = '../examples/caviar/results/log-YAP-caviar-100K-100K.txt',
-	 ResultsFile = '../examples/caviar/results/log-YAP-caviar-100K-100K-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/caviar/results/log-SWI-caviar-100K-100K.txt',
-	 ResultsFile = '../examples/caviar/results/log-SWI-caviar-100K-100K-recognised-intervals.txt'
-	),
-	WM = 100000,
-	Step = 100000, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 1007000,
-	StreamOrderFlag = ordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = preprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 40,
-	SDEBatch = 1000,
-	%%%%%%%% LOAD THE APPLICATION-SPECIFIC PRE-PROCESSING MODULE %%%%%%%%
-	consult('../examples/caviar/resources/auxiliary/pre-processing.prolog'),
-	consult('../examples/caviar/resources/patterns/caviar_declarations.prolog'),
-	consult('../examples/caviar/resources/patterns/compiled_caviar_patterns.prolog'),
-	consult('../examples/caviar/dataset/prolog/updateSDE-caviar.prolog'),
-	InputMode = dynamic_predicates(['../examples/caviar/dataset/prolog/appearance.prolog', '../examples/caviar/dataset/prolog/movementB.prolog']), 
-	consult('../examples/caviar/dataset/auxiliary/list-of-ids.prolog'), !.
+default(goals, toy, []).
+default(goals, maritime, []).
+default(goals, caviar, []).
+default(goals, voting, [assert_n_agents(1000)]).
+default(goals, netbill, [assert_n_agents(1000)]).
+default(goals, ctm, []).
+default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]).
 
+% The default event description files for each application. 
+% In order to run an application for a different value of this parameter, run:
+%   continuousQueries(ApplicationName, [event_description_files=EventDescriptionFiles]).
+default(event_description_files, toy, Files):-
+	Files=['../examples/toy/resources/patterns/toy_rules_compiled.prolog', 
+			'../examples/toy/resources/patterns/toy_declarations.prolog',
+			'../examples/toy/dataset/auxiliary/toy_var_domain.prolog'].
 
-%%%%%%%%%%%%%%%%%%%%%%%% CTM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+default(event_description_files, maritime, Files):-
+	Files=['../examples/maritime/resources/patterns/maritime_rules_compiled_dg.prolog', 
+			'../examples/maritime/resources/patterns/maritime_declarations_dg.prolog',
+			'../examples/maritime/resources/auxiliary/compare.prolog',
+			'../examples/maritime/resources/auxiliary/loadStaticData.prolog'].
 
-handleApplication(Prolog, ctmcsv, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	(Prolog=yap,
-	 LogFile = '../examples/ctm/results/log-YAP-csv-ctm-10K-10K.txt',
-	 ResultsFile = '../examples/ctm/results/log-YAP-csv-ctm-10K-10K-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/ctm/results/log-SWI-csv-ctm-10K-10K.txt',
-	 ResultsFile = '../examples/ctm/results/log-SWI-csv-ctm-10K-10K-recognised-intervals.txt'
-	),
-	WM = 10000,
-	Step = 10000, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 50000,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	SDEBatch = 1000,
-	consult('../examples/ctm/resources/patterns/ctm_declarations.prolog'),
-	consult('../examples/ctm/resources/patterns/compiled_ctm_patterns.prolog'),
-	InputMode = csv(['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv', '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']),
-	consult('../examples/ctm/dataset/auxiliary/vehicles.prolog'), !.
+default(event_description_files, caviar, Files):-
+	Files=['../examples/caviar/resources/patterns/caviar_rules_compiled.prolog', 
+			'../examples/caviar/resources/patterns/caviar_declarations.prolog',
+			'../examples/caviar/resources/auxiliary/pre-processing.prolog',
+			'../examples/caviar/dataset/auxiliary/list-of-ids.prolog'].
 
-handleApplication(Prolog, ctm, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch) :-
-	(Prolog=yap,
-	 LogFile = '../examples/ctm/results/log-YAP-ctm-10K-10K.txt',
-	 ResultsFile = '../examples/ctm/results/log-YAP-ctm-10K-10K-recognised-intervals.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/ctm/results/log-SWI-ctm-10K-10K.txt',
-	 ResultsFile = '../examples/ctm/results/log-SWI-ctm-10K-10K-recognised-intervals.txt'
-	),
-	WM = 10000,
-	Step = 10000, 
-	StartReasoningTime = 0,
-	EndReasoningTime = 50000,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	SDEBatch = 1000,
-	consult('../examples/ctm/resources/patterns/ctm_declarations.prolog'),
-	consult('../examples/ctm/resources/patterns/compiled_ctm_patterns.prolog'),
-	consult('../examples/ctm/dataset/prolog/updateSDE-ctm.prolog'),
-	consult('../examples/ctm/dataset/prolog/load-ctm-data.prolog'),
-	%InputMode = dynamic_predicates(['../examples/ctm/resources/abrupt_acceleration.prolog', '../examples/ctm/resources/abrupt_deceleration.prolog', '../examples/ctm/resources/internal_temperature_change.prolog', '../examples/ctm/resources/noise_level_change.prolog', '../examples/ctm/resources/passenger_density_change.prolog', '../examples/ctm/resources/sharp_turn.prolog', '../examples/ctm/resources/stop_enter_leave.prolog']),
-	consult('../examples/ctm/dataset/auxiliary/vehicles.prolog'), !.
+default(event_description_files, voting, Files):-
+	Files=['../examples/voting/resources/patterns/voting_rules_compiled_dg.prolog', 
+			'../examples/voting/resources/patterns/voting_declarations_dg.prolog',
+			'../examples/voting/dataset/auxiliary/voting_static_generator.prolog'].
 
+default(event_description_files, netbill, Files):-
+	Files=['../examples/netbill/resources/patterns/netbill_rules_compiled_dg.prolog', 
+			'../examples/netbill/resources/patterns/netbill_declarations_dg.prolog',
+			'../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog'].
 
-%%%%%%%%%%%%%%%%%%%%%%%% Maritime-Brest %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+default(event_description_files, ctm, Files):-
+	Files=['../examples/ctm/resources/patterns/ctm_rules_compiled.prolog', 
+			'../examples/ctm/resources/patterns/ctm_declarations.prolog',
+			'../examples/ctm/dataset/auxiliary/vehicles.prolog'].
 
-% Use SWI on the maritime datasets only for debugging
+default(event_description_files, feedback_loops, Files):-
+	Files=['../examples/feedback_loops/resources/patterns/feedback_loops_rules_compiled.prolog', 
+			'../examples/feedback_loops/resources/patterns/feedback_loops_declarations.prolog',
+			'../examples/feedback_loops/resources/auxiliary/static_info.prolog'].
 
-%%%%% critical points
+% The default input mode for each application. 
+% In order to run an application for a different value of this parameter, run:
+%   continuousQueries(ApplicationName, [input_mode=InputMode]).
+% There are three possible values for input_mode:
+% 	'csv': RTEC opens the input csv files and asserts the input events in the appropriate window.
+% 	'fifo': Live stream reasoning. RTEC reads the input events from named pipes and asserts them as soon as they arrive.
+%   'dynamic_predicates': RTEC consults directing the input prolog files containing the input events. Event assertions take place in the appropriate window. 
+default(input_mode, _Application, csv).
 
-handleApplication(Prolog, brest-critical, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, _SDEBatch) :-
-	(Prolog=yap,
- 	 LogFile = '../examples/maritime/results/log-Brest-critical-yap-1day-1day.txt',
-	 ResultsFile = '../examples/maritime/results/log-Brest-critical-yap-1day-1day-recognised-intervals-critical-yap.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/maritime/results/log-Brest-critical-SWI-1day-1day.txt',
-	 ResultsFile = '../examples/maritime/results/log-Brest-critical-SWI-1day-1day-recognised-intervals-critical-SWI.txt'
-	),
-	WM = 86400,
-	Step = 86400, 
-	% start of the dataset:
-	StartReasoningTime = 1443650400,
-	EndReasoningTime = 1448834400,
-	% end of dataset:
-	% EndReasoningTime = 1459548000,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	% load the patterns:
-	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Compiled.prolog'),
-	% these are auxiliary predicates used in the maritime patterns
-	consult('../examples/maritime/resources/auxiliary/compare.prolog'),	
-	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Declarations.prolog'),
-	% load the dynamic data:
-	InputMode = csv(['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']),
-	% load the static data
-	consult('../examples/maritime/resources/auxiliary/loadStaticData.prolog'), !.
+% Default stream rate, i.e., the expected rate at which the input streams have been sped up, for supported applications.
+% This variable affects the amount of time RTEC "sleeps" between the processing of consecutive windows.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [stream_rate=StreamRate]).
+% Note: this variable is only useful when running RTEC with the input mode: 'fifo'.
+% WARNING: the value of stream_rate should agree with speed rate of the input providers
+default(stream_rate, toy, 1).
+default(stream_rate, maritime, 1).
+default(stream_rate, caviar, 40).
+default(stream_rate, voting, 1).
+default(stream_rate, netbill, 1).
+default(stream_rate, ctm, 1).
+default(stream_rate, feedback_loops, 1).
 
+% The default number of time-points each Prolog rule for asserting input events contains for supported applications.
+% In order to run an application for a different value of this parameter, run:
+% 	continuousQueries(ApplicationName, [sde_batch=SDEBatch]).
+% Note: this variable is only useful when running RTEC with the input mode: 'dynamic_predicates'.
+% 		The definition of the input_mode parameter is presented shortly.
+default(sde_batch, toy, 10).
+default(sde_batch, maritime, 86400).
+default(sde_batch, caviar, 1000).
+default(sde_batch, voting, 10).
+default(sde_batch, netbill, 10).
+default(sde_batch, ctm, 1000).
+default(sde_batch, feedback_loops, 10).
 
-%%%%% enriched points
+% The default execution flags for each application. 
+% The meaning of these flags is described below:
+% 	dynamic_grounding_flag: 
+%	stream_order_flag:
+%	preprocessing_flag:
+default(dynamic_grounding_flag, toy, nodynamicgrounding). 
+default(dynamic_grounding_flag, maritime, dynamicgrounding). 
+default(dynamic_grounding_flag, caviar, nodynamicgrounding). 
+default(dynamic_grounding_flag, voting, dynamicgrounding). 
+default(dynamic_grounding_flag, netbill, dynamicgrounding). 
+default(dynamic_grounding_flag, ctm, nodynamicgrounding). 
+default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+default(stream_order_flag, _Application, unordered). 
+default(preprocessing_flag, _Application, nopreprocessing). 
 
-handleApplication(Prolog, brest-enriched, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, _SDEBatch) :-
-	(Prolog=yap,
- 	 LogFile = '../examples/maritime/results/log-Brest-enriched-yap-1day-1day.txt',
-	 ResultsFile = '../examples/maritime/results/log-Brest-enriched-yap-1day-1day-recognised-intervals-critical-yap.txt'
-	 ;
-	 Prolog=swi,
-	 LogFile = '../examples/maritime/results/log-Brest-enriched-SWI-1day-1day.txt',
-	 ResultsFile = '../examples/maritime/results/log-Brest-enriched-SWI-1day-1day-recognised-intervals-critical-SWI.txt'
+% The default values of the memory management thresholds used by RTEC.
+% 	forget_threshold:
+%	dynamic_grounding_threshold:
+default(forget_threshold, _Application, -1).
+default(dynamic_grounding_threshold, _Application, -1).
 
-	),
-	WM = 86400,
-	Step = 86400, 
-	% start of the dataset:
-	StartReasoningTime = 1443650400,
-	% end of the first week:
-	EndReasoningTime = 1444255200,
-	% end of dataset:
-	% EndReasoningTime = 1459548000,
-	StreamOrderFlag = unordered,
-	DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	% load the patterns:
-	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Compiled.prolog'),
-	% these are auxiliary predicates used in the maritime patterns
-	consult('../examples/maritime/resources/auxiliary/compare.prolog'),	
-	consult('../examples/maritime/resources/patterns/Maritime_Patterns_Declarations.prolog'),
-	% load the dynamic data:
-	InputMode = csv(['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_enriched_nd.csv']),
-	%%% Important: instruct the execution script that the recognitions on this dataset will be treated as the ground truth
-	assert( datasetType(ground_truth) ),
-	% load the static data
-	consult('../examples/maritime/resources/auxiliary/loadStaticData.prolog'), !.
+% The default input providers for each application. 
+% In order to run an application for a different value of this parameter, run:
+%   continuousQueries(ApplicationName, [input_providers=InputProvidersList]).
+% WARNING: The provided input paths must agree with the provided input mode.
+default(input_providers, toy, csv, ['../examples/toy/dataset/csv/toy_data.csv']).
+default(input_providers, toy, fifo, ['fifo1']).
+default(input_providers, toy, dynamic_predicates, ['../examples/toy/dataset/prolog/toy_data.prolog']).
 
+default(input_providers, maritime, csv, ['../examples/maritime/dataset/csv/brest.csv']).
+default(input_providers, maritime, fifo, ['fifo1']).
+default(input_providers, maritime, dynamic_predicates, []):-
+	write('ERROR: The maritime use case cannot be run for input_mode=dynamic_predicates. Try the csv or fifo input modes'), nl, exit(1).
 
-%%%% Execution scripts for CLIs 
+default(input_providers, caviar, csv, ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']).
+default(input_providers, caviar, fifo, ['fifo1', 'fifo2']).
+default(input_providers, caviar, dynamic_predicates, ['../examples/caviar/dataset/prolog/appearance.prolog', '../examples/caviar/dataset/prolog/movementB.prolog']).
 
-%test for cli
-handleApplication(Prolog, netbillCLI, InputMode, LogFile, ResultsFile, WM, Step, AgentNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputFiles, ResultsPath) :-
-	%AgentNo = 1000,
-	%Seed = 1,
-	atom_concat(ResultsPath, '/log-netbillCLI', LogsPath),
-	add_info(LogsPath, '.txt', [Prolog, WM, Step], LogFile),
-	add_info(LogsPath, '-recognised-intervals.txt', [Prolog, WM, Step], ResultsFile),
-	%StartReasoningTime = 0,
-	%EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	assert_n_agents(AgentNo),
-	InputMode = csv(InputFiles), !.
+default(input_providers, voting, csv, ['../examples/voting/dataset/csv/voting.csv']).
+default(input_providers, voting, fifo, ['fifo1']).
+default(input_providers, voting, dynamic_predicates, ['../examples/voting/dataset/prolog/voting_data_generator.prolog']).
 
-%test for cli
-handleApplication(Prolog, votingCLI, InputMode, LogFile, ResultsFile, WM, Step, AgentNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputFiles, ResultsPath) :-
-	%AgentNo = 1000,
-	%Seed = 1,
-	atom_concat(ResultsPath, '/log-votingCLI', LogsPath),
-	add_info(LogsPath, '.txt', [Prolog, WM, Step], LogFile),
-	add_info(LogsPath, '-recognised-intervals.txt', [Prolog, WM, Step], ResultsFile),
-	%StartReasoningTime = 0,
-	%EndReasoningTime = 100,
-	StreamOrderFlag = unordered,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = 10, 
-	DynamicGroundingThreshold = 0.8, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	assert_n_agents(AgentNo),
-	InputMode = csv(InputFiles), !.
+default(input_providers, netbill, csv, ['../examples/netbill/dataset/csv/netbill.csv']).
+default(input_providers, netbill, fifo, ['fifo1']).
+default(input_providers, netbill, dynamic_predicates, ['../examples/netbill/dataset/prolog/netbill_data_generator.prolog']).
 
-handleApplication(Prolog, maritimeCLI, InputMode, LogFile, ResultsFile, WM, Step, _AgentNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, _SDEBatch, InputFiles, ResultsPath) :-
-	atom_concat(ResultsPath, '/log-maritimeCLI', LogsPath),
-	add_info(LogsPath, '.txt', [Prolog, WM, Step], LogFile),
-	add_info(LogsPath, '-recognised-intervals.txt', [Prolog, WM, Step], ResultsFile),
-	% start of the dataset:
-	%StartReasoningTime = 1443650400,
-	%EndReasoningTime = 1448834400,
-	% end of dataset:
-	% EndReasoningTime = 1459548000,
-	StreamOrderFlag = unordered,
-	%DynamicGroundingFlag = dynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	% load the patterns:
-	%consult('../examples/Maritime-Monitoring/maritime resources/Maritime_Patterns_Compiled.prolog'),
-	% these are auxiliary predicates used in the maritime patterns
-	%consult('../examples/Maritime-Monitoring/maritime resources/compare.prolog'),	
-	%consult('../examples/Maritime-Monitoring/maritime resources/Maritime_Patterns_Declarations.prolog'),
-	% load the dynamic data:
-	InputMode = csv(InputFiles), !.
-	% load the static data
-	%consult('../examples/Maritime-Monitoring/Brest/experiments/data/static/loadStaticData.prolog'), !.
+default(input_providers, ctm, csv, ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv', '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']).
+default(input_providers, ctm, fifo, ['fifo1', 'fifo2', 'fifo3', 'fifo4', 'fifo5', 'fifo6', 'fifo7']). % maybe multiple fifos are needed here.
+default(input_providers, ctm, dynamic_predicates, ['../examples/ctm/dataset/prolog/updateSDE-ctm.prolog', '../examples/ctm/dataset/prolog/load-ctm-data.prolog']).
 
-handleApplication(Prolog, caviarCLI, InputMode, LogFile, ResultsFile, WM, Step, _AgentNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputFiles, ResultsPath) :-
-	atom_concat(ResultsPath, '/log-caviarCLI', LogsPath),
-	add_info(LogsPath, '.txt', [Prolog, WM, Step], LogFile),
-	add_info(LogsPath, '-recognised-intervals.txt', [Prolog, WM, Step], ResultsFile),	
-	%WM = 100000,
-	%Step = 100000, 
-	%StartReasoningTime = 0,
-	%EndReasoningTime = 1007000,
-	StreamOrderFlag = ordered,
-	%DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = preprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 40,
-	SDEBatch = 1000,
-	%%%%%%%% LOAD THE APPLICATION-SPECIFIC PRE-PROCESSING MODULE %%%%%%%%
-	%consult('../examples/caviar/resources/pre-processing.prolog'),
-	%consult('../examples/caviar/resources/caviar_declarations.prolog'),
-	%consult('../examples/caviar/resources/compiled_caviar_patterns.prolog'),
-	% load the csv file with input data stream	
-	%atom_concat(ResultsPath, '/examples/caviar/experiments/data/csv/appearance.csv', AppearanceFile),
-	%atom_concat(ResultsPath, '/examples/caviar/experiments/data/csv/movementB.csv', MovementBFile),
-	%InputMode = csv([AppearanceFile, MovementBFile]), !.
-	InputMode = csv(InputFiles), !.
-	%consult('../examples/caviar/experiments/data/list-of-ids.prolog'), !.
+default(input_providers, feedback_loops, csv, []).
+default(input_providers, feedback_loops, fifo, []).
+default(input_providers, feedback_loops, dynamic_predicates, []).
 
-handleApplication(Prolog, ctmCLI, InputMode, LogFile, ResultsFile, WM, Step, _AgentNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputFiles, ResultsPath) :-
-	atom_concat(ResultsPath, '/log-ctmCLI', LogsPath),
-	add_info(LogsPath, '.txt', [Prolog, WM, Step], LogFile),
-	add_info(LogsPath, '-recognised-intervals.txt', [Prolog, WM, Step], ResultsFile),	
-	%WM = 10000,
-	%Step = 10000, 
-	%StartReasoningTime = 0,
-	%EndReasoningTime = 50000,
-	StreamOrderFlag = unordered,
-	%DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	SDEBatch = 1000,
-	%consult('../examples/ctm/resources/ctm_declarations.prolog'),
-	%consult('../examples/ctm/resources/compiled_ctm_patterns.prolog'),
-	%InputMode = csv(['../examples/ctm/experiments/data/csv/abrupt_acceleration.csv', '../examples/ctm/experiments/data/csv/abrupt_deceleration.csv', '../examples/ctm/experiments/data/csv/internal_temperature_change.csv', '../examples/ctm/experiments/data/csv/noise_level_change.csv', '../examples/ctm/experiments/data/csv/passenger_density_change.csv', '../examples/ctm/experiments/data/csv/sharp_turn.csv', '../examples/ctm/experiments/data/csv/stop_enter_leave.csv']),
-	InputMode = csv(InputFiles), !.
-	%consult('../examples/ctm/experiments/data/vehicles.prolog'), !.
+% set_parameter(+ParameterList, +ParameterName, +Application, -Value)
+% Search the parameter list for an element containing the selected parameter name
+% and update the output value accordingly.
+% If the selected parameter name is not found in the list,
+% then the output value is the application specific default value defined in a default/3 fact.
+set_parameter([], ParameterName, Application, Value):-
+	default(ParameterName, Application, Value).
+set_parameter([ParameterName=Value|_T], ParameterName, _Application, Value):- !.
+set_parameter([dynamicgrounding|_T], dynamic_grounding_flag, _Application, dynamicgrounding):- !.
+set_parameter([ordered|_T], stream_order_flag, _Application, ordered):- !.
+set_parameter([preprocessing|_T], preprocessing_flag, _Application, preprocessing):- !.
+set_parameter([_H|T], ParameterName, Application, Value):-
+	set_parameter(T, ParameterName, Application, Value).	
 
-handleApplication(Prolog, toyCLI, InputMode, LogFile, ResultsFile, WM, Step, _AgentNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputFiles, ResultsPath) :- 
-	atom_concat(ResultsPath, '/log-toyCLI', LogsPath),
-	add_info(LogsPath, '.txt', [Prolog, WM, Step], LogFile),
-	add_info(LogsPath, '-recognised-intervals.txt', [Prolog, WM, Step], ResultsFile),	
-	%WM = 30,
-	%Step = 30, 
-	%StartReasoningTime = 0,
-	%EndReasoningTime = 30,
-	StreamOrderFlag = ordered,
-	%DynamicGroundingFlag = nodynamicgrounding,
-	PreprocessingFlag = nopreprocessing, 
-	ForgetThreshold = -1, 
-	DynamicGroundingThreshold = -1, 
-	ClockTick = 1,
-	SDEBatch = 10,
-	%consult('../examples/toy/resources/toy_rules_compiled.prolog'),
-	%consult('../examples/toy/resources/toy_declarations.prolog'),
-	% load the csv file with input data stream	
-	InputMode = csv(InputFiles), !. 
-	%consult('../examples/toy/resources/toy_var_domain.prolog'), !.
+% set_parameter(+ParameterList, +ParameterName, +Application, +InputMode, -Value)
+% Same meaning as set_parameter/4.
+% The input mode argument is used to fetch the correct default value 
+% for the parameter input_providers from a default/4 fact.
+set_parameter([], ParameterName, Application, InputMode, Value):-
+	default(ParameterName, Application, InputMode, Value).
+set_parameter([ParameterName=Value|_T], ParameterName, _Application, _InputMode, Value):- !.
+set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
+	set_parameter(T, ParameterName, Application, InputMode, Value).	
+
+handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals) :-
+	% Set window and step size
+	set_parameter(ParameterList, window_size, App, WindowSize),
+	set_parameter(ParameterList, step, App, Step),
+	% Start and end times of reasoning
+	set_parameter(ParameterList, start_time, App, StartReasoningTime),
+	set_parameter(ParameterList, end_time, App, EndReasoningTime),
+	% Set temporal distance between two consecutive time-points
+	set_parameter(ParameterList, clock_tick, App, ClockTick),
+	% The rate at which the input stream have been sped up (in 'fifo' mode)
+	set_parameter(ParameterList, stream_rate, App, StreamRate),
+	% Set directory for writing logs and the recognised intervals
+	set_parameter(ParameterList, results_directory, App, ResultsDir),
+	% Set prolog files to be consulted
+	set_parameter(ParameterList, event_description_files, App, PrologFiles),
+	% Set mode of receiving streams of input events
+	set_parameter(ParameterList, input_mode, App, InputMode),
+	set_parameter(ParameterList, input_providers, App, InputMode, InputProviders),
+	set_parameter(ParameterList, dynamic_grounding_flag, App, DynamicGroundingFlag),
+	set_parameter(ParameterList, stream_order_flag, App, StreamOrderFlag),
+	set_parameter(ParameterList, preprocessing_flag, App, PreprocessingFlag),
+	set_parameter(ParameterList, forget_threshold, App, ForgetThreshold),
+	set_parameter(ParameterList, dynamic_grounding_threshold, App, DynamicGroundingThreshold),
+	set_parameter(ParameterList, sde_batch, App, SDEBatch),
+	set_parameter(ParameterList, goals, App, Goals),
+	atom_concat(ResultsDir, '/log', ResultsDirLog),
+	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode], LogFile), % execution logs file
+	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode], ResultsFile). % recognised intervals file
 
 %% Auxiliary predicates to differentiate input/result files based on the parameter of the experiment. %%
 %% Usage:   add_info(+PrefixStr, +SuffixStr, +ParametersList, -FinalStr)							  %%

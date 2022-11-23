@@ -1,14 +1,13 @@
-
 /**********************************************************************************
 
  Script for running RTEC.
  Authors: Alexander Artikis and Manos Pitsikalis.
+ Maintainer: Periklis Mantenoglou
 
  Run in YAP: yap -s 0 -h 0 -t 0 -l continuousQueries.prolog
  Run in SWI: swipl -l continuousQueries.prolog
 
  **********************************************************************************/
-
 
 % load RTEC
 :- ['../src/RTEC.prolog'].
@@ -20,201 +19,97 @@
 
 % handleApplication includes hard-coded execution parameters, such as 
 % window and step sizes, for certain applications
+% handleApplication assigns the parameter values provided by the user to the appropriate variables. 
+% The parameters for which no value was provided are assigned an application-specific default value.
 :- ['handleApplication.prolog'].
-:- ['../src/timeoutTreatment.prolog'].
+% The logger contains predicates for printing out logs and results.
+:- ['logger.prolog'].
 
+% continuousQueries(+App, +ParameterList) runs RTEC for the application App and the execution parameters provided in ParameterList
+% Supported parameters: 
+% 	window_size: The temporal length of windows. The eventRecognition/2 process of 'src/RTEC.prolog' is executed for each temporal window.
+% 	step: The temporal distance between two consecutive query times.
+% 	start_time: The first time-point to be processed by RTEC.
+% 	end_time: The last time-point to be processed by RTEC.
+%	clock_tick: the temporal distance between consecutive time-points (keep the default value for supported applications).
+% 	input_mode: Three possible values: 
+% 		'csv': RTEC opens the input csv files and asserts the input events in the appropriate window.
+% 		'fifo': Live stream reasoning. RTEC reads the input events from named pipes and asserts them as soon as they arrive.
+%   	'dynamic_predicates': RTEC consults directing the input prolog files containing the input events. Event assertions take place in the appropriate window. 
+%	input_providers: a list of paths from which the event streams will be read. WARNING: must agree with the provided input_mode.
+%	results_directory: the directory in which the log and result files of RTEC will be written.
+%	event_description_files: a list of Prolog files containing at least two files: the compiled rules and the declarations of the application.
+%	goals: a list of Prolog queries to execute before running RTEC. 
+%	stream_rate: the expected rate at which the input streams have been sped up (only for 'fifo' mode). 
+%	---> WARNING: the value of stream_rate should agree with the speed rate of the input providers (named pipes).
+%	sde_batch: the default number of time-points each Prolog rule for asserting input events contains for supported applications.
+%	---> WARNING: only for input_mode=dynamic_predicates 
+%	dynamic_grounding_flag
+%	stream_order_flag
+%	preprocessing_flag
+%	forget_threshold
+%	dynamic_grounding_threshold
+
+% Example executions (the values of unspecified parameters default to the values declared in 'handleApplication.prolog'): 
+% 	"toy" use case, window_size=20, step=20, end_time=40:
+% 		"continuousQueries(toy, [window_size=20, step=20, end_time=40])." 
+% 	"netbill" use case, input_mode=fifo, input_providers=['path/to/fifo'], stream_rate=2 
+% 		"continuousQueries(netbill, [input_mode=fifo,input_providers=['path/to/fifo'], stream_rate=2]). 
+% 	"caviar" use case, window_size=200, step=200, two input csv files:  
+% 		"continuousQueries(caviar, [window_size=200, step=200, input_mode=csv, input_providers=['../examples/caviar/dataset/csv/appearance.csv','../examples/caviar/dataset/csv/movementB.csv']])." 
+%	--> The "csv" input mode is the default in the current version of the code, but we provided it to the script in case that the default has changed.
+
+% There is also a 1-arity definition for continuousQueries for running an application with its default parameters specified in 'handleApplication.prolog'.
+% For example, "continuousQueries(toy)." runs the same query as "continuousQueries(toy,[]).".
 % continuousQueries(+ApplicationName)
+% 	Possible queries:
+%   	continuousQueries(toy).
+% 		continuousQueries(caviar).
+% 		continuousQueries(maritime).
+% 		continuousQueries(voting).
+% 		continuousQueries(netbill).
+% 		continuousQueries(ctm).
 
-% eg: continuousQueries(toy).
-% eg: continuousQueries(toycsv).
-% eg: continuousQueries(netbill).
-% eg: continuousQueries(netbillcsv).
-% eg: continuousQueries(voting).
-% eg: continuousQueries(votingcsv).
-% eg: continuousQueries(caviar).
-% eg: continuousQueries(caviarcsv).
-% eg: continuousQueries(ctm).
-% eg: continuousQueries(ctmcsv).
-% eg: continuousQueries(brest-critical).
-% eg: continuousQueries(brest-enriched).
-
-continuousQueriesCLI(App, StartReasoningTime, EndReasoningTime, WM, Step, AgentsNo, DynamicGroundingFlag, ResultsPath, PrologFiles, InputCSVFiles) :-
-	% return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)	
-	% handleProlog(-Prolog, -StatisticsFlag)
-	handleProlog(Prolog, StatisticsFlag),
-	% load the requested event description, declarations, data; 
-	% return the parameters of the application: WM, Step; 
-	% continuous queries take place in (StartReasoningTime, EndReasoningTime]
-	% StreamOrderFlag (ordered or unordered), 
-	% DynamicGroundingFlag (dynamicgrounding or nodynamicgrounding),
-	% PreprocessingFlag (preprocessing or nopreprocessing), 
-	% ClockTick: temporal distance between two consecutive time-points
-	% SDEBatch: the input narrative size asserted in a single batch
-	% handleApplication(+Prolog, +App, +WM, +Step, -InputMode, -LogFile, -ResultsFile, -StartReasoningTime, -EndReasoningTime, -StreamOrderFlag, -PreprocessingFlag, -ForgetThreshold, -DynamicGroundingThreshold, -ClockTick, -SDEBatch),
+continuousQueries(App, ParamList) :-
+	handleProlog(Prolog, StatisticsFlag), 
+	handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals),
+	% PrologFiles includes at least two files: the compiled rules and the declarations of the application. 
+	% All files included in PrologFiles are consulted through the following predicate.
+	%consultInputFiles(+PrologFiles)
 	consultInputFiles(PrologFiles),
-	handleApplication(Prolog, App, InputMode, LogFile, ResultsFile, WM, Step, AgentsNo, StreamOrderFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, InputCSVFiles, ResultsPath),
-	format("                                                                 
-	8 888888888o. 8888888 8888888888 8 8888888888       ,o888888o.    
-	8 8888    `88.      8 8888       8 8888            8888     `88.  
-	8 8888     `88      8 8888       8 8888         ,8 8888       `8. 
-	8 8888     ,88      8 8888       8 8888         88 8888           
-	8 8888.   ,88'      8 8888       8 888888888888 88 8888           
-	8 888888888P'       8 8888       8 8888         88 8888           
-	8 8888`8b           8 8888       8 8888         88 8888           
-	8 8888 `8b.         8 8888       8 8888         `8 8888       .8' 
-	8 8888   `8b.       8 8888       8 8888            8888     ,88'  
-	8 8888     `88.     8 8888       8 888888888888     `8888888P'   
-	"), nl,
-	% openFiles(+datasetfiles, -datasetstreams, -datasetpointerpositions, +logfile, -logfilestream, +resultsfile, -resultsfilestream)
-	openFiles(InputMode, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream), 
-	% initialise RTEC
+	% The user may provide as input a list named 'Goals', which contains queries to be ran by this script before executing RTEC.
+	%executeUserGoals(+Goals)
+	executeUserGoals(Goals), % run queries requested by the user.
+	printLogo,
+	openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream),
+	% initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
 	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
 	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
 	QueryTime is StartReasoningTime+WM,
+	% In case that the input is a live stream, sleep until the first query time, which coincides with the last time-point of the first window.
+	sleep_if_fifo_start(InputMode, WM, StreamRate),
 	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
-	querying(InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), (OutputListOutFVpairs,OutputListOutLI,OutputListOutLD), SDEBatch),
+	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
 	% calculate and record the recognition time statistics
-	list_stats(RecTimes,_,_,AvgTime,_,DevTime),
-	nl(LogFileStream), nl(LogFileStream),
-	write(LogFileStream, 'Recognition Time average (ms)		: '), 
-	write(LogFileStream, AvgTime), nl(LogFileStream),
-	write(LogFileStream, 'Recognition Time standard deviation (ms): '), 
-	write(LogFileStream, DevTime), nl(LogFileStream),
-	write('Recognition Time average (ms)			: '), 
-	writeln(AvgTime),
-	% calculate and record the max query time
-	max_list(RecTimes, Max),
-	write(LogFileStream, 'Recognition Time worst (ms)		: '), 
-	write(LogFileStream, Max), nl(LogFileStream), nl(LogFileStream),
-	% calculate and record the average number of input entities per window
-	list_stats(InputList,_,_,AvgSDEs,_,DevSDEs),
-	write(LogFileStream, 'Input Entities average			: '), 
-	write(LogFileStream, AvgSDEs), nl(LogFileStream),
-	write(LogFileStream, 'Input Entities standard deviation	: '), 
-	write(LogFileStream, DevSDEs), nl(LogFileStream), nl(LogFileStream),
-	write('Input Entities average				: '), 
-	writeln(AvgSDEs),
-	% calculate and record the average and standard deviation of output entity fluent-value pairs per window
-	list_stats(OutputListOutFVpairs,_,_,AvgOutFVpairs,_,DevOutFVpairs),
-	write(LogFileStream, 'Output Entities (average number of fluent-value pairs)	: '), 
-	write(LogFileStream, AvgOutFVpairs), nl(LogFileStream),
-	write(LogFileStream, 'Output Entities (standard deviation)	  		: '), 
-	write(LogFileStream, DevOutFVpairs), nl(LogFileStream),
-	write('Output Entities (average # fluent-value pairs)	: '), writeln(AvgOutFVpairs),
-	% calculate and record the average and standard deviation of output entity intervals per window
-	list_stats(OutputListOutLI,_,_,AvgOutL,_,DevOutL),
-	write(LogFileStream, 'Output Entities (average number of intervals)	: '), 
-	write(LogFileStream, AvgOutL), nl(LogFileStream),
-	write(LogFileStream, 'Output Entities (standard deviation)	  	: '), 
-	write(LogFileStream, DevOutL), nl(LogFileStream),
-	write('Output Entities (average # intervals)		: '), 
-	writeln(AvgOutL),
-	% calculate and record the average and standard deviation of output entity duration per window
-	list_stats(OutputListOutLD,_,_,AvgOutLD,_,DevOutLD),
-	write(LogFileStream, 'Output Entities (average number of timepoints)	: '), 
-	write(LogFileStream, AvgOutLD),nl(LogFileStream),
-	write(LogFileStream, 'Output Entities (standard deviation)	 	: '), 
-	write(LogFileStream, DevOutLD),nl(LogFileStream),
-	write('Output Entities (average # timepoints)		: '), 
-	writeln(AvgOutLD),
-	writeln('========================================================='),
+	logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
 	closeFiles(InputStreams, LogFileStream, ResultsFileStream), !.
 
-continuousQueries(App) :-
-	% return the correct statistics flag ('cputime' for YAP or 'runtime' for SWI)	
-	% handleProlog(-Prolog, -StatisticsFlag)
-	handleProlog(Prolog, StatisticsFlag),
-	% load the requested event description, declarations, data; 
-	% return the parameters of the application: WM, Step; 
-	% continuous queries take place in (StartReasoningTime, EndReasoningTime]
-	% StreamOrderFlag (ordered or unordered), 
-	% DynamicGroundingFlag (dynamicgrounding or nodynamicgrounding),
-	% PreprocessingFlag (preprocessing or nopreprocessing), 
-	% ClockTick: temporal distance between two consecutive time-points
-	% SDEBatch: the input narrative size asserted in a single batch
-	% handleApplication(+Prolog, +App, -InputMode, -LogFile, -ResultsFile, -WM, -Step, -StartReasoningTime, -EndReasoningTime, -StreamOrderFlag, -DynamicGroundingFlag, -PreprocessingFlag, -ForgetThreshold, -DynamicGroundingThreshold, -ClockTick, -SDEBatch),
-	handleApplication(Prolog, App, InputMode, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch),
-	format("                                                                 
-	8 888888888o. 8888888 8888888888 8 8888888888       ,o888888o.    
-	8 8888    `88.      8 8888       8 8888            8888     `88.  
-	8 8888     `88      8 8888       8 8888         ,8 8888       `8. 
-	8 8888     ,88      8 8888       8 8888         88 8888           
-	8 8888.   ,88'      8 8888       8 888888888888 88 8888           
-	8 888888888P'       8 8888       8 8888         88 8888           
-	8 8888`8b           8 8888       8 8888         88 8888           
-	8 8888 `8b.         8 8888       8 8888         `8 8888       .8' 
-	8 8888   `8b.       8 8888       8 8888            8888     ,88'  
-	8 8888     `88.     8 8888       8 888888888888     `8888888P'   
-	"), nl,
-	% openFiles(+datasetfiles, -datasetstreams, -datasetpointerpositions, +logfile, -logfilestream, +resultsfile, -resultsfilestream)
-	openFiles(InputMode, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream), 
-	% initialise RTEC
-	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
-	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
-	QueryTime is StartReasoningTime+WM,
-	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
-	querying(InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), (OutputListOutFVpairs,OutputListOutLI,OutputListOutLD), SDEBatch),
-	% calculate and record the recognition time statistics
-	list_stats(RecTimes,_,_,AvgTime,_,DevTime),
-	nl(LogFileStream), nl(LogFileStream),
-	write(LogFileStream, 'Recognition Time average (ms)		: '), 
-	write(LogFileStream, AvgTime), nl(LogFileStream),
-	write(LogFileStream, 'Recognition Time standard deviation (ms): '), 
-	write(LogFileStream, DevTime), nl(LogFileStream),
-	write('Recognition Time average (ms)			: '), 
-	writeln(AvgTime),
-	% calculate and record the max query time
-	max_list(RecTimes, Max),
-	write(LogFileStream, 'Recognition Time worst (ms)		: '), 
-	write(LogFileStream, Max), nl(LogFileStream), nl(LogFileStream),
-	% calculate and record the average number of input entities per window
-	list_stats(InputList,_,_,AvgSDEs,_,DevSDEs),
-	write(LogFileStream, 'Input Entities average			: '), 
-	write(LogFileStream, AvgSDEs), nl(LogFileStream),
-	write(LogFileStream, 'Input Entities standard deviation	: '), 
-	write(LogFileStream, DevSDEs), nl(LogFileStream), nl(LogFileStream),
-	write('Input Entities average				: '), 
-	writeln(AvgSDEs),
-	% calculate and record the average and standard deviation of output entity fluent-value pairs per window
-	list_stats(OutputListOutFVpairs,_,_,AvgOutFVpairs,_,DevOutFVpairs),
-	write(LogFileStream, 'Output Entities (average number of fluent-value pairs)	: '), 
-	write(LogFileStream, AvgOutFVpairs), nl(LogFileStream),
-	write(LogFileStream, 'Output Entities (standard deviation)	  		: '), 
-	write(LogFileStream, DevOutFVpairs), nl(LogFileStream),
-	write('Output Entities (average # fluent-value pairs)	: '), writeln(AvgOutFVpairs),
-	% calculate and record the average and standard deviation of output entity intervals per window
-	list_stats(OutputListOutLI,_,_,AvgOutL,_,DevOutL),
-	write(LogFileStream, 'Output Entities (average number of intervals)	: '), 
-	write(LogFileStream, AvgOutL), nl(LogFileStream),
-	write(LogFileStream, 'Output Entities (standard deviation)	  	: '), 
-	write(LogFileStream, DevOutL), nl(LogFileStream),
-	write('Output Entities (average # intervals)		: '), 
-	writeln(AvgOutL),
-	% calculate and record the average and standard deviation of output entity duration per window
-	list_stats(OutputListOutLD,_,_,AvgOutLD,_,DevOutLD),
-	write(LogFileStream, 'Output Entities (average number of timepoints)	: '), 
-	write(LogFileStream, AvgOutLD),nl(LogFileStream),
-	write(LogFileStream, 'Output Entities (standard deviation)	 	: '), 
-	write(LogFileStream, DevOutLD),nl(LogFileStream),
-	write('Output Entities (average # timepoints)		: '), 
-	writeln(AvgOutLD),
-	writeln('========================================================='),
-	closeFiles(InputStreams, LogFileStream, ResultsFileStream), !.
+continuousQueries(App) :- !,
+	continuousQueries(App, []).
 
-% continuous queries should stop when the previous query time is greater or equal to the designated last reasoning time 
+% execution stops when the previous query time is greater or equal to the designated last reasoning time 
 querying(_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFileStream, _ResultsFileStream, _WM, Step, QueryTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch) :-
 	PrevQueryTime is QueryTime-Step,
  	PrevQueryTime >= EndReasoningTime, !.
 
-querying(InputStreams, InputPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch) :-
+querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
  	QueryTimeMinusWM is QueryTime-WM,
 	% VerifiedQueryTime=QueryTime when QueryTime =< EndReasoningTime
 	% otherwise: VerifiedQueryTime=EndReasoningTime 
 	verifyQueryTime(QueryTime, EndReasoningTime, VerifiedQueryTime),
 	% load input data in (QueryTimeMinusWM, VerifiedQueryTime]
-	loadNarrative(InputStreams, QueryTimeMinusWM, VerifiedQueryTime, InputPointerPositions, NewInputPointerPositions, SDEBatch),
- 	write('Current Window                         	: ('), 
-	write(QueryTimeMinusWM), write(', '), write(VerifiedQueryTime), writeln(']'),
+	loadNarrative(InputMode, InputStreams, QueryTimeMinusWM, VerifiedQueryTime, PointerPositions, NewPointerPositions, SDEBatch),
+	printBeforeER(QueryTimeMinusWM, VerifiedQueryTime),	
 	%%%%%%%%% compute the recognition time of the current window
 	statistics(StatisticsFlag,[S1,_T1]),
 	% eventRecognition(+QueryTime, +WM)
@@ -229,33 +124,27 @@ querying(InputStreams, InputPointerPositions, StatisticsFlag, LogFileStream, Res
 	statistics(StatisticsFlag,[S2,_T2]),
 	% log the computed intervals of output entities
 	printRecognitions(ResultsFileStream, QueryTime, WM),
-	%%%%%%%%% compute the recognition time of the current window
+	% log window execution time
  	S is S2-S1, %S=T2,
  	writeResult(S, LogFileStream),
- 	write('Recognition Time (ms)			: '), writeln(S),
- 	% calculate and record the number of input entities
- 	findall((Ev,EvT), (inputEntity(Ev),happensAtIE(Ev,EvT)), EvList), length(EvList,InL1),
- 	findall((InF,InFT), (inputEntity(InF),holdsAtIE(InF,InFT)), InFList), length(InFList,InL2),
- 	InL is InL1+InL2,
- 	write('Input Entities				: '), writeln(InL),
- 	% compute and record output entity statistics
- 	findall(Interval, (outputEntity(F=V),holdsFor(F=V,L),member(Interval,L)), AllIntervals),
- 	temporalDistance(TemporalDistance),
- 	% fluents_duration(+OELI, +TemporalDistance, +QueryTimeMinusWM, +VerifiedQueryTime, -OELID)
- 	fluents_duration(OELI, TemporalDistance, QueryTimeMinusWM, VerifiedQueryTime, OELID),
- 	length(OELI, OutFVpairs),
- 	length(OELT,OELTL),
- 	length(AllIntervals,AllIntervalsL),
- 	OutLI is AllIntervalsL+OELTL,
- 	OutLD is OELID+OELTL,
- 	write('Output Entities (# fluent-value pairs)	: '), writeln(OutFVpairs),
-	write('Output Entities (# intervals)		: '), writeln(OutLI),
-	write('Output Entities (# timepoints)		: '), writeln(OutLD),
-	writeln('========================================================='),
-	% move to the next query-time
-	NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
-	querying(InputStreams, NewInputPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch).
-
+	% print statistics about window execution: recognition time, input entities and output entities.
+	printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD),
+	(
+		% if the designated last time-point of reasoning has not been passed
+		QueryTime < EndReasoningTime,
+		% (i) compute the next query-time
+		NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
+		% (ii) sleep until the next query time 
+		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
+		sleep_if_fifo_between_windows(InputMode, Step, StreamRate, S),
+		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
+	;
+		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
+		QueryTime >= EndReasoningTime,
+		RecTimes = [S|InitRecTime],
+		InputList = [InL|InitInput],
+		OutputList= ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD])
+	).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Utils
@@ -267,36 +156,56 @@ handleProlog(yap, cputime) :-
 handleProlog(swi, runtime) :-
 	current_prolog_flag(dialect, swi).
 
-
-% openFiles(+datasetfiles, -datasetstreams, -datasetpointerpositions, +logfile, -logfilestream, +resultsfile, -resultsfilestream)
-openFiles(InputMode, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream) :-
+% openFilesOrPipes(+InputMode, +InputPaths, -InputStreams, -PointerPositions, +LogFile, -LogFileStream, +ResultsFile, -ResultFileStream)
+openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream):-
 	open(LogFile, write, LogFileStream),
 	open(ResultsFile, write, ResultsFileStream),
-	(
+	(	
+		% the dataset arrives in live stream(s)
+		InputMode = fifo,
+		InputStreams = [],
+		initLoaderThreads(InputPaths)
+		;
 		% the dataset is in csv file(s)
-		InputMode = csv(InputFiles),
-		openInputCSVFiles(InputFiles, InputStreams, PointerPositions)
+		InputMode = csv,
+		openInputCSVFiles(InputPaths, InputStreams, PointerPositions)
 		;
 		% the dataset is in the form of Prolog assertions
-		InputMode = dynamic_predicates(InputFiles),
+		InputMode = dynamic_predicates,
 		InputStreams = [], 		
-		consultInputFiles(InputFiles)
+		consultInputFiles(InputPaths)
 	).
-	
+
+% Create a new execution thread for each named pipe in InputPipes.
+% Each thread executes the goal: loadIELiveStream(InputPipe), which is specified in 'src/data loader/dataLoader.prolog' 
+% Its function is to assert the events written in the pipe as soon as they arrive.
+% initLoaderThreads(+InputPipes) 
+initLoaderThreads([]).
+initLoaderThreads([InputPipe|RestPipes]):-
+	thread_create(loadIELiveStream(InputPipe), _),
+	initLoaderThreads(RestPipes).
+
+% Open one input stream for each input file, while maintaining the reading position in the stream.
 % openInputCSVFiles(+InputFiles, -InputStreams, -PointerPositions)
-openInputCSVFiles([], [], []) :- !.
+openInputCSVFiles([], [], []).
 openInputCSVFiles([File|MoreFiles], [Stream|MoreStreams], [Position|MorePositions]) :-
 	open(File, read, Stream),
 	stream_property(Stream, position(Position)),
 	openInputCSVFiles(MoreFiles, MoreStreams, MorePositions).
 
-% consultInputFiles(+InputFiles)
 % the InputFiles are Prolog assertions expressing an input narrative
-consultInputFiles([]) :- !.
+% consultInputFiles(+InputFiles)
+consultInputFiles([]).
 consultInputFiles([File|MoreFiles]) :-
 	consult(File),
 	consultInputFiles(MoreFiles).
 
+% run selected goals before execution.
+% this is used, e.g., for asserting the agents in the MAS use cases.
+executeUserGoals([]).
+executeUserGoals([Goal|RestGoals]) :-
+	Goal,
+	executeUserGoals(RestGoals).
 
 % closeFiles(+datasetfilesstreams, +logfilestream, +resultsfilestream)
 % first case: there are no input streams, 
@@ -305,6 +214,7 @@ closeFiles(InputStreams, LogFileStream, ResultsFileStream) :-
 	close(LogFileStream),
 	close(ResultsFileStream),
 	InputStreams = [], !.	
+
 % second case: the dataset is in csv files;
 % in this case close each input stream;
 % note: the log file stream is closed in the 
@@ -318,53 +228,6 @@ closeInputFiles([InputStream|MoreInputStreams]) :-
 	close(InputStream),
 	closeInputFiles(MoreInputStreams).
 
-
-% write(+RecognitionTime, +LogFile)
-writeResult(Time, LogFileStream):-
-  	write(LogFileStream,'+'),
-	write(LogFileStream,Time).
-
-
-%Input   :  List L of numbers
-%returns :  Length of L (Len)
-%           Sum of L (Sum) 
-%           Mean (Avg), Variance (Var) and Standard Deviations of L elements
-list_stats(L,Len,Sum,Avg,Var,Dev):-
-	sum_list(L,Sum),
-	length(L,Len),
-	Avg is Sum/Len,
-	list_var(L,Avg,Var1),
-	Var is Var1/Len,
-	Dev is sqrt(Var).
-
-%Input   :  List L and List Mean (Avg)
-%Returns :  X where X = Variance of L * Length of L
-list_var([],_,0).
-list_var([El|Other],Avg,Var):-
-	list_var(Other,Avg,VarIn),
-	Var is (VarIn + ((El-Avg)*(El-Avg))).
-
-%Input   :  List L of pairs (F=V,I)
-%           TemporalDistance of timepoints,
-%           S,E where S and E are the values of the intersection interval (S,E)
-%Returns :  Total Duration of intervals
-fluents_duration([],_,_,_,0).
-fluents_duration([(_=_,Li)|OtherFluents],TemporalDistance,S,E,Duration):-
-	fluents_duration(OtherFluents,TemporalDistance,S,E,DurationIn),
-	intersect_all([Li,[(S,E)]],L),
-	interval_list_duration(L,CurDur),
-	CurrentDuration is CurDur/TemporalDistance,
-	Duration is DurationIn + CurrentDuration.
-
-%Input   : Interval List
-%Returns : Duration of intervals without taking into consideration TemporalDistance
-interval_list_duration([],0).
-interval_list_duration([(S,E)|L],T) :- 
-	interval_list_duration(L,S1),
-	D is E-S,
-	T is S1+D.
-
-
 % verifyQueryTime(+QueryTime, +EndReasoningTime, -VerifiedQueryTime)
 % A given QueryTime is OK as long as it is less or equal to the designated last reasoning time; 
 % otherwise, it is set to the designated last reasoning time
@@ -375,21 +238,52 @@ verifyQueryTime(QueryTime, EndReasoningTime, EndReasoningTime) :-
 	write(' to '), write(EndReasoningTime),
 	writeln(' but QueryTime-WM remains the same.').
 
+% if fifo, sleep between window executions
+% sleep_if_fifo_between_windows(+InputMode, +Step, +StreamRate, +S)	
+sleep_if_fifo_between_windows(InputMode, Step, StreamRate, S):-
+	(
+		InputMode = fifo, 
+		SleepTime is Step/StreamRate - S/1000,
+		sleep_until_query_time(SleepTime)
+	; 	\+ InputMode = fifo
+	).
+	
+% if fifo, sleep before first window
+% sleep_if_fifo_between_windows(+InputMode, +WM, +StreamRate)	
+sleep_if_fifo_start(InputMode, WM, StreamRate):-
+	(	
+		InputMode=fifo, 
+		SleepTime is WM/StreamRate,
+		sleep_until_query_time(SleepTime)
+	;   \+ InputMode = fifo 
+	).
+
+sleep_until_query_time(SleepTimeSec):-
+	statistics(walltime,[TBeforeSleep,_T1]),	
+	write('About to sleep for '), write(SleepTimeSec), write(' seconds.'), nl,
+	sleep(SleepTimeSec),
+	statistics(walltime,[TAfterSleep,_T2]),
+	TSleep is (TAfterSleep - TBeforeSleep)/1000,
+	write('I slept for '), write(TSleep), write(' seconds.'), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Assert narrative (SDEs)
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% loadNarrative(+InputStreams, +Start, +End, +PointerPositions, -NewPointerPositions, +SDEBatch)
-loadNarrative(InputStreams, Start, End, PointerPositions, NewPointerPositions, SDEBatch) :-
+% 
+% loadNarrative(+InputMode, +InputStreams, +Start, +End, +PointerPositions, -NewPointerPositions, +SDEBatch)
+loadNarrative(InputMode, InputStreams, Start, End, PointerPositions, NewPointerPositions, SDEBatch) :-
 	(
 		% use the csv data loader
-		\+ InputStreams = [],
+		InputMode = csv,
 		loadIEStreams(InputStreams, Start, End, PointerPositions, NewPointerPositions)
 		;
-		% do NOT use the csv data loader 
-		InputStreams = [],
+		% use dynamic predicates 
+		InputMode = dynamic_predicates,
 		updateManySDE(Start, End, SDEBatch)
+		;
+		% when using named pipes, the input is being read by another Prolog thread 
+		InputMode = fifo
 	).
 
 
@@ -413,48 +307,3 @@ updateManySDE(Start, End, SDEBatch) :-
 
 updateManySDE(_, _, _).
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Log the recognised intervals
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% printRecognitions(+CEIntervalsStream, +CurrentTime, +WM)
-printRecognitions(CEIntervalsStream, CurrentTime, WM) :-
-	StartTime is CurrentTime-WM,
-	findall((F=V,L2), 
-		(
-		outputEntity(F=V),
-                holdsFor(F=V,L),
-                L\==[],
-                intersect_all([L,[(StartTime,CurrentTime)]],L2)
-                ), 
-              CEIntervals),
-	writeCEs(CEIntervalsStream, CEIntervals).
-
-writeCEs(ResultStream, []) :-
-	nl(ResultStream), !.
-writeCEs(ResultStream, [(_CE,[])|OtherCCs]) :-
-	writeCEs(ResultStream,OtherCCs).
-writeCEs(ResultStream,[(F=V,L)|OtherCCs]) :-
-	(
-		\+ datasetType(ground_truth),
-		DType = 'predictions'
-		;
-		% in some cases the ground truth is computed by RTEC;
-		% eg in the maritime application, we consider as ground truth the recognition on the raw dataset
-		datasetType(ground_truth),
-		DType = 'ground_truth'
-	),
-	L \= [],
-   	F =.. [FluentName|Args],
-    	write(ResultStream,'recognitions('),
-    	write(ResultStream,DType),
-    	write(ResultStream,','),
-    	write(ResultStream,FluentName),
-    	write(ResultStream,','),
-   	write(ResultStream,[Args,V]),
-    	write(ResultStream,','),
-    	write(ResultStream,L),
-    	write(ResultStream,').'),
-    	nl(ResultStream),
-    	writeCEs(ResultStream,OtherCCs).

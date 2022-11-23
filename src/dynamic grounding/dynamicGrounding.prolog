@@ -1,4 +1,3 @@
-
 % ordered lists and set operations
 :-use_module(library(ordsets)).
 
@@ -102,7 +101,7 @@ findRemainingTerms([(Event,GroundTerm)|Other],OldTerms,NewTerms):-
     findRemainingTerms(Other,TermsSoFar,NewTerms).
 
 removeOutdated:-
-    % find all fluent value pairs whose arguments are dynamic-grounded in this window.
+    % find all fluent value pairs whose arguments are dynamic-grounded in this window, and retract the maximal intervals of all the remaining ones.
     % FVPs who had a open interval are not retracted because they were dynamic-grounded in this window by findRemainingTerms.
     findall((Index, F=V), (simpleFPList(Index, F=V, RestrictedList, Extension), \+cachingOrder2(Index, F=V), 
                            retract(simpleFPList(Index, F=V, RestrictedList, Extension))), _SimpleFluentList),
@@ -112,8 +111,6 @@ removeOutdated:-
     %
     findall((Index, F=V), (iePList(Index, F=V, RestrictedList, Extension), \+cachingOrder2(Index, F=V), 
                            retract(iePList(Index, F=V, RestrictedList, Extension))), _InputSDFluentList).
-    %length(SimpleFluentList, SFLLen), 
-    %write(SFLLen), nl.
 
 % assert_grounding(+Term)
 assert_grounding([]).

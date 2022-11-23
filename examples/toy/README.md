@@ -1,6 +1,6 @@
 # Toy example
 
-This example is illustrated in the [manual of RTEC](https://github.com/aartikis/RTEC/blob/master/RTEC_manual.pdf).
+This example is illustrated in the [manual of RTEC](../../RTEC_manual.pdf).
 
 # Directory Structure
 - /dataset. A toy dataset in RTEC format.
@@ -9,6 +9,5 @@ This example is illustrated in the [manual of RTEC](https://github.com/aartikis/
 
 # Execution Instructions
 
-1. [Requirements](https://github.com/aartikis/RTEC/blob/master/docs/prolog-requirements.md)
-2. Optional: [Setting Execution Parameters](https://github.com/aartikis/RTEC/blob/master/docs/prolog-parameters.md)
-3. [Running an Existing Application](https://github.com/aartikis/RTEC/blob/master/docs/prolog-existing-apps.md)
+1. [Requirements](../../docs/prolog-requirements.md)
+2. [Running an Existing Application](../../docs/prolog-existing-apps.md)

@@ -95,25 +95,25 @@ cyclic(obl(send_goods(_,_,_))=false).
 :- dynamic person/1, person_pair/2.
 
 grounding(suspended(Ag,Role)=true)		:- person(Ag),role_of(Ag,Role).
-dgrounded(suspended(Ag,Role)=true, person(Ag)).
+dgrounded(suspended(Ag,_Role)=true, person(Ag)).
 
 grounding(quote(M,C,GD)=true)			:- person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
-dgrounded(quote(M,C,GD)=true, person_pair(M,C)).
+dgrounded(quote(M,C,_GD)=true, person_pair(M,C)).
 
 grounding(contract(M,C,GD)=true)		:- person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
-dgrounded(contract(M,C,GD)=true, person_pair(M,C)).
+dgrounded(contract(M,C,_GD)=true, person_pair(M,C)).
 
 grounding(pow(accept_quote(C,M,GD))=true)	:- person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ C=M, queryGoodsDescription(GD).
-dgrounded(pow(accept_quote(C,M,GD))=true, person_pair(M,C)).
+dgrounded(pow(accept_quote(C,M,_GD))=true, person_pair(M,C)).
 
 grounding(per(present_quote(M,C))=false)	:- person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ C=M.
 dgrounded(per(present_quote(M,C))=false, person_pair(M,C)).
 
 grounding(obl(send_EPO(C,iServer,GD))=true)	:- person(C),role_of(C,consumer), queryGoodsDescription(GD).
-dgrounded(obl(send_EPO(C,iServer,GD))=true, person(C)).
+dgrounded(obl(send_EPO(C,iServer,_GD))=true, person(C)).
 
 grounding(obl(send_goods(M,iServer,GD))=true)	:- person(M),role_of(M,merchant), queryGoodsDescription(GD).
-dgrounded(obl(send_goods(M,iServer,GD))=true, person(M)).
+dgrounded(obl(send_goods(M,iServer,_GD))=true, person(M)).
 
 collectGrounds([request_quote(P,_,_), present_quote(P,_,_,_), accept_quote(P,_,_),send_EPO(P,_,_,_),send_goods(P,_,_,_,_),
                 request_quote(_,P,_), present_quote(_,P,_,_), accept_quote(_,P,_)], person(P)).

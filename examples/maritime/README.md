@@ -14,6 +14,5 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 
 # Execution Instructions
 
-1. [Requirements](https://github.com/aartikis/RTEC/blob/master/docs/prolog-requirements.md)
-2. Optional: [Setting Execution Parameters](https://github.com/aartikis/RTEC/blob/master/docs/prolog-parameters.md)
-3. [Running an Existing Application](https://github.com/aartikis/RTEC/blob/master/docs/prolog-existing-apps.md)
+1. [Requirements](../../docs/prolog-requirements.md)
+3. [Running an Existing Application](../../docs/prolog-existing-apps.md)

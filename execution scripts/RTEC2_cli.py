@@ -1,7 +1,7 @@
 import click
 import os
 import sys
-from zipfile import ZipFile
+from zipfile import ZipFile # for Windows OS` 
 import pkg_resources
 
 if sys.platform=="win32":
@@ -12,11 +12,6 @@ else:
 	doubleSep = "/"
 
 use_case_enum = ['caviar','ctm', 'maritime', 'netbill', 'voting', 'toy']
-default_window_values = {"voting": 10, "netbill": 10, "maritime": 86400, "ctm": 10000, "caviar": 100000, "toy": 30}
-default_step_values = default_window_values
-default_dynamic_grounding_values = {"voting": True, "netbill": True, "maritime": True, "ctm": False, "caviar": False, "toy": False}
-default_start_values = {"voting": 0, "netbill": 0, "maritime": 1443650400, "ctm": 0, "caviar": 0, "toy": 0}
-default_end_values = {"voting": 100, "netbill": 100, "maritime": 1448834400, "ctm": 50000, "caviar": 1007000, "toy": 30}
 
 ### Helper functions ###
 
@@ -29,23 +24,7 @@ def doubleSeperate(path):
 	pathNew = path.replace(sep, doubleSep)
 	return pathNew
 
-
-def prologFilesStr(path, prologFiles):
-	prologStr = ""
-	for prologFile in prologFiles:
-		prologStr += "'" + path + doubleSep + prologFile + "'" + ","
-	return prologStr
-
-def FilesToList(path, files):
-	listStr = "["
-	for file in files:
-		listStr += "'" + path + doubleSep + file + "'"
-		if file!=files[-1]:
-			listStr += ","
-	listStr += "]"
-	return listStr
-
-def PathsToList(paths):
+def pathsToList(paths):
 	listStr = "["
 	for path in paths:
 		listStr += "'" + path + "'"
@@ -54,137 +33,148 @@ def PathsToList(paths):
 	listStr += "]"
 	return listStr
 
-## Script Path ## 
-if sys.platform=="win32":
-	egg_folder = doubleSeperate(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-	#print(egg_folder.split(doubleSep)[-1])
-	if "egg"==egg_folder.split(doubleSep)[-1].split('.')[-1]: ## Compare suffix
-		zip = ZipFile(egg_folder, 'r')
-		#zip.printdir()
-		# extracting all the files
-		#print('Extracting all the files now...')
-		zip.extractall(doubleSeperate(os.path.dirname(egg_folder)))
-		script_folder = doubleSeperate(os.path.dirname(egg_folder) + sep + 'bin' + sep + "RTEC2-files" + sep + 'execution scripts') ##
-	else:
-		script_folder = doubleSeperate(os.path.dirname(os.path.dirname(__file__)) + sep + 'bin' + sep + "RTEC2-files" + sep + 'execution scripts') ##
-elif "linux" in sys.platform:
-	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC2-files" + sep + 'execution scripts')
-elif sys.platform=="darwin":
-	script_folder = doubleSeperate(os.path.dirname(__file__) + sep + "RTEC2-files" + sep + 'execution scripts')
-#print(script_folder)
+def addFilesWithSuffixFromDirs(files_list, directories, suffix):
+		for directory in directories:
+			addFilesWithSuffixInDir(files_list, directory, suffix)
+		return pathsToList(files_list)
 
-### CLI ###
-'''
-class Config(object):
-	# Parameters of general group are passed to subgroups via the config object
-	def __init__(self):
-		self.use_case=''
-		self.filesPath=''
-		self.prolog=''
-		self.start=0
-		self.end=0
-		self.window=0
-		self.step=0
-		self.agents=1000
-		self.dynamic_grounding=True
-'''
+def addFilesWithSuffixInDir(files_list, directory, suffix):
+	if os.path.isdir(directory):	
+		for file in os.listdir(directory):
+			if file.endswith(suffix):
+				files_list.append(directory + doubleSep + file)
+	return 
 
-#pass_config = click.make_pass_decorator(Config, ensure=True)
+def addParameterListLiveStream(parameter_string, parameter_name, parameter_values_list):
+	if len(parameter_values_list)>0:
+		for parameter_value in parameter_values_list:
+			parameter_string+=parameter_name + "=" + parameter_value + " "
+	return parameter_string
 
-@click.group(invoke_without_command=True, no_args_is_help=True) # The cli passes the usecase and dataset parameters to the specified subgroup.
-@click.option('--use-case', required=True, help='The supported use cases are: "maritime", "caviar", "ctm", "voting" and "netbill".')
-@click.option('--path', required=True, help='The relative path to the folder containing the event description (".prolog" files) and the input event stream (".csv" file).') #Folder must be in RTEC repo.
+def addParameterLiveStream(parameter_string, parameter_name, parameter_value):
+	if parameter_value:
+		parameter_string+=parameter_name + "=" + parameter_value + " "
+	return parameter_string
+
+def addParameter(parameter_string, parameter_name, parameter_value):
+	'''Append the given parameter declaration to the input string containing the current parameter declarations.'''
+	if parameter_value:
+		parameter_declaration_string = parameter_name + "=" + str(parameter_value)
+		parameter_string += ", " + parameter_declaration_string if len(parameter_string)>0 else parameter_declaration_string
+	return parameter_string
+
+def addParameterNameless(parameter_string, parameter_value):
+	'''Two argument variant of addParameter/3 for nameless parameters (e.g., dynamic grounding flag).'''
+	if parameter_value:
+		parameter_string += ", " + str(parameter_value) if len(parameter_string)>0 else str(parameter_value)
+	return parameter_string
+
+## CLI configurations and parameters.
+@click.group(invoke_without_command=True, no_args_is_help=True)
+@click.option('--use-case', required=True, help='The supported use cases are: toy, caviar, maritime, voting, netbill and ctm.')
+@click.option('--path', required=True, help='The path to the folder containing the event description (".prolog" files) and the input event stream (".csv" file). Starting from the given directory, event description files may be located in the directories: resources/patterns, resources/auxiliary or dataset/auxiliary, while input stream providers are located in:dataset/csv') 
 @click.option('--prolog', default="swipl", help='Select the Prolog language for running RTEC. The available options are: "swipl" (default) and "yap".')
-@click.option('--start', default=-1, help='The timestamp of the stream from which reasoning starts.')
-@click.option('--end', default=-1, help='The timestamp of the stream at which reasoning ends.')
-@click.option('--window', default=-1, help='The time period before the current query time on which RTEC operates.') # Default should vary in the real-data applications
-@click.option('--step', default=-1, help='The size of the data batches processed by oPIEC.')
-@click.option('--agents', default=1000, help='The number of agents (only used for Multi-Agent Systems).')
-#@click.option('--dynamic-grounding', default=True, help='Enable dynamic grounding? "True"/"False".')
-#@click.option('--agents', default=1000, help='Number of Agents for Multi-Agent Systems applications.')
-#@click.option('--seed', default=1, help="Dataset id number for Multi-Agent Systems applications.")
-#@pass_config
-def cli(use_case, path, prolog, start, end, window, step, agents):
-	print()
-	print('Selected use case: ' + use_case)
+@click.option('--start-time', default=None, help='The timestamp of the stream from which reasoning starts. Default value differs depending on the use case.')
+@click.option('--end-time', default=None, help='The timestamp of the stream at which reasoning ends. Default value differs depending on the use case.')
+@click.option('--window', default=None, help='The size of the temporal windows in which RTEC processes the input event streams. Default value differs depending on the use case.')
+@click.option('--step', default=None, help='The temporal distance between two consecutive query times. Default value differs depending on the use case.')
+@click.option('--dynamic-grounding', default=False, help='Enable dynamic grounding? "True"/"False".')
+@click.option('--stream-rate', default='1', help='In live stream mode, expect the input streams to arrive this many times faster than their normal speed.')
+@click.option('--input-mode', default="csv", help='Choose input mode. Options: csv, fifo, dynamic_predicates.')
+@click.option('--input-providers', multiple=True, default=[], help='Input Providers: named pipes, csv files or prolog files, depending on the input mode')
+@click.option('--event-description', multiple=True, default=[], help='Event Description: Prolog files to consult')
+@click.option('--live-stream-simulation', is_flag=True, help='Provide the input events to RTEC in real time (seconds)?')
+
+# This is the function called when invoking the CLI.
+def cli(use_case, path, prolog, start_time, end_time, window, step, dynamic_grounding, stream_rate, input_mode, input_providers, event_description, live_stream_simulation):
+	
+	# The cli may only be used for supported applications.	
 	if use_case not in use_case_enum:
 		print("Error: Invalid use-case/application name.")
 		print("The available use-cases are: " + str(use_case_enum))
 		exit(1)
-	#config.use_case=use_case
 	filesPath = doubleSeperate(os.path.abspath(path))
-	print('Reading files from path: ' + filesPath)
-	#config.filesPath=filesPath
-	#config.prolog=prolog
-	## If the following parameters are not given by the user, fetch their application-specific default value.
-	start=start if start>-1 else default_start_values[use_case]
-	end=end if end>-1 else default_end_values[use_case]
-	window=window if window>-1 else default_window_values[use_case]
-	step=step if step>-1 else default_step_values[use_case]
-	# Only used for MAS protocols
-	agents=agents
-	# Dynamic grounding is currently application-specific
-	dynamic_grounding=default_dynamic_grounding_values[use_case]
-
-#@cli.command()
-#@pass_config
-#def continuousCER(config):
-	"""Run continuousQueries with the given parameters."""
-	if dynamic_grounding:
-		dgString="dynamicgrounding"
-	else:
-		dgString="nodynamicgrounding"
 	
-	prologFiles=list() 
-	csvFiles=list()
+	# If the filesPath is provided, create a directory for RTEC's logs and results in filesPath/results.
+	# Else, resort to the default directory.
+	# Currently, the filesPath is *not* optional.
+	resultsPath = filesPath + doubleSep + "results" if len(filesPath)>0 else ""
+	
+	# Find the event description of the application in the provided path.
+	# Looks for Prolog files containing domain knowledge, e.g., complex event definitions and declarations,
+	# in the following directories: 
+	# 	provided/path/resources/patterns 
+	# 	provided/path/resources/auxiliary 
+	# 	provided/path/dataset/auxiliary 
+	# RTEC will consult these Prolog files before execution.
+	
+	# Currently, the filesPath is *not* optional.
+	if len(filesPath)>0 and len(event_description)==0: # if the Prolog files have not been explicitly provided by the user.
+		default_event_description_directories = [filesPath + doubleSep + 'resources' + doubleSep + 'patterns', filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary', filesPath + doubleSep + 'dataset' + doubleSep + 'auxiliary']
+		event_description=list()
+		addFilesWithSuffixFromDirs(event_description, default_event_description_directories, '.prolog')
+	elif len(event_description)>0: 
+		event_description=list(event_description)
 
-	# Collect ".prolog" files from the subfolders of resources\
-	consultPath = filesPath + doubleSep + 'resources' + doubleSep + 'patterns'
-	for file in os.listdir(consultPath):
-		if file.endswith(".prolog"):
-			prologFiles.append(consultPath + doubleSep + file)
+	# Find the input providers (files or named pipes) of the application in the provided path.
+	# Looks for Prolog files, csv files or named pipes containing input events, depending on the selected input_mode.
+	# in the following directories: 
+	# 	provided/path/resources/patterns 
+	# 	provided/path/resources/auxiliary 
+	# 	provided/path/dataset/auxiliary 
 
-	consultPath = filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary'
-	if os.path.exists(consultPath):
-		for file in os.listdir(consultPath):
-			if file.endswith(".prolog"):
-				prologFiles.append(consultPath + doubleSep + file)
+	if len(filesPath)>0 and len(input_providers)==0:
+		input_providers=list()
+		if input_mode=='csv':
+			default_input_provider_directories = [filesPath + doubleSep + 'dataset' + doubleSep + 'csv']
+			addFilesWithSuffixFromDirs(input_providers, default_input_provider_directories, '.csv')
+		if input_mode=='dynamic_predicates':
+			default_input_provider_directories = [filesPath + doubleSep + 'dataset' + doubleSep + 'prolog']
+			addFilesWithSuffixFromDirs(input_providers, default_input_provider_directories, '.prolog')
+	else:
+		input_providers=list(input_providers)
 
-	consultPath = filesPath + doubleSep + 'dataset' + doubleSep + 'auxiliary'
-	if os.path.exists(consultPath):
-		for file in os.listdir(consultPath):
-			if file.endswith(".prolog"):
-				prologFiles.append(consultPath + doubleSep + file)
-
-	# Collect csv files from dataset/csv
-	consultPath = filesPath + doubleSep + 'dataset' + doubleSep + 'csv' #These files are not directly "consulted"
-	for file in os.listdir(consultPath): # There may only be one ".csv" file in the input folder.
-		if file.endswith(".csv"):
-			csvFiles.append(consultPath + doubleSep + file)
-
-	#print(prologFiles)	
-	#print(csvFiles)
-	#print(script_folder)
-
-	folderPath = filesPath
-	resultsPath = folderPath + doubleSep + 'results' 
-	#resourcesPath = folderPath + doubleSep + 'resources'
-	#datasetPath = folderPath + doubleSep + 'dataset'
+	# If the live stream simulation flag is active, simply pass the input parameters to the "live_stream_reasoning.sh" script and return 
+	if live_stream_simulation:
+		stream_provider = doubleSeperate(pkg_resources.resource_filename("RTECv2", "scripts/stream_provider.sh")) 
+		prolog_script = doubleSeperate(pkg_resources.resource_filename("RTECv2", "scripts/continuousQueries.prolog"))
+		live_stream_reasoning_command = doubleSeperate(pkg_resources.resource_filename("RTECv2", "scripts/live_stream_reasoning.sh")) +\
+			" " + use_case + " " 
+		for input_provider in input_providers:
+			live_stream_reasoning_command += input_provider + " "
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--window-size", window)
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--step", step)	
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--start-time", start_time)	
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--end-time", end_time)	
+		live_stream_reasoning_command=addParameterListLiveStream(live_stream_reasoning_command, "--event-description-files", event_description)
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--results-directory", resultsPath) 
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--stream-rate", stream_rate)
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--stream-provider-script", stream_provider) 
+		live_stream_reasoning_command=addParameterLiveStream(live_stream_reasoning_command, "--prolog-script", prolog_script) 
+		os.system(live_stream_reasoning_command)
+		return 0
+		
+	dgString = "dynamicgrounding" if dynamic_grounding else "nodynamicgrounding"
 	safe_mkdir(resultsPath)
-				
-	continuousQueriesPath = '"' + doubleSeperate(pkg_resources.resource_filename("RTECv2", "execution scripts/continuousQueries.prolog")) + '"'
-	print(continuousQueriesPath)
-	if prolog=="swipl":
+	
+	parameter_string=""
+	parameter_string=addParameter(parameter_string, "window_size", window)
+	parameter_string=addParameter(parameter_string, "step", step)	
+	parameter_string=addParameter(parameter_string, "start_time", start_time)
+	parameter_string=addParameter(parameter_string, "end_time", end_time)	
+	parameter_string=addParameter(parameter_string, "event_description_files", event_description)
+	parameter_string=addParameter(parameter_string, "input_mode", input_mode) 
+	parameter_string=addParameter(parameter_string, "input_providers", input_providers)
+	parameter_string=addParameter(parameter_string, "results_directory", "'" + resultsPath + "'") 
+	parameter_string=addParameterNameless(parameter_string, dgString)
+	parameter_string=addParameter(parameter_string, "stream_rate", stream_rate)
+	
+	continuousQueriesPath = '"' + doubleSeperate(pkg_resources.resource_filename("RTECv2", "scripts/continuousQueries.prolog")) + '"'
+	if prolog=="swipl":	
 		prologCommand = prolog + " -l " + continuousQueriesPath + \
-				' -g "continuousQueriesCLI(' + use_case + "CLI" + "," + \
-				str(start) + "," + str(end) + "," + str(window) + "," + str(step) + "," + \
-				 str(agents) + "," + dgString + ",'" + resultsPath + "'," + PathsToList(prologFiles) + "," + \
-				 PathsToList(csvFiles) + '),halt."'
+				' -g "continuousQueries(' + use_case + ',[' + parameter_string + ']),halt."'
 	elif prolog=="yap":
 		prologCommand = prolog + " -s 0 -h 0 -t 0 -l " + continuousQueriesPath + \
-				' -g "continuousQueriesCLI(' + use_case + "CLI" + "," + \
-				str(start) + "," + str(end) + "," + str(window) + "," + str(step) + "," + \
-				 str(agents) + "," + dgString + ",'" + resultsPath + "'," + PathsToList(prologFiles) + "," + \
-				 PathsToList(csvFiles) + '),halt."'
-	#print(prologCommand)
+				' -g "continuousQueries(' + use_case + ',[' + parameter_string + ']),halt."'
 	os.system(prologCommand)
+	return 0

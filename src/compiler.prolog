@@ -15,6 +15,10 @@
 % these predicates are defined in this file
 :- discontiguous compileHoldsAtTree/3, findChildren/3. 
 
+% these predicates may appear discontiguously in the input rules and declarations files.
+:- discontiguous event/1, inputEntity/1, index/2, simpleFluent/1, outputEntity/1, sDFluent/1, initiatedAt/2, terminatedAt/2, holdsFor/3. 
+
+% these predicates may or may not appear in the input rules and declarations files.
 :- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, 
 	   happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1.
 

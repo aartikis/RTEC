@@ -13,6 +13,17 @@ Written by: Elias Alevizos
 :- use_module(library(readutil)).
 :- use_module(library(lists)).
 
+get_row_from_line(Stream,Row) :-
+	read_line_to_codes(Stream,Codes),
+	(
+	Codes = end_of_file,
+	Row = [],
+	!
+	;
+	partition_by_delim(Codes,124,[[]],PartitionedCodes),
+	atom_partitions(PartitionedCodes,Atoms),
+	Row =.. [row|Atoms]
+	).
 
 get_row_from_line(_Stream,[],end_of_file,end_of_file).
 	

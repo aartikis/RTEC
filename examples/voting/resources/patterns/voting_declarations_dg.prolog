@@ -108,13 +108,13 @@ grounding(status(M)=voting)			:- queryMotion(M).
 grounding(status(M)=voted)			:- queryMotion(M).
 
 grounding(voted(Ag,M)=null)			:- person(Ag),role_of(Ag,voter), queryMotion(M).
-dgrounded(voted(Ag,M)=null, person(Ag)).
+dgrounded(voted(Ag,_M)=null, person(Ag)).
 
 grounding(voted(Ag,M)=aye)			:- person(Ag),role_of(Ag,voter), queryMotion(M).
-dgrounded(voted(Ag,M)=aye, person(Ag)).
+dgrounded(voted(Ag,_M)=aye, person(Ag)).
 
 grounding(voted(Ag,M)=nay)			:- person(Ag),role_of(Ag,voter), queryMotion(M).
-dgrounded(voted(Ag,M)=nay, person(Ag)).
+dgrounded(voted(Ag,_M)=nay, person(Ag)).
 
 grounding(auxMotionOutcomeEvent(M,_Outcome)) :- queryMotion(M).
 

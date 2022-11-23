@@ -146,10 +146,3 @@ initiatedAt(suspended(Cons,consumer)=true, T1, T, T2) :-
 % ----- unless re-initiated in the meantime
 maxDurationUE(suspended(Ag,Role)=true, suspended(Ag,Role)=false, 3) :- 
 	grounding(suspended(Ag,Role)=true).
-
-
-
-
-
-
-

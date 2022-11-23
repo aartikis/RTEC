@@ -65,6 +65,25 @@ Notes:
 % when they are not defined. 
 :- dynamic needsGrounding/3, points/1.
 
+% Opens a named pipe, and then reads continuously from the pipe and asserts all input events
+% at the time that they are read, regardless of time-stamp 
+% loadIELiveStream(+PipeName)
+loadIELiveStream(PipeFileName):-
+	open(PipeFileName, read, Stream, [eof_action(reset)]), % open the pipe for reading. 
+	% eof_action(reset) -> when reaching the end_of_file character in the pipe, do not stop 
+	%					   but continue reading eof until a new event appears.
+	set_input(Stream), % $Stream is the current input stream.
+	loadIERealTimeStreamLoop(Stream).
+
+% loadIERealTimeStreamLoop(+Stream, +StreamPosition)
+% process a stream arriving in real time... 
+loadIERealTimeStreamLoop(Stream) :-
+	get_row_from_line(Stream, Row),
+	(Row=[] ->  true % If Row is empty, i.e., end_of_file, continue. 
+		;
+				%write(Row), nl,	   
+				getIEFromRowandAssertIt(Row)), % assert event in Row.
+	loadIERealTimeStreamLoop(Stream). % continue reading from the pipe. This is an infinite loop.
 
 % loadIEStreams(+InputStreams, +StartPoint, +EndPoint, +InputStreamPositions, -NewInputStreamPositions)
 % load SDEs in the range of (StartPoint, EndPoint]

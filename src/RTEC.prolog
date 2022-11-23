@@ -89,6 +89,8 @@ DECLARATIONS:
 :- ['utilities/amalgamate-periods.prolog'].
 % Load the dynamic grounding module
 :- ['dynamic grounding/dynamicGrounding.prolog'].
+% Load module for handling deadlines
+:- ['timeoutTreatment.prolog'].
 
 /***** dynamic predicates *****/
 
@@ -162,7 +164,7 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Forget
 eventRecognition(QueryTime, WM) :-
 	InitTime is QueryTime-WM,
 	assert(initTime(InitTime)),
-        % delete input entities that have taken place before or on Qi-WM
+    % delete input entities that have taken place before or on Qi-WM
 	forget(InitTime),
 	% calculate the items for which we will perform reasoning
 	dynamicGrounding(InitTime, QueryTime),

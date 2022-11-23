@@ -6,7 +6,7 @@
 mkdir RTECv2
 touch RTECv2/__init__.py
 mv src RTECv2
-mv execution\ scripts RTECv2
+mv execution\ scripts RTECv2/scripts
 
 ## Install RTEC via setuptools.
 machine="$(uname -s)"
@@ -40,6 +40,6 @@ esac
 
 ## Revert the changes in the file structure.
 mv RTECv2/src .
-mv RTECv2/execution\ scripts .
+mv RTECv2/scripts execution\ scripts
 rm RTECv2/__init__.py
 rmdir RTECv2
