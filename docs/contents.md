@@ -13,7 +13,7 @@
    1. [Requirements](prolog-requirements.md)
    2. [Running an Existing Application](prolog-existing-apps.md) 
    3. [Running a New Application](prolog-new-apps.md)
-5. CLI Tools
+5. Running RTEC with its Command Line Interface 
    1. [Requirements](cli-requirements.md)
    2. [Running an Existing Application](cli-existing-apps.md)
 6. [References](references.md)

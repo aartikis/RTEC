@@ -212,7 +212,7 @@ default(input_providers, toy, csv, ['../examples/toy/dataset/csv/toy_data.csv'])
 default(input_providers, toy, fifo, ['fifo1']).
 default(input_providers, toy, dynamic_predicates, ['../examples/toy/dataset/prolog/toy_data.prolog']).
 
-default(input_providers, maritime, csv, ['../examples/maritime/dataset/csv/brest.csv']).
+default(input_providers, maritime, csv, ['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']).
 default(input_providers, maritime, fifo, ['fifo1']).
 default(input_providers, maritime, dynamic_predicates, []):-
 	write('ERROR: The maritime use case cannot be run for input_mode=dynamic_predicates. Try the csv or fifo input modes'), nl, exit(1).

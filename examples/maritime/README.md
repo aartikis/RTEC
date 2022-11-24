@@ -8,11 +8,12 @@ Pitsikalis M., Artikis A., Dreo R., Ray C., Camossi E., and Jousselme A., [Compo
 In 13th International Conference on Distributed and Event-Based Systems (DEBS), pp. 163–174, 2019.
 
 # Directory Structure
-- /dataset. This folder contains a download link for a dataset which includes vessels sailing the area near the port of Brest for six months. After download the ".csv" file containing the dataset, place it in this folder. 
-- /results. Directory of the execution logs.
-- /resources. Original and compiled patterns along with declarations and auxiliary domain knowledge.
+- **dataset.** This folder contains a download link for a dataset which includes vessels sailing the area near the port of Brest for six months. After download the ".csv" file containing the dataset, place it in this folder. 
+- **results.** Directory of the execution logs.
+- **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
 
 # Execution Instructions
 
 1. [Requirements](../../docs/prolog-requirements.md)
-3. [Running an Existing Application](../../docs/prolog-existing-apps.md)
+2. [Running an Existing Application with Prolog](../../docs/prolog-existing-apps.md)
+3. [Running an Existing Application with the Command Line Interface](../../docs/cli-existing-apps.md)
