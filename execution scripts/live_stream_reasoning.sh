@@ -64,7 +64,6 @@ done
 [ -z $stream_provider_script ] && stream_provider_script="./stream_provider.sh" 
 [ -z $prolog_script ] && prolog_script="continuousQueries.prolog" 
 
-echo $input_csv_files
 fifos=()
 ids=()
 # Create one live stream provider for each input csv file

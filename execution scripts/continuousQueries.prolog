@@ -85,11 +85,11 @@ continuousQueries(App, ParamList) :-
 	% initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
 	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
 	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
-	QueryTime is StartReasoningTime+WM,
-	% In case that the input is a live stream, sleep until the first query time, which coincides with the last time-point of the first window.
-	sleep_if_fifo_start(InputMode, WM, StreamRate),
+	QueryTime is StartReasoningTime + Step,
+	% In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
+	sleep_if_fifo(InputMode, Step, StreamRate, 0),
 	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
-	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
+	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
 	% calculate and record the recognition time statistics
 	logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
 	closeFiles(InputStreams, LogFileStream, ResultsFileStream), !.
@@ -98,18 +98,18 @@ continuousQueries(App) :- !,
 	continuousQueries(App, []).
 
 % execution stops when the previous query time is greater or equal to the designated last reasoning time 
-querying(_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFileStream, _ResultsFileStream, _WM, Step, QueryTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch) :-
+querying(_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFileStream, _ResultsFileStream, _WM, Step, QueryTime, _StartReasoningTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch) :-
 	PrevQueryTime is QueryTime-Step,
  	PrevQueryTime >= EndReasoningTime, !.
 
-querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
- 	QueryTimeMinusWM is QueryTime-WM,
+querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
+	getWindowStartTime(QueryTime, WM, StartReasoningTime, WindowStartTime),
 	% VerifiedQueryTime=QueryTime when QueryTime =< EndReasoningTime
 	% otherwise: VerifiedQueryTime=EndReasoningTime 
 	verifyQueryTime(QueryTime, EndReasoningTime, VerifiedQueryTime),
-	% load input data in (QueryTimeMinusWM, VerifiedQueryTime]
-	loadNarrative(InputMode, InputStreams, QueryTimeMinusWM, VerifiedQueryTime, PointerPositions, NewPointerPositions, SDEBatch),
-	printBeforeER(QueryTimeMinusWM, VerifiedQueryTime),	
+	% load input data in (WindowStartTime, VerifiedQueryTime]
+	loadNarrative(InputMode, InputStreams, WindowStartTime, VerifiedQueryTime, PointerPositions, NewPointerPositions, SDEBatch),
+	printBeforeER(WindowStartTime, VerifiedQueryTime),	
 	%%%%%%%%% compute the recognition time of the current window
 	statistics(StatisticsFlag,[S1,_T1]),
 	% eventRecognition(+QueryTime, +WM)
@@ -128,7 +128,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStrea
  	S is S2-S1, %S=T2,
  	writeResult(S, LogFileStream),
 	% print statistics about window execution: recognition time, input entities and output entities.
-	printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD),
+	printAfterER(S, WindowStartTime, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD),
 	(
 		% if the designated last time-point of reasoning has not been passed
 		QueryTime < EndReasoningTime,
@@ -136,8 +136,8 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStrea
 		NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
 		% (ii) sleep until the next query time 
 		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
-		sleep_if_fifo_between_windows(InputMode, Step, StreamRate, S),
-		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
+		sleep_if_fifo(InputMode, Step, StreamRate, S),
+		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
 	;
 		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
 		QueryTime >= EndReasoningTime,
@@ -228,6 +228,15 @@ closeInputFiles([InputStream|MoreInputStreams]) :-
 	close(InputStream),
 	closeInputFiles(MoreInputStreams).
 
+% getWindowStartTime(+QueryTime, +WM, +StartReasoningTime, -WindowStartTime)
+% If QueryTime-WM=<StartReasoningTime, the window starts at StartReasoningTime
+% Else, in the more general case that QueryTime-WM>StartReasoningTime, the window starts at QueryTime-WM
+getWindowStartTime(QueryTime, WM, StartReasoningTime, StartReasoningTime):-
+	QueryTime-WM=<StartReasoningTime, !.
+
+getWindowStartTime(QueryTime, WM, _StartReasoningTime, WindowStartTime):-
+	WindowStartTime is QueryTime - WM.	
+
 % verifyQueryTime(+QueryTime, +EndReasoningTime, -VerifiedQueryTime)
 % A given QueryTime is OK as long as it is less or equal to the designated last reasoning time; 
 % otherwise, it is set to the designated last reasoning time
@@ -238,9 +247,9 @@ verifyQueryTime(QueryTime, EndReasoningTime, EndReasoningTime) :-
 	write(' to '), write(EndReasoningTime),
 	writeln(' but QueryTime-WM remains the same.').
 
-% if fifo, sleep between window executions
+% if fifo, sleep until the next query time 
 % sleep_if_fifo_between_windows(+InputMode, +Step, +StreamRate, +S)	
-sleep_if_fifo_between_windows(InputMode, Step, StreamRate, S):-
+sleep_if_fifo(InputMode, Step, StreamRate, S):-
 	(
 		InputMode = fifo, 
 		SleepTime is Step/StreamRate - S/1000,
@@ -248,16 +257,6 @@ sleep_if_fifo_between_windows(InputMode, Step, StreamRate, S):-
 	; 	\+ InputMode = fifo
 	).
 	
-% if fifo, sleep before first window
-% sleep_if_fifo_between_windows(+InputMode, +WM, +StreamRate)	
-sleep_if_fifo_start(InputMode, WM, StreamRate):-
-	(	
-		InputMode=fifo, 
-		SleepTime is WM/StreamRate,
-		sleep_until_query_time(SleepTime)
-	;   \+ InputMode = fifo 
-	).
-
 sleep_until_query_time(SleepTimeSec):-
 	statistics(walltime,[TBeforeSleep,_T1]),	
 	write('About to sleep for '), write(SleepTimeSec), write(' seconds.'), nl,
