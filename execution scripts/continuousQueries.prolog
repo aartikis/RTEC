@@ -92,7 +92,7 @@ continuousQueries(App, ParamList) :-
 	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
 	% calculate and record the recognition time statistics
 	logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
-	closeFiles(InputStreams, LogFileStream, ResultsFileStream), !.
+	closeFiles(InputMode, InputStreams, LogFileStream, ResultsFileStream), !.
 
 continuousQueries(App) :- !,
 	continuousQueries(App, []).
@@ -163,8 +163,8 @@ openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile,
 	(	
 		% the dataset arrives in live stream(s)
 		InputMode = fifo,
-		InputStreams = [],
-		initLoaderThreads(InputPaths)
+		%InputStreams = [],
+		initLoaderThreads(InputPaths, InputStreams) % InputStreams contains thread ids in this case.
 		;
 		% the dataset is in csv file(s)
 		InputMode = csv,
@@ -180,10 +180,10 @@ openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile,
 % Each thread executes the goal: loadIELiveStream(InputPipe), which is specified in 'src/data loader/dataLoader.prolog' 
 % Its function is to assert the events written in the pipe as soon as they arrive.
 % initLoaderThreads(+InputPipes) 
-initLoaderThreads([]).
-initLoaderThreads([InputPipe|RestPipes]):-
-	thread_create(loadIELiveStream(InputPipe), _),
-	initLoaderThreads(RestPipes).
+initLoaderThreads([], []).
+initLoaderThreads([InputPipe|RestPipes], [ThreadID|RestIDs]):-
+	thread_create(loadIELiveStream(InputPipe), ThreadID),
+	initLoaderThreads(RestPipes, RestIDs).
 
 % Open one input stream for each input file, while maintaining the reading position in the stream.
 % openInputCSVFiles(+InputFiles, -InputStreams, -PointerPositions)
@@ -210,23 +210,38 @@ executeUserGoals([Goal|RestGoals]) :-
 % closeFiles(+datasetfilesstreams, +logfilestream, +resultsfilestream)
 % first case: there are no input streams, 
 % ie the dataset is in the form of Prolog assertions
-closeFiles(InputStreams, LogFileStream, ResultsFileStream) :-
+closeFiles(dynamic_predicates, [], LogFileStream, ResultsFileStream) :-
 	close(LogFileStream),
-	close(ResultsFileStream),
-	InputStreams = [], !.	
+	close(ResultsFileStream).	
 
 % second case: the dataset is in csv files;
 % in this case close each input stream;
-% note: the log file stream is closed in the 
-% above closeFiles/2 clause
-closeFiles(InputStreams, _LogFileStream, _ResultsFileStream) :-
+closeFiles(csv, InputStreams, LogFileStream, ResultsFileStream) :-
+	close(LogFileStream),
+	close(ResultsFileStream),	
 	closeInputFiles(InputStreams).
 
+% third case: fifo mode;
+% the InputStreams variable contains thread IDs;
+% destroy all threads
+closeFiles(fifo, ThreadIDs, LogFileStream, ResultsFileStream) :-
+	close(LogFileStream),
+	close(ResultsFileStream),
+	assertz(rtecTermination),
+	killThreads(ThreadIDs),
+	retract(rtecTermination).
+
 % closeInputFiles(+InputStreams)	
-closeInputFiles([]) :- !.
+closeInputFiles([]). 
 closeInputFiles([InputStream|MoreInputStreams]) :-
 	close(InputStream),
 	closeInputFiles(MoreInputStreams).
+
+% killThreads(+InputStreams)	
+killThreads([]).
+killThreads([ThreadID|RestIDs]) :-
+	thread_signal(ThreadID, abort),
+	killThreads(RestIDs).
 
 % getWindowStartTime(+QueryTime, +WM, +StartReasoningTime, -WindowStartTime)
 % If QueryTime-WM=<StartReasoningTime, the window starts at StartReasoningTime
