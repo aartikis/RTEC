@@ -7,7 +7,7 @@ examples/maritime/results/*.txt
 examples/netbill/results/*.txt
 examples/toy/results/*.txt
 examples/voting/results/*.txt
-examples/maritime/dataset/*.csv
+examples/maritime/dataset/csv/*.csv
 examples/maritime-imis/*
 ehthumbs.db
 Icon?

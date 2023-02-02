@@ -29,7 +29,7 @@
 % For example: 
 % 	continuousQueries(toy, [window_size=20]).
 default(window_size, toy, 10).
-default(window_size, maritime, 10).
+default(window_size, maritime, 86400).
 default(window_size, caviar, 100000).
 default(window_size, voting, 10).
 default(window_size, netbill, 10).
@@ -42,7 +42,7 @@ default(window_size, feedback_loops, 10).
 % For example: 
 % 	continuousQueries(toy, [step=5]).
 default(step, toy, 10).
-default(step, maritime, 10).
+default(step, maritime, 86400).
 default(step, caviar, 100000).
 default(step, voting, 10).
 default(step, netbill, 10).
@@ -116,8 +116,8 @@ default(event_description_files, toy, Files):-
 			'../examples/toy/dataset/auxiliary/toy_var_domain.prolog'].
 
 default(event_description_files, maritime, Files):-
-	Files=['../examples/maritime/resources/patterns/maritime_rules_compiled_dg.prolog', 
-			'../examples/maritime/resources/patterns/maritime_declarations_dg.prolog',
+	Files=['../examples/maritime/resources/patterns/maritime_rules_compiled.prolog', 
+			'../examples/maritime/resources/patterns/maritime_declarations.prolog',
 			'../examples/maritime/resources/auxiliary/compare.prolog',
 			'../examples/maritime/resources/auxiliary/loadStaticData.prolog'].
 
