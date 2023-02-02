@@ -93,7 +93,8 @@ logWindowStats(LogFileStream, RecTimes, InputList, (OutputListOutFVpairs,OutputL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % printRecognitions(+CEIntervalsStream, +CurrentTime, +WM)
-printRecognitions(CEIntervalsStream, CurrentTime, WM) :-
+printRecognitions(CEIntervalsFile, CurrentTime, WM) :-
+	open(CEIntervalsFile, append, CEIntervalsStream),
 	StartTime is CurrentTime-WM,
 	findall((F=V,L2), 
 		(
@@ -103,7 +104,8 @@ printRecognitions(CEIntervalsStream, CurrentTime, WM) :-
                 intersect_all([L,[(StartTime,CurrentTime)]],L2)
                 ), 
               CEIntervals),
-	writeCEs(CEIntervalsStream, CEIntervals).
+	writeCEs(CEIntervalsStream, CEIntervals),
+	close(CEIntervalsStream).
 
 writeCEs(ResultStream, []) :-
 	nl(ResultStream), !.

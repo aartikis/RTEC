@@ -81,7 +81,8 @@ continuousQueries(App, ParamList) :-
 	%executeUserGoals(+Goals)
 	executeUserGoals(Goals), % run queries requested by the user.
 	printLogo,
-	openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream),
+	%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream),
+	openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile),
 	% initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
 	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
 	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
@@ -89,20 +90,24 @@ continuousQueries(App, ParamList) :-
 	% In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
 	sleep_if_fifo(InputMode, Step, StreamRate, 0),
 	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
-	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
+	%querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
+	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, ResultsFile, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
 	% calculate and record the recognition time statistics
+	open(LogFile, append, LogFileStream),
 	logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
-	closeFiles(InputMode, InputStreams, LogFileStream, ResultsFileStream), !.
+	close(LogFileStream),
+	closeFiles(InputMode, InputStreams), !.
+	%closeFiles(InputMode, InputStreams, LogFileStream, ResultsFileStream), !.
 
 continuousQueries(App) :- !,
 	continuousQueries(App, []).
 
 % execution stops when the previous query time is greater or equal to the designated last reasoning time 
-querying(_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFileStream, _ResultsFileStream, _WM, Step, QueryTime, _StartReasoningTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch) :-
+querying(_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFile, _ResultsFile, _WM, Step, QueryTime, _StartReasoningTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch) :-
 	PrevQueryTime is QueryTime-Step,
  	PrevQueryTime >= EndReasoningTime, !.
 
-querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
+querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, ResultsFile, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
 	getWindowStartTime(QueryTime, WM, StartReasoningTime, WindowStartTime),
 	% VerifiedQueryTime=QueryTime when QueryTime =< EndReasoningTime
 	% otherwise: VerifiedQueryTime=EndReasoningTime 
@@ -123,10 +128,12 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStrea
 	findall((EE,TT), (outputEntity(EE),happensAt(EE,TT)), OELT),
 	statistics(StatisticsFlag,[S2,_T2]),
 	% log the computed intervals of output entities
-	printRecognitions(ResultsFileStream, QueryTime, WM),
+	printRecognitions(ResultsFile, QueryTime, WM),
 	% log window execution time
  	S is S2-S1, %S=T2,
+	open(LogFile, append, LogFileStream),
  	writeResult(S, LogFileStream),
+	close(LogFileStream),
 	% print statistics about window execution: recognition time, input entities and output entities.
 	printAfterER(S, WindowStartTime, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD),
 	(
@@ -137,7 +144,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStrea
 		% (ii) sleep until the next query time 
 		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
 		sleep_if_fifo(InputMode, Step, StreamRate, S),
-		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
+		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFile, ResultsFile, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
 	;
 		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
 		QueryTime >= EndReasoningTime,
@@ -157,9 +164,12 @@ handleProlog(swi, runtime) :-
 	current_prolog_flag(dialect, swi).
 
 % openFilesOrPipes(+InputMode, +InputPaths, -InputStreams, -PointerPositions, +LogFile, -LogFileStream, +ResultsFile, -ResultFileStream)
-openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream):-
-	open(LogFile, write, LogFileStream),
-	open(ResultsFile, write, ResultsFileStream),
+openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile):-
+%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream):-
+	%open(LogFile, write, LogFileStream),
+	%open(ResultsFile, write, ResultsFileStream),
+	create_file(LogFile),
+	create_file(ResultsFile),
 	(	
 		% the dataset arrives in live stream(s)
 		InputMode = fifo,
@@ -175,6 +185,12 @@ openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile,
 		InputStreams = [], 		
 		consultInputFiles(InputPaths)
 	).
+
+% touch <File>, so that it exists as an empty file before the execution of the first window.
+%create_file(+File)
+create_file(File):-
+	open(File, write, FileStream),
+	close(FileStream).	
 
 % Create a new execution thread for each named pipe in InputPipes.
 % Each thread executes the goal: loadIELiveStream(InputPipe), which is specified in 'src/data loader/dataLoader.prolog' 
@@ -210,26 +226,24 @@ executeUserGoals([Goal|RestGoals]) :-
 % closeFiles(+datasetfilesstreams, +logfilestream, +resultsfilestream)
 % first case: there are no input streams, 
 % ie the dataset is in the form of Prolog assertions
-closeFiles(dynamic_predicates, [], LogFileStream, ResultsFileStream) :-
-	close(LogFileStream),
-	close(ResultsFileStream).	
+closeFiles(dynamic_predicates, []).
+	%close(LogFileStream),
+	%close(ResultsFileStream).	
 
 % second case: the dataset is in csv files;
 % in this case close each input stream;
-closeFiles(csv, InputStreams, LogFileStream, ResultsFileStream) :-
-	close(LogFileStream),
-	close(ResultsFileStream),	
+closeFiles(csv, InputStreams) :-
+	%close(LogFileStream),
+	%close(ResultsFileStream),	
 	closeInputFiles(InputStreams).
 
 % third case: fifo mode;
 % the InputStreams variable contains thread IDs;
 % destroy all threads
-closeFiles(fifo, ThreadIDs, LogFileStream, ResultsFileStream) :-
-	close(LogFileStream),
-	close(ResultsFileStream),
-	assertz(rtecTermination),
-	killThreads(ThreadIDs),
-	retract(rtecTermination).
+closeFiles(fifo, ThreadIDs) :-
+	%close(LogFileStream),
+	%close(ResultsFileStream),
+	killThreads(ThreadIDs).
 
 % closeInputFiles(+InputStreams)	
 closeInputFiles([]). 
