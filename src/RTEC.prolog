@@ -87,6 +87,8 @@ DECLARATIONS:
 :- ['processEvents.prolog'].
 :- ['utilities/interval-manipulation.prolog'].
 :- ['utilities/amalgamate-periods.prolog'].
+% Load allen relations module
+:- ['utilities/allen.prolog'].
 % Load the dynamic grounding module
 :- ['dynamic grounding/dynamicGrounding.prolog'].
 % Load module for handling deadlines

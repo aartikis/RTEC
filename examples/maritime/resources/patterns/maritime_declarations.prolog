@@ -1,14 +1,4 @@
 
-/****************************************************************
- *                                                              *
- * Event Recognition for Maritime Situational Awareness		* 
- *                                                              *
- *                                                              *
- * Alexander Artikis						*
- *								*
- ****************************************************************/
-
-
 /******************************************* DECLARATIONS ***************************
  1. Declare the entities of the event description: 
 	-events (event/1), 
@@ -98,15 +88,48 @@ simpleFluent(trawlingMovement(_)=true).         outputEntity(trawlingMovement(_)
 simpleFluent(trawlingMovement(_)=false).        outputEntity(trawlingMovement(_)=false).        
 
 
-sDFluent(underWay(_)=true).			outputEntity(underWay(_)=true).			index(underWay(Vessel)=true, Vessel).
-sDFluent(inSAR(_)=true).			outputEntity(inSAR(_)=true).			index(inSAR(Vessel)=true, Vessel).
-sDFluent(anchoredOrMoored(_)=true).		outputEntity(anchoredOrMoored(_)=true).	        index(anchoredOrMoored(Vessel)=true, Vessel).
-sDFluent(tugging(_,_)=true).			outputEntity(tugging(_,_)=true).		index(tugging(Vessel,_)=true, Vessel).
-sDFluent(rendezVous(_,_)=true).			outputEntity(rendezVous(_,_)=true).		index(rendezVous(Vessel,_)=true, Vessel).
-sDFluent(trawling(_)=true).			outputEntity(trawling(_)=true).			index(trawling(Vessel)=true, Vessel).
-sDFluent(pilotOps(_,_)=true).			outputEntity(pilotOps(_,_)=true).		index(pilotOps(Vessel,_)=true, Vessel).
-sDFluent(loitering(_)=true).			outputEntity(loitering(_)=true).		index(loitering(Vessel)=true, Vessel).
+sDFluent(underWay(_)=true).					outputEntity(underWay(_)=true).					index(underWay(Vessel)=true, Vessel).
+sDFluent(inSAR(_)=true).					outputEntity(inSAR(_)=true).					index(inSAR(Vessel)=true, Vessel).
+sDFluent(anchoredOrMoored(_)=true).			outputEntity(anchoredOrMoored(_)=true).	    	index(anchoredOrMoored(Vessel)=true, Vessel).
+sDFluent(tugging(_,_)=true).				outputEntity(tugging(_,_)=true).				index(tugging(Vessel,_)=true, Vessel).
+sDFluent(rendezVous(_,_)=true).				outputEntity(rendezVous(_,_)=true).				index(rendezVous(Vessel,_)=true, Vessel).
+sDFluent(trawling(_)=true).					outputEntity(trawling(_)=true).					index(trawling(Vessel)=true, Vessel).
+sDFluent(pilotOps(_,_)=true).				outputEntity(pilotOps(_,_)=true).				index(pilotOps(Vessel,_)=true, Vessel).
+sDFluent(loitering(_)=true).				outputEntity(loitering(_)=true).				index(loitering(Vessel)=true, Vessel).
 
+sDFluent(disappearedInArea(_,_)=true).		outputEntity(disappearedInArea(_,_)=true).		index(disappearedInArea(Vessel, _)=true, Vessel).
+
+sDFluent(stoppedWithinArea(_,_)=true).		outputEntity(stoppedWithinArea(_,_)=true).		index(stoppedWithinArea(Vessel, _)=true, Vessel).
+
+sDFluent(stoppedMeetsGap(_)=true).		outputEntity(stoppedMeetsGap(_)=true).		index(stoppedMeetsGap(Vessel)=true, Vessel).
+sDFluent(dangerNearCoast(_)=true).		outputEntity(dangerNearCoast(_)=true).		index(dangerNearCoast(Vessel)=true, Vessel).
+sDFluent(highSpeedNCBeforeDrifting(_)=true).		outputEntity(highSpeedNCBeforeDrifting(_)=true).		index(highSpeedNCBeforeDrifting(Vessel)=true, Vessel).
+sDFluent(gainingSpeed(_)=true).		outputEntity(gainingSpeed(_)=true).		index(gainingSpeed(Vessel)=true, Vessel).
+sDFluent(speedChangeAbove(_)=true).		outputEntity(speedChangeAbove(_)=true).		index(speedChangeAbove(Vessel)=true, Vessel).
+
+sDFluent(movingSpeedStartsUnderway(_)=_).		outputEntity(movingSpeedStartsUnderway(_)=_).		index(movingSpeedStartsUnderway(Vessel)=_, Vessel).
+sDFluent(movingSpeedFinishesUnderway(_)=_).		outputEntity(movingSpeedFinishesUnderway(_)=_).		index(movingSpeedFinishesUnderway(Vessel)=_, Vessel).
+sDFluent(movingSpeedEqualUnderway(_)=_).		outputEntity(movingSpeedEqualUnderway(_)=_).		index(movingSpeedEqualUnderway(Vessel)=_, Vessel).
+
+sDFluent(collisionDanger(_,_)=true).		outputEntity(collisionDanger(_,_)=true).		index(collisionDanger(Vessel, _)=true, Vessel).
+sDFluent(suspiciousRendezVous(_,_)=true).	outputEntity(suspiciousRendezVous(_,_)=true).	index(suspiciousRendezVous(Vessel, _)=true, Vessel).
+sDFluent(anchoredFarFromPorts(_)=true).	outputEntity(anchoredFarFromPorts(_)=true).	index(anchoredFarFromPorts(Vessel)=true, Vessel).
+sDFluent(anchoredNearPorts(_)=true).	outputEntity(anchoredNearPorts(_)=true).	index(anchoredNearPorts(Vessel)=true, Vessel).
+
+sDFluent(driftingWhileTugging(_,_)=true).	outputEntity(driftingWhileTugging(_,_)=true).	index(driftingWhileTugging(Vessel, _)=true, Vessel).
+
+sDFluent(tuggingStartsProximity(_,_)=true).	outputEntity(tuggingStartsProximity(_,_)=true).	index(tuggingStartsProximity(Vessel, _)=true, Vessel).
+sDFluent(tuggingFinishesProximity(_,_)=true).	outputEntity(tuggingFinishesProximity(_,_)=true).	index(tuggingFinishesProximity(Vessel, _)=true, Vessel).
+sDFluent(tuggingEqualProximity(_,_)=true).	outputEntity(tuggingEqualProximity(_,_)=true).	index(tuggingEqualProximity(Vessel, _)=true, Vessel).
+sDFluent(rendezVousStartsProximity(_,_)=true).	outputEntity(rendezVousStartsProximity(_,_)=true).	index(rendezVousStartsProximity(Vessel, _)=true, Vessel).
+sDFluent(rendezVousFinishesProximity(_,_)=true).	outputEntity(rendezVousFinishesProximity(_,_)=true).	index(rendezVousFinishesProximity(Vessel, _)=true, Vessel).
+sDFluent(rendezVousEqualProximity(_,_)=true).	outputEntity(rendezVousEqualProximity(_,_)=true).	index(rendezVousEqualProximity(Vessel, _)=true, Vessel).
+sDFluent(pilotOpsStartsProximity(_,_)=true).	outputEntity(pilotOpsStartsProximity(_,_)=true).	index(pilotOpsStartsProximity(Vessel, _)=true, Vessel).
+sDFluent(pilotOpsFinishesProximity(_,_)=true).	outputEntity(pilotOpsFinishesProximity(_,_)=true).	index(pilotOpsFinishesProximity(Vessel, _)=true, Vessel).
+sDFluent(pilotOpsEqualProximity(_,_)=true).	outputEntity(pilotOpsEqualProximity(_,_)=true).	index(pilotOpsEqualProximity(Vessel, _)=true, Vessel).
+
+sDFluent(fishingTripInArea(_)=true).				outputEntity(fishingTripInArea(_)=true).				index(fishingTripInArea(Vessel)=true, Vessel).
+sDFluent(fishingTripTrawling(_)=true).				outputEntity(fishingTripTrawling(_)=true).				index(fishingTripTrawling(Vessel)=true, Vessel).
 
 % For input entities expressed as statically determined fluents, state whether 
 % the fluent instances will be reported as time-points (points/1) or intervals.
@@ -194,6 +217,7 @@ dgrounded(pilotOps(Vessel1, Vessel2)=true, vpair(Vessel1, Vessel2)).
 dgrounded(pilotOps(Vessel1,_)=true, vessel(Vessel1)).
 dgrounded(pilotOps(_, Vessel2)=true, vessel(Vessel2)).
 
+%======================================= experimental grounding start ===========================================
 grounding(tuggingSpeed(Vessel)=true)                          	:- vessel(Vessel).
 dgrounded(tuggingSpeed(Vessel)=true , vessel(Vessel)).
 
@@ -206,6 +230,8 @@ grounding(rendezVous(Vessel1, Vessel2)=true)               		:- vpair(Vessel1, V
 dgrounded(rendezVous(Vessel1, Vessel2)=true, vpair(Vessel1, Vessel2)).
 dgrounded(rendezVous(Vessel1,_)=true, vessel(Vessel1)).
 dgrounded(rendezVous(_, Vessel2)=true, vessel(Vessel2)).
+%======================================= experimental grounding end ===========================================
+
 
 
 grounding(trawlingMovement(Vessel)=true)		                :- vessel(Vessel), vesselType(Vessel,fishing).
@@ -217,9 +243,116 @@ dgrounded(trawlingMovement(Vessel)=false, vessel(Vessel)).
 grounding(trawling(Vessel)=true)                          		:- vessel(Vessel).
 dgrounded(trawling(Vessel)=true, vessel(Vessel)).
 
-grounding(loitering(Vessel)=true)                         		:- vessel(Vessel).
+grounding(loitering(Vessel)=true) :- vessel(Vessel).
 dgrounded(loitering(Vessel)=true, vessel(Vessel)).
 
+grounding(disappearedInArea(Vessel, AreaType)=true) :- vessel(Vessel), areaType(AreaType).
+dgrounded(disappearedInArea(Vessel, _AreaType)=true, vessel(Vessel)).
+
+grounding(stoppedWithinArea(Vessel, AreaType)=true) :- vessel(Vessel), areaType(AreaType).
+dgrounded(stoppedWithinArea(Vessel, _AreaType)=true, vessel(Vessel)).
+
+grounding(stoppedMeetsGap(Vessel)=true) :- vessel(Vessel).
+dgrounded(stoppedMeetsGap(Vessel)=true, vessel(Vessel)).
+
+grounding(highSpeedNCBeforeDrifting(Vessel)=true) :- vessel(Vessel).
+dgrounded(highSpeedNCBeforeDrifting(Vessel)=true, vessel(Vessel)).
+
+grounding(dangerNearCoast(Vessel)=true) :- vessel(Vessel).
+dgrounded(dangerNearCoast(Vessel)=true, vessel(Vessel)).
+
+grounding(gainingSpeed(Vessel)=true) :- vessel(Vessel).
+dgrounded(gainingSpeed(Vessel)=true, vessel(Vessel)).
+
+grounding(speedChangeAbove(Vessel)=true) :- vessel(Vessel).
+dgrounded(speedChangeAbove(Vessel)=true, vessel(Vessel)).
+
+grounding(movingSpeedStartsUnderway(Vessel)=Status) :- vessel(Vessel), movingStatus(Status).
+dgrounded(movingSpeedStartsUnderway(Vessel)=below, vessel(Vessel)).
+dgrounded(movingSpeedStartsUnderway(Vessel)=above, vessel(Vessel)).
+dgrounded(movingSpeedStartsUnderway(Vessel)=normal, vessel(Vessel)).
+
+grounding(movingSpeedFinishesUnderway(Vessel)=Status) :- vessel(Vessel), movingStatus(Status).
+dgrounded(movingSpeedFinishesUnderway(Vessel)=below, vessel(Vessel)).
+dgrounded(movingSpeedFinishesUnderway(Vessel)=above, vessel(Vessel)).
+dgrounded(movingSpeedFinishesUnderway(Vessel)=normal, vessel(Vessel)).
+
+grounding(movingSpeedEqualUnderway(Vessel)=Status) :- vessel(Vessel), movingStatus(Status).
+dgrounded(movingSpeedEqualUnderway(Vessel)=below, vessel(Vessel)).
+dgrounded(movingSpeedEqualUnderway(Vessel)=normal, vessel(Vessel)).
+dgrounded(movingSpeedEqualUnderway(Vessel)=above, vessel(Vessel)).
+
+grounding(collisionDanger(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(collisionDanger(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(collisionDanger(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(collisionDanger(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(suspiciousRendezVous(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(suspiciousRendezVous(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(suspiciousRendezVous(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(suspiciousRendezVous(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(driftingWhileTugging(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(driftingWhileTugging(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(driftingWhileTugging(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(driftingWhileTugging(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(anchoredFarFromPorts(Vessel)=true) :- vessel(Vessel).
+dgrounded(anchoredFarFromPorts(Vessel)=true, vessel(Vessel)).
+
+grounding(anchoredNearPorts(Vessel)=true) :- vessel(Vessel).
+dgrounded(anchoredNearPorts(Vessel)=true, vessel(Vessel)).
+
+grounding(tuggingStartsProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(tuggingStartsProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(tuggingStartsProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(tuggingStartsProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(tuggingFinishesProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(tuggingFinishesProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(tuggingFinishesProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(tuggingFinishesProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(tuggingEqualProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(tuggingEqualProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(tuggingEqualProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(tuggingEqualProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(rendezVousStartsProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(rendezVousStartsProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(rendezVousStartsProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(rendezVousStartsProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(rendezVousFinishesProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(rendezVousFinishesProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(rendezVousFinishesProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(rendezVousFinishesProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(rendezVousEqualProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(rendezVousEqualProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(rendezVousEqualProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(rendezVousEqualProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(pilotOpsStartsProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(pilotOpsStartsProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(pilotOpsStartsProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(pilotOpsStartsProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(pilotOpsFinishesProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(pilotOpsFinishesProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(pilotOpsFinishesProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(pilotOpsFinishesProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(pilotOpsEqualProximity(Vessel1, Vessel2)=true) :- vpair(Vessel1, Vessel2).
+dgrounded(pilotOpsEqualProximity(Vessel1, Vessel2)=true, vpair(Vessel1,Vessel2)).
+dgrounded(pilotOpsEqualProximity(Vessel1, _Vessel2)=true, vessel(Vessel1)).
+dgrounded(pilotOpsEqualProximity(_Vessel1, Vessel2)=true, vessel(Vessel2)).
+
+grounding(fishingTripInArea(Vessel)=true) :- vessel(Vessel).
+dgrounded(fishingTripInArea(Vessel)=true, vessel(Vessel)).
+
+grounding(fishingTripTrawling(Vessel)=true) :- vessel(Vessel).
+dgrounded(fishingTripTrawling(Vessel)=true, vessel(Vessel)).
 
 collectGrounds([coord(Vessel,_,_), entersArea(Vessel,_), leavesArea(Vessel,_)], vessel(Vessel)).
 collectGrounds([proximity(Vessel1, Vessel2)=true], vpair(Vessel1, Vessel2)).
