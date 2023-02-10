@@ -88,13 +88,13 @@ The algorithm presented below minimises redundant computations by leveraging the
 atomic_relation((_S1, E1), (S2, _E2), before):-
 	S2>=E1. %% Intervals are right-open.
 
-atomic_relation((_S1, E1), (S2, _E2), meets):-
-		E1=S2.
+%atomic_relation((_S1, E1), (S2, _E2), meets):-
+%		E1=S2.
 atomic_relation((S1, E1), (S2, _E2), meets):-
-		%\+ E1=inf,
-		%E1MinusOne is E1 - 1, %% Intervals are right-open. 
-		%\+ S1=E1MinusOne, % if I1 is a unit interval, the relation should be starts.
-		%E1MinusOne=S2.
+	\+ E1=inf,
+	E1MinusOne is E1 - 1, %% Intervals are right-open. 
+	\+ S1=E1MinusOne, % if I1 is a unit interval, the relation should be starts.
+	E1MinusOne=S2.
 
 atomic_relation((S1, E1), (S2, E2), starts):-
 	S1=S2, E1<E2.
