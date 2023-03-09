@@ -123,7 +123,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Res
 	% When QueryTime =< EndReasoningTime then event recognition takes place in (QueryTime-WM,QueryTime]
 	% Otherwise, event recognition takes place effectively in (QueryTime-WM,EndReasoningTime]
 	% because no input data are loader after EndReasoningTime
-	eventRecognition(QueryTime, WM),
+	eventRecognition(QueryTime, WM, Step, WM),
 	findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L),L\=[]), OELI),
 	findall((EE,TT), (outputEntity(EE),happensAt(EE,TT)), OELT),
 	statistics(StatisticsFlag,[S2,_T2]),

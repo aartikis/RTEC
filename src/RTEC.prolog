@@ -97,7 +97,7 @@ DECLARATIONS:
 /***** dynamic predicates *****/
 
 % The predicates below are asserted/retracted
-:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3.
+:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3, queryTime/1, step/1, windowSize/1, allenMemory/1, cachedIntervalsAllen/6.
 
 % The predicates below may or may not appear in the declarations of an application;
 % thus they must be declared dynamic
@@ -162,6 +162,36 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Forget
 
 /************************************* EVENT RECOGNITION *************************************/
 
+% To assert receive extra parameters needed when processing allen relations.
+eventRecognition(QueryTime, WM, Step, AllenMem) :-
+	InitTime is QueryTime - WM,
+	assertParams(InitTime, QueryTime, WM, Step, AllenMem),
+    % delete input entities that have taken place before or on Qi-WM
+	forget(InitTime),
+	% calculate the items for which we will perform reasoning
+	dynamicGrounding(InitTime, QueryTime),
+	% compute the intervals of input entities/statically determined fluents
+	inputProcessing(InitTime, QueryTime),
+	preProcessing(QueryTime),
+	% CYCLES #1 CHANGE
+	prepareCyclic,
+	% CYCLES & DEADLINES CHANGE
+	findall((Index,F=V,SPoints), (startingPoints(Index,F=V,SPoints),retract(startingPoints(Index,F=V,SPoints))), _),
+	% DEADLINES #1 CHANGE
+	findall((F=V,Duration), (maxDuration(F=V,_,Duration), deadlines1(F=V,Duration,InitTime)), _),
+	% the order in which entities are processed makes a difference
+	% start from lower-level entities and then move to higher-level entities
+	% in this way the higher-level entities will use the CACHED lower-level entities
+	% the order in which we process entities is set by cachingOrder/1 
+	% which is specified in the domain-dependent file 
+	% cachingOrder2/2 is produced in the compilation stage 
+	% by combining cachingOrder/1, indexOf/2 and grounding/1
+	findall(OE, (cachingOrder2(Index,OE), processEntity(Index,OE,InitTime,QueryTime)), _),
+	% DEADLINES #2 CHANGE
+	findall((F=V,Duration), (maxDuration(F=V,_,Duration), deadlines2(F=V,Duration,InitTime)), _),
+	retractParams.
+	%retract(initTime(InitTime)).
+
 
 eventRecognition(QueryTime, WM) :-
 	InitTime is QueryTime-WM,
@@ -190,6 +220,20 @@ eventRecognition(QueryTime, WM) :-
 	% DEADLINES #2 CHANGE
 	findall((F=V,Duration), (maxDuration(F=V,_,Duration), deadlines2(F=V,Duration,InitTime)), _),
 	retract(initTime(InitTime)).
+
+assertParams(InitTime, QueryTime, WM, Step, AllenMem):-
+	assertz(initTime(InitTime)),
+	assertz(queryTime(QueryTime)),
+	assertz(windowSize(WM)),
+	assertz(step(Step)),
+	assertz(allenMemory(AllenMem)).
+
+retractParams:-
+	retract(initTime(_InitTime)),
+	retract(queryTime(_QueryTime)),
+	retract(step(_Step)),
+	retract(windowSize(_WM)),
+	retract(allenMemory(_AllenMem)).
 
 processEntity(Index, OE, InitTime, QueryTime) :-
 	(
