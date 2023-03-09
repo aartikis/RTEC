@@ -248,7 +248,7 @@ unroll_tuples_simple([[IS, TargetIntervals]|Rest], Rel, [IS|RestLS], _PrevIT, [I
 unwind_tuples_simple(Tuples, Rel, L1, L2):-
 	unroll_tuples_simple(Tuples, Rel, L1, nil, L2).
 
-% allen(+F1=V1, +F2=V2, +Fout=Vout, +Rel, +SList, +TList, +OutputType, -IsItSatisfied, -OutputListOfIntervals)
+% allen(+F=V, +Index, +Rel, +SList, +TList, +OutputType, -IsItSatisfied, -OutputListOfIntervals)
 % -  Retrieve the cached source intervals and append them before the source intervals of the current window.
 % -  Compute all intervals pairs among lists SList and TList satisfying relation Rel.
 % -  Check if there is at least one such pair of intervals. 
@@ -266,17 +266,17 @@ unwind_tuples_simple(Tuples, Rel, L1, L2):-
 %		relative_complement_inverse: return all subintervals of intervals in Trel which are not part of any interval of Srel
 % -  Cache 
 
-allen(F1=V1, F2=V2, Fout=Vout, Rel, SList0, TList0, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	retract(cachedIntervalsAllen(F1=V1, F2=V2, Fout=Vout, CachedSourceSegment, CachedTargetSegment, CachedSourceIntervals)), !,
+allen(F=V, Index, Rel, SList0, TList0, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	retract(cachedIntervalsAllen(F=V, Index, CachedSourceSegment, CachedTargetSegment, CachedSourceIntervals)), !,
 	(CachedSourceSegment\=null -> amalgamatePeriods([CachedSourceSegment], SList0, SList1); SList1=SList0),
-	(CachedSourceSegment\=null -> amalgamatePeriods([CachedTargetSegment], TList0, TList); TList=TList0),
+	(CachedTargetSegment\=null -> amalgamatePeriods([CachedTargetSegment], TList0, TList); TList=TList0),
 	(CachedSourceIntervals\=[] -> append(CachedSourceIntervals, SList1, SList); SList=SList1),
 	compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals),
-	windowing_allen(F1=V1, F2=V2, Fout=Vout, SList, TList, Rel).
+	windowing_allen(F=V, Index, SList, TList, Rel).
 
-allen(F1=V1, F2=V2, Fout=Vout, Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals):-
+allen(F=V, Index, Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals):-
 	compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals),
-	windowing_allen(F1=V1, F2=V2, Fout=Vout, SList, TList, Rel).
+	windowing_allen(F=V, Index, SList, TList, Rel).
 
 compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals):-
 	allen_relations(SList, TList, Rel, Tuples),
@@ -284,26 +284,26 @@ compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputList
 	unwind_tuples_simple(Tuples, Rel, Srel, Trel),
 	apply_return_type(OutputType, Srel, Trel, OutputListOfIntervals).
 	
-before(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, before, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals).
+before(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, before, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals).
 
-meets(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, meets, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
+meets(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, meets, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
 
-starts(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, starts, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
+starts(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, starts, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
 
-finishes(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, finishes, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
+finishes(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, finishes, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
 
-during(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, during, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
+during(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, during, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
 
-overlaps(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, overlaps, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
+overlaps(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, overlaps, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
 
-equal(F1=V1, F2=V2, Fout=Vout, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	allen(F1=V1, F2=V2, Fout=Vout, equal, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
+equal(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
+	allen(F=V, Index, equal, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals). 
 
 /******* Wrapper Predicate Helpers ************/
 
@@ -331,17 +331,17 @@ apply_return_type(relative_complement_inverse, L1, L2, L):-
 %
 %
 
-windowing_allen(F1=V1, F2=V2, Fout=Vout, SList, TList, Rel):-
-	retrieveParams(QueryTime, WindowSize, Step, AllenMem), 
-	allen_intervals_to_cache(SList, TList, Rel, QueryTime, Step, WindowSize, AllenMem, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache),
-	update_cache(F1=V1, F2=V2, Fout=Vout, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache).
+windowing_allen(F=V, Index, SList, TList, Rel):-
+	retrieveParams(InitTime, Step, AllenMem), 
+	allen_intervals_to_cache(SList, TList, Rel, InitTime, Step, AllenMem, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache),
+	update_cache(F=V, Index, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache).
 
-update_cache(_, _, _, null, null, []):- !.
-update_cache(F1=V1, F2=V2, Fout=Vout, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache):-
-	assertz(cachedIntervalsAllen(F1=V1, F2=V2, Fout=Vout, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache)).
+update_cache(_, _, null, null, []):- !.
+update_cache(F=V, Index, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache):-
+	assertz(cachedIntervalsAllen(F=V, Index, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache)).
 
-allen_intervals_to_cache(SList, TList, Rel, QueryTime, Step, WindowSize, Mem, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache):-
-	NextWindowStart is QueryTime+Step-WindowSize,
+allen_intervals_to_cache(SList, TList, Rel, InitTime, Step, Mem, SourceSegmentToCache, TargetSegmentToCache, SIntsToCache):-
+	NextWindowStart is InitTime+Step,
 	getIntervalsBeforeTimepoint(SList, NextWindowStart, SNotInNextWindow),	
 	getIntervalContainingTimepoint(SList, NextWindowStart, SIntStar),	
 	getIntervalContainingTimepoint(TList, NextWindowStart, TIntStar),
@@ -422,9 +422,8 @@ getIntervalContainingTimepoint([(S,E)|_], Tp, (S,E)):-
 	E>Tp, S=<Tp, !.
 getIntervalContainingTimepoint([_|_], _, null).
 
-retrieveParams(QueryTime, WM, Step, AllenMem):-
-	queryTime(QueryTime),
-	windowSize(WM),
+retrieveParams(InitTime, Step, AllenMem):-
+	initTime(InitTime),
 	step(Step),
 	allenMemory(AllenMem).
 

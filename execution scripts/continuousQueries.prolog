@@ -72,7 +72,7 @@
 
 continuousQueries(App, ParamList) :-
 	handleProlog(Prolog, StatisticsFlag), 
-	handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals),
+	handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals, AllenMem),
 	% PrologFiles includes at least two files: the compiled rules and the declarations of the application. 
 	% All files included in PrologFiles are consulted through the following predicate.
 	%consultInputFiles(+PrologFiles)
@@ -84,8 +84,8 @@ continuousQueries(App, ParamList) :-
 	%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream),
 	openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile),
 	% initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
-	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
-	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
+	% initialiseRecognition(+Step, +StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick, +AllenMem),	
+	initialiseRecognition(Step, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
 	QueryTime is StartReasoningTime + Step,
 	% In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
 	sleep_if_fifo(InputMode, Step, StreamRate, 0),
@@ -123,7 +123,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Res
 	% When QueryTime =< EndReasoningTime then event recognition takes place in (QueryTime-WM,QueryTime]
 	% Otherwise, event recognition takes place effectively in (QueryTime-WM,EndReasoningTime]
 	% because no input data are loader after EndReasoningTime
-	eventRecognition(QueryTime, WM, Step, WM),
+	eventRecognition(QueryTime, WM),
 	findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L),L\=[]), OELI),
 	findall((EE,TT), (outputEntity(EE),happensAt(EE,TT)), OELT),
 	statistics(StatisticsFlag,[S2,_T2]),

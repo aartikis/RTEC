@@ -88,6 +88,15 @@ default(clock_tick, netbill, 1).
 default(clock_tick, ctm, 1).
 default(clock_tick, feedback_loops, 1).
 
+% Default memory size for allen relations.
+default(allen_memory, toy, 10).
+default(allen_memory, maritime, 86400).
+default(allen_memory, caviar, 100000).
+default(allen_memory, voting, 10).
+default(allen_memory, netbill, 10).
+default(allen_memory, ctm, 10000).
+default(allen_memory, feedback_loops, 10).
+
 
 % The default results directory for each application. 
 % In order to run an application for a different value of this parameter, run:
@@ -261,7 +270,7 @@ set_parameter([ParameterName=Value|_T], ParameterName, _Application, _InputMode,
 set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 	set_parameter(T, ParameterName, Application, InputMode, Value).	
 
-handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals) :-
+handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals, AllenMem) :-
 	% Set window and step size
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
@@ -286,6 +295,7 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	set_parameter(ParameterList, dynamic_grounding_threshold, App, DynamicGroundingThreshold),
 	set_parameter(ParameterList, sde_batch, App, SDEBatch),
 	set_parameter(ParameterList, goals, App, Goals),
+	set_parameter(ParameterList, allen_memory, App, AllenMem),
 	atom_concat(ResultsDir, '/log', ResultsDirLog),
 	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode], LogFile), % execution logs file
 	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode], ResultsFile). % recognised intervals file

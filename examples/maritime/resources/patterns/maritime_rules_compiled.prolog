@@ -45,7 +45,6 @@ terminatedAt(stopped(Vessel)=_, T1, T, T2) :-
     happensAtProcessedSimpleFluent(Vessel,start(gap(Vessel)=_),T),
     T1=<T, T<T2.
 
-/*
 %-------------- lowspeed----------------------%
 
 initiatedAt(lowSpeed(Vessel)=true, T1, T, T2) :-
@@ -339,52 +338,49 @@ holdsForSDFluent(pilotOps(Vessel1,Vessel2)=true,I) :-
     holdsForProcessedSimpleFluent(Vessel2,withinArea(Vessel2,nearCoast)=true,Inc2),
     relative_complement_all(Ii,[Inc1,Inc2],I).
 
-*/
-
 %-------- The following patterns include Allen relations -----------%
 
 %-------- disappearedInArea ---------------------------%
 holdsForSDFluent(disappearedInArea(Vessel, AreaType)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, withinArea(Vessel, AreaType)=true, Iwa),
 	holdsForProcessedSimpleFluent(Vessel, gap(Vessel)=farFromPorts, Ig),
-	meets(withinArea(Vessel, AreaType)=true, gap(Vessel)=farFromPorts, disappearedInArea(Vessel, AreaType)=true, Iwa, Ig, union, true, I).
+	meets(disappearedInArea(Vessel, AreaType)=true, 1, Iwa, Ig, union, true, I).
 	
 %-------- stoppedWithinArea ---------------------------%
 holdsForSDFluent(stoppedWithinArea(Vessel, AreaType)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, withinArea(Vessel, AreaType)=true, Iwa),
 	holdsForProcessedSimpleFluent(Vessel, stopped(Vessel)=farFromPorts, Is),
-	during(withinArea(Vessel, AreaType)=true, stopped(Vessel)=farFromPorts, stoppedWithinArea(Vessel, AreaType)=true, Is, Iwa, lhs, true, I).
+	during(stoppedWithinArea(Vessel, AreaType)=true, 1, Is, Iwa, lhs, true, I).
 
 %-------- stoppedMeetsGap ---------------------------%
 holdsForSDFluent(stoppedMeetsGap(Vessel)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, stopped(Vessel)=farFromPorts, Is),
 	holdsForProcessedSimpleFluent(Vessel, gap(Vessel)=farFromPorts, Ig),
-	meets(stopped(Vessel)=farFromPorts, gap(Vessel)=farFromPorts, stoppedMeetsGap(Vessel)=true, Is, Ig, union, true, I).
+	meets(stoppedMeetsGap(Vessel)=true, 1, Is, Ig, union, true, I).
 
-/*
 %-------- highSpeedNCBeforeDrifting ---------------------------%
 holdsForSDFluent(highSpeedNCBeforeDrifting(Vessel)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, highSpeedNearCoast(Vessel)=true, Ih),
 	holdsForProcessedSimpleFluent(Vessel, drifting(Vessel)=true, Id),
-	before(highSpeedNearCoast(Vessel)=true, drifting(Vessel)=true, highSpeedNCBeforeDrifting(Vessel)=true, Ih, Id, union, true, I).
+	before(highSpeedNCBeforeDrifting(Vessel)=true, 1, Ih, Id, union, true, I).
 
 %-------- dangerNearCoast ---------------------------%
 holdsForSDFluent(dangerNearCoast(Vessel)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, highSpeedNearCoast(Vessel)=true, Ih),
 	holdsForProcessedSimpleFluent(Vessel, drifting(Vessel)=true, Id),
-	overlaps(highSpeedNearCoast(Vessel)=true, drifting(Vessel)=true, dangerNearCoast(Vessel)=true, Ih, Id, union, true, I).
+	overlaps(dangerNearCoast(Vessel)=true, 1, Ih, Id, union, true, I).
 
 %-------- gainingSpeed ---------------------------%
 holdsForSDFluentn(gainingSpeed(Vessel)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, movingSpeed(Vessel)=below, Ib),
 	holdsForProcessedSimpleFluent(Vessel, movingSpeed(Vessel)=normal, In),
-	meets(movingSpeed(Vessel)=below, movingSpeed(Vessel)=normal, gainingSpeed(Vessel)=true, Ib, In, union, true, I).
+	meets(gainingSpeed(Vessel)=true, 1, Ib, In, union, true, I).
 
 %-------- speedChangeAbove ---------------------------%
 holdsForSDFluent(speedChangeAbove(Vessel)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, changingSpeed(Vessel)=true, Ic),
 	holdsForProcessedSimpleFluent(Vessel, movingSpeed(Vessel)=above, Ia),
-	starts(changingSpeed(Vessel)=true, movingSpeed(Vessel)=above, speedChangeAbove(Vessel)=true, Ic, Ia, relative_complement_inverse, true, I).
+	starts(speedChangeAbove(Vessel)=true, 1, Ic, Ia, relative_complement_inverse, true, I).
 
 %-------- collisionDanger ---------------------------%
 holdsForSDFluent(collisionDanger(Vessel1, Vessel2)=true, I):- 
@@ -392,7 +388,7 @@ holdsForSDFluent(collisionDanger(Vessel1, Vessel2)=true, I):-
     holdsForProcessedSimpleFluent(Vessel1, movingSpeed(Vessel1)=above, Imsa1),
     holdsForProcessedSimpleFluent(Vessel2, movingSpeed(Vessel2)=above, Imsa2),
 	union_all([Imsa1,Imsa2],Imsa),
-    overlaps(collisionDanger(Vessel1, Vessel2)=true, Imsa, Ip, intersection, true, I).
+    overlaps(collisionDanger(Vessel1, Vessel2)=true, 1, Imsa, Ip, intersection, true, I).
 
 %-------- suspiciousRendezVous ---------------------------%
 holdsForSDFluent(suspiciousRendezVous(Vessel1, Vessel2)=true, I):-
@@ -400,7 +396,7 @@ holdsForSDFluent(suspiciousRendezVous(Vessel1, Vessel2)=true, I):-
     holdsForProcessedSimpleFluent(Vessel1, gap(Vessel1)=_, Ig1),
     holdsForProcessedSimpleFluent(Vessel2, gap(Vessel2)=_, Ig2),
 	union_all([Ig1,Ig2], Ig),
-    during(suspiciousRendezVous(Vessel1, Vessel2)=true, Ig, Ip, lhs, true, I).
+    during(suspiciousRendezVous(Vessel1, Vessel2)=true, 1, Ig, Ip, lhs, true, I).
 
 %-------- anchoredFarFromPorts ---------------------------%
 holdsForSDFluent(anchoredFarFromPorts(Vessel)=true,I) :-
@@ -408,92 +404,92 @@ holdsForSDFluent(anchoredFarFromPorts(Vessel)=true,I) :-
     holdsForProcessedSimpleFluent(Vessel,stopped(Vessel)=farFromPorts,Isf),
     holdsForProcessedSimpleFluent(Vessel,withinArea(Vessel,anchorage)=true,Ia),
     intersect_all([Isf,Ia],Isfa),
-	equal(anchoredFarFromPorts(Vessel)=true, Iaom, Isfa, lhs, true, I).
+	equal(anchoredFarFromPorts(Vessel)=true, 1, Iaom, Isfa, lhs, true, I).
 
 %-------- anchoredNearPorts ---------------------------%
 holdsForSDFluent(anchoredNearPorts(Vessel)=true,I) :-
 	holdsForProcessedSDFluent(Vessel, anchoredOrMoored(Vessel)=true, Iaom),
     holdsForProcessedSimpleFluent(Vessel,stopped(Vessel)=nearPorts,Isn),
-	equal(anchoredNearPorts(Vessel)=true, Iaom, Isn, lhs, true, I).
+	equal(anchoredNearPorts(Vessel)=true, 1, Iaom, Isn, lhs, true, I).
 
 %-------- tuggingStartsProximity ---------------------------%
 holdsForSDFluent(tuggingStartsProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,tugging(Vessel1,Vessel2)=true, It),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	starts(tuggingStartsProximity(Vessel1,Vessel2)=true, It, Ip, lhs, true, I).
+	starts(tuggingStartsProximity(Vessel1,Vessel2)=true, 1, It, Ip, lhs, true, I).
 
 %-------- tuggingFinishesProximity ---------------------------%
 holdsForSDFluent(tuggingFinishesProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,tugging(Vessel1,Vessel2)=true, It),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	finishes(tuggingFinishesProximity(Vessel1,Vessel2)=true, It, Ip, lhs, true, I).
+	finishes(tuggingFinishesProximity(Vessel1,Vessel2)=true, 1, It, Ip, lhs, true, I).
 
 %-------- tuggingEqualProximity ---------------------------%
 holdsForSDFluent(tuggingEqualProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,tugging(Vessel1,Vessel2)=true, It),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	equal(tuggingEqualProximity(Vessel1,Vessel2)=true, It, Ip, lhs, true, I).
+	equal(tuggingEqualProximity(Vessel1,Vessel2)=true, 1, It, Ip, lhs, true, I).
 
 %-------- rendezVousStartsProximity ---------------------------%
 holdsForSDFluent(rendezVousStartsProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,rendezVous(Vessel1,Vessel2)=true, Ir),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	starts(rendezVousStartsProximity(Vessel1,Vessel2)=true, Ir, Ip, lhs, true, I).
+	starts(rendezVousStartsProximity(Vessel1,Vessel2)=true, 1, Ir, Ip, lhs, true, I).
 
 %-------- rendezVousFinishesProximity ---------------------------%
 holdsForSDFluent(rendezVousFinishesProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,rendezVous(Vessel1,Vessel2)=true, Ir),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	finishes(rendezVousFinishesProximity(Vessel1,Vessel2)=true, Ir, Ip, lhs, true, I).
+	finishes(rendezVousFinishesProximity(Vessel1,Vessel2)=true, 1, Ir, Ip, lhs, true, I).
 
 %-------- rendezVousEqualProximity ---------------------------%
 holdsForSDFluent(rendezVousEqualProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,rendezVous(Vessel1,Vessel2)=true, Ir),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	equal(rendezVousEqualProximity(Vessel1,Vessel2)=true, Ir, Ip, lhs, true, I).
+	equal(rendezVousEqualProximity(Vessel1,Vessel2)=true, 1, Ir, Ip, lhs, true, I).
 
 %-------- pilotOpsStartsProximity ---------------------------%
 holdsForSDFluent(pilotOpsStartsProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	starts(pilotOpsStartsProximity(Vessel1,Vessel2)=true, Ipo, Ip, lhs, true, I).
+	starts(pilotOpsStartsProximity(Vessel1,Vessel2)=true, 1, Ipo, Ip, lhs, true, I).
 
 %-------- pilotOpsFinishesProximity ---------------------------%
 holdsForSDFluent(pilotOpsFinishesProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	finishes(pilotOpsFinishesProximity(Vessel1,Vessel2)=true, Ipo, Ip, lhs, true, I).
+	finishes(pilotOpsFinishesProximity(Vessel1,Vessel2)=true, 1, Ipo, Ip, lhs, true, I).
 
 %-------- pilotOpsEqualProximity ---------------------------%
 holdsForSDFluent(pilotOpsEqualProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	equal(pilotOpsEqualProximity(Vessel1,Vessel2)=true, Ipo, Ip, lhs, true, I).
+	equal(pilotOpsEqualProximity(Vessel1,Vessel2)=true, 1, Ipo, Ip, lhs, true, I).
 
 % movingSpeed rel underay patterns	
 %-------- movingSpeedStartsUnderway---------------------------%
 holdsForSDFluent(movingSpeedStartsUnderway(Vessel)=Speed,I):-
 	holdsForProcessedSDFluent(Vessel,underWay(Vessel)=true, Iu),
 	holdsForProcessedSimpleFluent(Vessel,movingSpeed(Vessel)=Speed, Ims),
-	starts(movingSpeedStartsUnderway(Vessel)=Speed, Ims, Iu, lhs, true, I).
+	starts(movingSpeedStartsUnderway(Vessel)=Speed, 1, Ims, Iu, lhs, true, I).
 
 %-------- movingSpeedFinishesUnderway ---------------------------%
 holdsForSDFluent(movingSpeedFinishesUnderway(Vessel)=Speed,I):-
 	holdsForProcessedSDFluent(Vessel,underWay(Vessel)=true, Iu),
 	holdsForProcessedSimpleFluent(Vessel,movingSpeed(Vessel)=Speed, Ims),
-	finishes(movingSpeedFinishesUnderway(Vessel)=Speed, Ims, Iu, lhs, true, I).
+	finishes(movingSpeedFinishesUnderway(Vessel)=Speed, 1, Ims, Iu, lhs, true, I).
 
 %-------- movingSpeedEqualUnderway ---------------------------%
 holdsForSDFluent(movingSpeedEqualUnderway(Vessel)=Speed,I):-
 	holdsForProcessedSDFluent(Vessel,underWay(Vessel)=true, Iu),
 	holdsForProcessedSimpleFluent(Vessel,movingSpeed(Vessel)=Speed, Ims),
-	equal(movingSpeedEqualUnderway(Vessel)=Speed, Ims, Iu, lhs, true, I).
+	equal(movingSpeedEqualUnderway(Vessel)=Speed, 1, Ims, Iu, lhs, true, I).
 
 %-------- pilotOpsEqualProximity ---------------------------%
 holdsForSDFluent(pilotOpsEqualProximity(Vessel1,Vessel2)=true,I):-
 	holdsForProcessedSDFluent(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
 	holdsForProcessedIE(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
-	equal(pilotOpsEqualProximity(Vessel1,Vessel2)=true, Ipo, Ip, lhs, true, I).
+	equal(pilotOpsEqualProximity(Vessel1,Vessel2)=true, 1, Ipo, Ip, lhs, true, I).
 
 %-------- driftingWhileTugging ---------------------------%
 holdsForSDFluent(driftingWhileTugging(Vessel1, Vessel2)=true, I):-
@@ -501,25 +497,22 @@ holdsForSDFluent(driftingWhileTugging(Vessel1, Vessel2)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel1, drifting(Vessel1)=true, Id1),
 	holdsForProcessedSimpleFluent(Vessel2, drifting(Vessel2)=true, Id2),
 	union_all([Id1,Id2], Id),
-	during(driftingWhileTugging(Vessel1, Vessel2)=true, It, Id, union, true, I).
+	during(driftingWhileTugging(Vessel1, Vessel2)=true, 1, It, Id, union, true, I).
 
-*/
-
-/*	
 %-------- fishingTripInArea ---------------------------%
 holdsForSDFluent(fishingTripInArea(Vessel)=true, I):-
     holdsForProcessedSimpleFluent(Vessel, withinArea(Vessel, nearPorts)=true, Iwa), 
     holdsForProcessedSimpleFluent(Vessel, withinArea(Vessel, fishing)=true, Iwaf),
-	before(Iwa, Iwaf, union, true, Ifishing1),
-    before(fishingTripInArea(Vessel)=true, Ifishing1, Iwa, union, true, I).
+	before(fishingTripInArea(Vessel)=true, 1, Iwa, Iwaf, union, true, Ifishing1),
+    before(fishingTripInArea(Vessel)=true, 2, Ifishing1, Iwa, union, true, I).
 
 %-------- fishingTripTrawling ---------------------------%
 holdsForSDFluent(fishingTripTrawling(Vessel)=true, I):-
     holdsForProcessedSimpleFluent(Vessel, withinArea(Vessel, nearPorts)=true, Iwa), 
     holdsForProcessedSDFluent(Vessel, trawling(Vessel)=true, It),
-	before(Iwa, It, union, true, Ifishing1),
-    before(Ifishing1, Iwa, union, true, I).
-*/
+	before(fishingTripTrawling(Vessel)=true, 1, Iwa, It, union, true, Ifishing1),
+    before(fishingTripTrawling(Vessel)=true, 2, Ifishing1, Iwa, union, true, I).
+
 cachingOrder2(Vessel, withinArea(Vessel,AreaType)=true) :-
     vessel(Vessel),areaType(AreaType).
 
@@ -673,13 +666,11 @@ cachingOrder2(Vessel, suspiciousRendezVous(Vessel, Vessel2)=true):-
 cachingOrder2(Vessel, driftingWhileTugging(Vessel, Vessel2)=true):-
     vpair(Vessel, Vessel2).
 
-/*
 cachingOrder2(Vessel, fishingTripInArea(Vessel)=true):-
     vessel(Vessel).
 
 cachingOrder2(Vessel, fishingTripTrawling(Vessel)=true):-
     vessel(Vessel).
-*/
 
 collectIntervals2(Vessel, proximity(Vessel,Vessel2)=true) :-
     vpair(Vessel,Vessel2).

@@ -101,7 +101,8 @@ printRecognitions(CEIntervalsFile, CurrentTime, WM) :-
 		outputEntity(F=V),
                 holdsFor(F=V,L),
                 L\==[],
-                intersect_all([L,[(StartTime,CurrentTime)]],L2)
+				L2=L
+				%intersect_all([L,[(StartTime,CurrentTime)]],L2)
                 ), 
               CEIntervals),
 	writeCEs(CEIntervalsStream, CEIntervals),
