@@ -262,8 +262,8 @@ holdsForSDFluent(trawling(Vessel)=true,I) :-
     holdsForProcessedSimpleFluent(Vessel,trawlSpeed(Vessel)=true,Its),
     holdsForProcessedSimpleFluent(Vessel,trawlingMovement(Vessel)=true,Itm),
     intersect_all([Its,Itm],Ii),
-    thresholds(trawlingTime,Thr),
-    intDurGreater(Ii,Thr,I).
+	thresholds(trawlingTime,Thr),
+	intDurGreater(Ii,Thr,I).
 
 
 %-------------------------- SAR --------------%
@@ -306,7 +306,7 @@ holdsForSDFluent(inSAR(Vessel)=true,I) :-
     holdsForProcessedSimpleFluent(Vessel,sarSpeed(Vessel)=true,Iss),
     holdsForProcessedSimpleFluent(Vessel,sarMovement(Vessel)=true,Ism),
     intersect_all([Iss,Ism],Ii),
-    intDurGreater(Ii,3600,I).
+	intDurGreater(Ii,3600,I).
 
 
 %-------- loitering --------------------------%

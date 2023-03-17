@@ -9,6 +9,7 @@ examples/toy/results/*.txt
 examples/voting/results/*.txt
 examples/maritime/dataset/csv/*.csv
 examples/maritime-imis/*
+examples/maritime/scripts/*
 ehthumbs.db
 Icon?
 Thumbs.db
