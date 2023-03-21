@@ -54,21 +54,23 @@ cachingLevel(Node, Level) :-
 simplEC(InputFile, OutputFile, DeclarationsFile, GraphFile, GraphFontSize, FourArgAtRules) :-
 	
 	% Prepare files for reading and writing
-	split_string(InputFile, ".", "", InputFileTokens),
+	% Set log file name
+	split_string(InputFile, ".", "", InputFileTokens), 
 	list_head(InputFileTokens, InputName, _),
-	atomics_to_string([InputName, ".log"], LogFile),
+	atomics_to_string([InputName, ".log"], LogFile),  
+	% open files
 	open(InputFile, read, Input),
 	open(DeclarationsFile, write, DeclStream),
 	open(LogFile, write, LogStream), close(LogStream),
 	tell(OutputFile),
-	
 	% Set auxiliary global variables for interval numbering and logfile production
-	nb_setval(intervalNo, 1),
+	nb_setval(intervalNo, 1), % count the intervals inside a holdsfor
 	nb_setval(logFile, LogFile),
 	nb_setval(fourArgs, FourArgAtRules),
 	
-	% Parse and translate the rules into RTEC format
+	% Parse SimplEC rules in <Input> in variable <Codes>.
 	read_stream_to_codes(Input, Codes),
+	% Match <Codes> against the DCG rule 'goal'.
 	phrase(goal, Codes),
 	
 	% Finalize dependencies
@@ -207,9 +209,11 @@ space 			--> 	"\r", space.
 space 			--> 	" ", space.
 space			-->	[].
 
+% SimplEC rules comprise a 'space' seperated list of ceDefinitions.
 goal			--> 	space, ceDefinition, space, goal.
 goal			--> 	[].
 
+% A SimplEC file contains declarations of atemporal predicates. These predicates represent background knowledge and are probably defined in Prolog files.
 ceDefinition		-->	atemporalPredicates.
 ceDefinition		-->	multivaluedFluents.
 ceDefinition		-->	initially.
@@ -229,7 +233,8 @@ ceDefinition		-->	string_without([46], ErrRule), ".",
 					write(LogStream, "\nERROR: Unknown event pattern detected.\nPlease check your syntax.\n\n"),
 					close(LogStream)
 				}.
-				
+
+% atemporal predicate declarations consist of a keyword followed by a list of functor names. These are the names of the predicates used in the background knowledge of the domain,	
 atemporalPredicates	-->	"atemporal:", space, functawr(FncStr), moreFacts, ".",
 				{
 					assertz(atem(FncStr))
@@ -241,6 +246,7 @@ moreFacts		-->	space, ",", space, functawr(FncStr), moreFacts,
 				}.
 moreFacts		-->	"".
 
+% this does not appear in the examples
 multivaluedFluents	-->	"multivalued:", space, multivaluedFluent, moremultivaluedFluents, ".".
 
 moremultivaluedFluents	-->	space, ",", space, multivaluedFluent, moremultivaluedFluents.
@@ -292,6 +298,7 @@ grounding	--> "grounding:", space, string_without([45], Thingy), "-->", space, s
 	assertz(three(Result))
 }.
 
+% 
 initially		-->	"initially", space, fluent("simple", "output", CTStr, _, _, _, _, null, null), ".",
 				{
 					atomics_to_string(["initially(", CTStr, ").\n\n"], "", InitiallyStr),
@@ -376,6 +383,7 @@ shead(HeadStr, DeclRepr, GraphRepr)						--> 	"happens", space, event("output", 
 	atomics_to_string(["happensAt(", EvStr, ", T)"], "", HeadStr)
 }.
 
+% Type: simple, sD. Etype: output, input.
 fluent(Type, Etype, CTStr, DeclRepr, GraphRepr, _, I, HeadDeclRepr, HeadGraphRepr)	--> 	functawr(FncStr), "(", argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, Index, _), ")", space, value(ValStr, VType), !,
 {
 	\+ atem(FncStr),
@@ -563,21 +571,26 @@ event(Etype, EvStr, DeclRepr, GraphRepr, _, HeadDeclRepr, HeadGraphRepr)		-->	fu
 	assertz(matchRepr(DeclRepr, GraphRepr)))
 }.
 
+% a functor starts with a lower case letter and is possibly following by other characters (see restChars).
 functawr(FncStr)	 					--> 	[Lower], { char_type(Lower, lower) }, restChars(RCList),
 {
 	string_codes(FncStr, [Lower|RCList])
 }.
 	
+% a variable may start with an upper case letter and is possibly following by other characters (see restChars).
 variable(VarStr)						-->	[Upper], { char_type(Upper, upper) }, restChars(RCList),
 {
 	string_codes(VarStr, [Upper|RCList])
 }.
+
+% a variable may start with an underscore and is possibly following by other characters (see restChars).
 variable(VarStr)						-->	"_", restChars(RCList),
 {
 	string_codes(RCStr, RCList),
 	string_concat("_", RCStr, VarStr)
 }.
 
+% second argument is an output and states whether the detected value was a variable or ground.
 value(ValStr, var)						-->	"=", space, variable(ArgStr),
 {
 	string_concat("=", ArgStr, ValStr)
@@ -608,6 +621,7 @@ value(ValStr, val)						-->	"=", space, tuple(ArgStr, _),
 }.
 value("=true", val)						-->	[].
 
+% Read everything until \t,\n,\r,<space>,(,),<comma>,.,[,]
 restChars(Chars)						--> 	string_without([9, 10, 13, 32, 40, 41, 44, 46, 91, 93], Chars).
 
 argumentsList(ArgLStr, UArgLStr, GArgLStr, IndArgLStr, "X", ArgList)	--> 	"_", moreArguments(MArgStr, UMArgStr, GMArgStr, MArgList),
