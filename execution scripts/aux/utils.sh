@@ -110,7 +110,6 @@ function set_prolog_command() {
 	[ -z $results_directory ] || second_argument+=",results_directory='$results_directory'" 
 	# event_description and input_providers are are comma-separated strings. 
 	[ ${#input_providers[@]} -gt 0 ] && printf -v input_providers "'%s'," "${input_providers[@]}" &&  second_argument+=",input_providers=[${input_providers%,}]"
-	echo ${input_providers}
 	[ ${#goal[@]} -gt 0 ] &&  printf -v goal '%s,' "${goal[@]}" 
 	[ ${#goal[@]} -gt 0 ] &&  second_argument+=",goal=[${goal%,}]"
 	second_argument+="]"
