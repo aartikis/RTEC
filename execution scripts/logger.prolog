@@ -96,12 +96,13 @@ logWindowStats(LogFileStream, RecTimes, InputList, (OutputListOutFVpairs,OutputL
 printRecognitions(CEIntervalsFile, CurrentTime, WM) :-
 	open(CEIntervalsFile, append, CEIntervalsStream),
 	StartTime is CurrentTime-WM,
+	NextStartTime is StartTime + 1,
 	findall((F=V,L2), 
 		(
 		outputEntity(F=V),
                 holdsFor(F=V,L),
                 L\==[],
-                intersect_all([L,[(StartTime,CurrentTime)]],L2)
+                intersect_all([L,[(NextStartTime,CurrentTime)]],L2)
                 ), 
               CEIntervals),
 	writeCEs(CEIntervalsStream, CEIntervals),

@@ -95,7 +95,7 @@ DECLARATIONS:
 /***** dynamic predicates *****/
 
 % The predicates below are asserted/retracted
-:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3.
+:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, queryTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3.
 
 % The predicates below may or may not appear in the event description of an application;
 % thus they must be declared dynamic
@@ -163,6 +163,7 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Forget
 eventRecognition(QueryTime, WM) :-
 	InitTime is QueryTime-WM,
 	assert(initTime(InitTime)),
+	assert(queryTime(QueryTime)),
     % delete input entities that have taken place before or on Qi-WM
 	forget(InitTime),
 	% calculate the items for which we will perform reasoning
@@ -186,6 +187,7 @@ eventRecognition(QueryTime, WM) :-
 	findall(OE, (cachingOrder2(Index,OE), processEntity(Index,OE,InitTime,QueryTime)), _),
 	% DEADLINES #2 CHANGE
 	findall((F=V,Duration), (maxDuration(F=V,_,Duration), deadlines2(F=V,Duration,InitTime)), _),
+	retract(queryTime(QueryTime)),
 	retract(initTime(InitTime)).
 
 processEntity(Index, OE, InitTime, QueryTime) :-
