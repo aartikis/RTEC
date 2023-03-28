@@ -15,6 +15,9 @@
 %Vessel information
 :-['./vesselInformation/vesselStaticInfo.prolog'].
 :-['./vesselInformation/typeSpeeds.prolog'].
+% Asserting all vessels before execution is not required, because we use dynamic grounding.
+%:-['./vesselInformation/vessels.prolog'].
+%:-['./vesselInformation/vesselPairs.prolog'].
 
 %Patterns parameters
 :-['./patternsParameters/thresholds.prolog'].

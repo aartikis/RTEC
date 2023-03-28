@@ -216,6 +216,7 @@ assertFluent(Row) :-
 	Fluent =.. [FluentLabel|FluentAttributes],
 	% check that the fluent should be represented by means of holdsAtIE
 	% points/1 is defined in the declarations of an event description
+	% points(Fluent=Value), !,
 	points(Fluent=Value), !, 
 	assert( holdsAtIE(Fluent=Value, OccurenceTime) ).
 	

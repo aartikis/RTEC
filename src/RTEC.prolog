@@ -97,9 +97,9 @@ DECLARATIONS:
 % The predicates below are asserted/retracted
 :- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3.
 
-% The predicates below may or may not appear in the declarations of an application;
+% The predicates below may or may not appear in the event description of an application;
 % thus they must be declared dynamic
-:- dynamic collectIntervals/1, collectIntervals2/2, buildFromPoints/1, buildFromPoints2/2, cyclic/1, maxDuration/3, maxDurationUE/3, internalEntity/1, sDFluent/1.	%simpleFluent/1,  inputEntity/1.
+:- dynamic collectIntervals2/2, buildFromPoints2/2, cyclic/1, maxDuration/3, maxDurationUE/3, internalEntity/1, sDFluent/1,	simpleFluent/1, inputEntity/1, collectGrounds/2, dgrounded/2.
 
 /***** multifile predicates *****/
 
@@ -122,7 +122,6 @@ inputEntity/1, internalEntity/1, outputEntity/1, index/2, event/1, simpleFluent/
 holdsFor/2, holdsForSDFluent/2, initially/1, initiatedAt/2, terminatedAt/2, initiates/3, terminates/3, initiatedAt/4, terminatedAt/4, happensAt/2, maxDuration/3, maxDurationUE/3,
 % this predicate may appear in the data files of an application
 updateSDE/4. 
-
 
 /********************************** INITIALISE RECOGNITION ***********************************/
 
@@ -335,7 +334,7 @@ deadlines2(F=V, Duration, InitTime) :-
 	amalgamatePeriods(I2, I1, I),
 	findall(T, 
 		(member((S,_),I), prevTimePoint(S,PrevS), PrevS>InitTime, T is PrevS+Duration), 
-	NewList),
+	NewList), !,
 	% the predicate below is defined in processEvents.prolog
 	updateevTList(Index, attempt(F=V), NewList).
 
@@ -436,7 +435,7 @@ notBrokenOrReInitiated(_, _, _, _).
 
 % we are looking in the interval [Ts,Te)
 brokenOnce(Index, F=V1, Ts, T, Te) :-
-	simpleFluent(F=V2), \+V2=V1,
+	simpleFluent(F=V2), grounding(F=V2), \+V2=V1,
 	startedBetween(Index, F=V2, Ts, T, Te), !.
 brokenOnce(_Index, F=V, Ts, T, Te) :-
 	terminatedAt(F=V, Ts, T, Te), !.

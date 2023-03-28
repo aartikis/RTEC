@@ -10,15 +10,19 @@
 %:- ['prolog/agent9000.prolog'].
 %:- ['prolog/agent10000.prolog'].
 
-assert_n_agents(N):- N>0, N1 is N-1, N1=0, assert(agent(N1)).
-assert_n_agents(N):- N>0, N1 is N-1, assert(agent(N1)), assert_n_agents(N1).
+%assert_n_agents(N):- N>0, N1 is N-1, N1=0, assert(agent(N1)).
+%assert_n_agents(N):- N>0, N1 is N-1, assert(agent(N1)), assert_n_agents(N1).
 
 role(merchant).
 role(consumer).
 
 % role allocation: 66% consumers, 10% merchants, 6% both roles, 30% no role
-role_of(C, consumer) :- agent(C), TempC is C mod 3, TempC>0.
-role_of(M, merchant) :- agent(M), TempM is M mod 10, TempM=0.
+role_of(C, consumer) :- 
+	%agent(C),
+	TempC is C mod 3, TempC>0.
+role_of(M, merchant) :- 
+	%agent(M),
+	TempM is M mod 10, TempM=0.
 
 %queryGoodsDescription(book1).
 %queryGoodsDescription(book2).

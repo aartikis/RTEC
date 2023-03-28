@@ -30,6 +30,7 @@ get_row_from_line(_Stream,[],end_of_file,end_of_file).
 get_row_from_line(Stream,Row,StreamPosition,NewStreamPosition) :-
 	(
 	StreamPosition \= [],
+	% In YAP 7.3, the stream flag "reposition" must be set to true before running the following predicate.
 	set_stream_position(Stream,StreamPosition),
 	!
 	;

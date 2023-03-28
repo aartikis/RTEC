@@ -1,0 +1,116 @@
+# Default values for the applications packed with RTEC.
+
+[toy]
+# RTEC execution parameters 
+event_description = '../examples/toy/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/toy/dataset/csv/toy_data.csv']
+results_directory = "../examples/toy/results"
+window_size = 10
+step = 10
+start_time = 0
+end_time = 50
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/toy/dataset/auxiliary/toy_var_domain.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/toy/resources/graphs'
+include_input = false
+
+[maritime]
+# RTEC execution parameters 
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']
+results_directory = "../examples/maritime/results"
+window_size = 86400 # 1 day = 86400 seconds
+step = 86400
+start_time = 1443650400 
+end_time = 1448834400
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+stream_rate = 1000
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+
+[voting]
+# RTEC execution parameters 
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+input_mode = "fifo"
+input_providers = ['../examples/voting/dataset/csv/voting.csv']
+results_directory = "../examples/voting/results"
+window_size = 10
+step = 10
+start_time = 0
+end_time = 100
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/voting/resources/graphs'
+include_input = false
+
+[netbill]
+# RTEC execution parameters 
+event_description = '../examples/netbill/resources/patterns/rules.prolog'
+input_mode = "fifo"
+input_providers = ['../examples/netbill/dataset/csv/netbill.csv']
+results_directory = "../examples/netbill/results"
+window_size = 10
+step = 10
+start_time = 0
+end_time = 100
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/netbill/resources/graphs'
+include_input = false
+
+[caviar]
+# RTEC execution parameters 
+event_description = '../examples/caviar/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
+results_directory = "../examples/caviar/results"
+window_size = 100000
+step = 100000
+start_time = 0
+end_time = 1007000
+clock_tick = 40
+goals = []
+background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.prolog'] #, '../examples/caviar/dataset/auxiliary/list-of-ids.prolog']
+stream_rate = 10000
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/caviar/resources/graphs'
+include_input = false
+
+[ctm]
+# RTEC execution parameters 
+event_description = '../examples/ctm/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv    /internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv'    , '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/    csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']
+results_directory = "../examples/ctm/results"
+window_size = 10000
+step = 10000
+start_time = 0
+end_time = 50000
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/ctm/dataset/auxiliary/vehicles.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/ctm/resources/graphs'
+include_input = false
+

@@ -161,6 +161,7 @@ printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs
 	write('Output Entities (# timepoints)		: '), writeln(OutLD),
 	writeln('=========================================================').
 
+%% multiline arguments to format may produce an error in some Prolog engines, e.g., YAP 7.3
 printLogo:- 
 	format("                                                                 
 	8 888888888o. 8888888 8888888888 8 8888888888       ,o888888o.    

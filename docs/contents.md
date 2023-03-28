@@ -9,12 +9,13 @@
    4. [Voting in Multi-Agent Systems](../examples/voting/README.md)
    5. [NetBill: An E-commerce Protocol](../examples/netbill/README.md)
    6. [Maritime Situational Awareness](../examples/maritime/README.md)
-4. Running RTEC in Prolog
-   1. [Requirements](prolog-requirements.md)
-   2. [Running an Existing Application](prolog-existing-apps.md) 
-   3. [Running a New Application](prolog-new-apps.md)
-5. Running RTEC with its Command Line Interface 
+4. [Reasoning over Historical Data vs a Live Stream](input_mode.md)
+5. Running RTEC with a bash execution script
+   1. [Requirements](requirements.md)
+   2. [Running an Existing Application](existing-apps.md) 
+   3. [Running a New Application](new-apps.md)
+6. Running RTEC with its Command Line Interface 
    1. [Requirements](cli-requirements.md)
    2. [Running an Existing Application](cli-existing-apps.md)
-6. [References](references.md)
+7. [References](references.md)
 

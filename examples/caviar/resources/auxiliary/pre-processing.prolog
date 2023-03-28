@@ -33,7 +33,11 @@ aux2(Threshold, List, QueryTime, Id1, Id2) :-
 % do not assert empty list of distance intervals
 aux2(_Threshold, _List, _QueryTime, _Id1, _Id2).
 
+id_pair(Id1, Id2):-
+	id(Id1), id(Id2), Id1@<Id2.
 
+symmetric_id_pair(Id1, Id2):-
+	id(Id1), id(Id2), Id2@<Id1.
 
 % Application-dependent threshold distances
 % IMPORTANT: the facts below must be ordered by threshold and there should be no duplicates
