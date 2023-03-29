@@ -15,5 +15,5 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 # Execution Instructions
 
 1. [Requirements](../../docs/requirements.md)
-2. [Running an Existing Application with Prolog](../../docs/existing-apps.md)
+2. [Running an Existing Application with a bash script](../../docs/existing-apps.md)
 3. [Running an Existing Application with the Command Line Interface](../../docs/cli-existing-apps.md)
