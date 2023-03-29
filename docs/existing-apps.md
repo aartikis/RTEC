@@ -25,11 +25,11 @@
 
   2. **Run RTEC.** 
 
-	- **default parameters**: We run RTEC with the bash script "execution scripts/run_rtec.sh". Open a terminal, ```cd execution\ scripts``` and execute the command ```.\run_rtec.sh --app=toy```. This command runs RTEC for the toy application and the default parameters specified in the TOML file.
+- **default parameters**: We run RTEC with the bash script "execution scripts/run_rtec.sh". Open a terminal, ```cd execution\ scripts``` and execute the command ```.\run_rtec.sh --app=toy```. This command runs RTEC for the toy application and the default parameters specified in the TOML file.
 
-    - **custom parameters**: One way to change the execution parameters of RTEC is to modify the key-value pairs in the TOML file. This may not be practical, however, in certain cases, such as when RTEC is being invoked by another program. To address this issue, the user may pass custom key-value pairs as parameters in "run_rtec.sh", overriding the default value of the corresponding parameters. For example, the command ```.\run_rtec.sh --app=toy --window-size=20``` runs RTEC for the toy application using windows of 20 time-points. The remaining parameters are set to their default values, as specified in the TOML file. The names of the parameters passed to the "run_rtec.sh" are the same as in the TOML file, after replacing "_" with "-".
+- **custom parameters**: One way to change the execution parameters of RTEC is to modify the key-value pairs in the TOML file. This may not be practical, however, in certain cases, such as when RTEC is being invoked by another program. To address this issue, the user may pass custom key-value pairs as parameters in "run_rtec.sh", overriding the default value of the corresponding parameters. For example, the command ```.\run_rtec.sh --app=toy --window-size=20``` runs RTEC for the toy application using windows of 20 time-points. The remaining parameters are set to their default values, as specified in the TOML file. The names of the parameters passed to the "run_rtec.sh" are the same as in the TOML file, after replacing "_" with "-".
 
-  4. **See the execution results.** The specified results directory includes a log file with statistics concerning the execution of RTEC and a file containing intervals recognised by RTEC in each window. 
+3. **See the execution results.** The specified results directory includes a log file with statistics concerning the execution of RTEC and a file containing intervals recognised by RTEC in each window. 
 
 ### Execution examples
 
