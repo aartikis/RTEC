@@ -38,14 +38,12 @@ role_of is rigid, ie it is not a fluent. Agents may be temporarily suspended tho
 % ----- a quote enables the consumer to create a contract by accepting it
 initiatedAt(quote(Merch,Cons,GD)=true, T) :-
 	happensAt(present_quote(Merch,Cons,GD,_Price), T).
-initiatedAt(quote(Merch,Cons,GD)=false, T) :-
+terminatedAt(quote(Merch,Cons,GD)=true, T) :-
 	happensAt(accept_quote(Cons,Merch,GD), T).
 % ----- a quote is terminated 5 time-points after initiated
 maxDurationUE(quote(Merch,Cons,GD)=true, quote(Merch,Cons,GD)=false, 5).
 
-/*****************
- *   contract	 *
- *****************/
+ % *   contract	 *
 
 % ----- accepting a quote initiates a contract 
 initiatedAt(contract(Merch,Cons,GD)=true, T) :-
@@ -57,9 +55,7 @@ initiatedAt(contract(Merch,Cons,GD)=true, T) :-
 % ----- a contract is terminated 10 time-points after initiated 
 maxDuration(contract(Merch,Cons,GD)=true, contract(Merch,Cons,GD)=false, 5).
 
-/*********************
-  INSTITUTIONAL POWER
- *********************/
+% INSTITUTIONAL POWER
 
 holdsFor(pow(accept_quote(Cons,Merch,GD))=true, I) :-
 	holdsFor(quote(Merch,Cons,GD)=true, I1),
@@ -69,15 +65,7 @@ holdsFor(pow(accept_quote(Cons,Merch,GD))=true, I) :-
 	
 % ----- we do not define institutional power for the remaining actions
 
-/***********************
- *     PERMISSION      *
- ***********************/
-
-/*
-% initially:
-initiatedAt(per(present_quote(Merch,Cons))=true, T1, -1, T2) :- 
-	T1=<(-1), -1<T2.
-*/
+% *     PERMISSION      *
 
 % permitted by default; thus we only model (and ground) prohibitions
 initiatedAt(per(present_quote(Merch,Cons))=false, T) :-
@@ -86,9 +74,7 @@ initiatedAt(per(present_quote(Merch,Cons))=true, T) :-
 	happensAt(request_quote(Cons,Merch,_GD), T).
 maxDurationUE(per(present_quote(Merch,Cons))=false, per(present_quote(Merch,Cons))=true, 10).
 
-/***********************
- *     OBLIGATION      *
- ***********************/
+% *     OBLIGATION      *
 
 % ----- establishing a contract initiates obligations for the contracting parties
 initiatedAt(obl(send_EPO(Cons,iServer,GD))=true, T1, T, T2) :-
@@ -118,9 +104,7 @@ initiatedAt(obl(send_goods(Merch,iServer,GD))=false, T1, T, T2) :-
 	% end(F=V) events are not supported for cyclic fluents F
 	initiatedAt(contract(Merch,_Cons,GD)=false, T1, T, T2).
 
-/***********************
- *      SANCTION       *
- ***********************/
+%       SANCTION       
 
 % ----- if a merchant sends unsolicited quotes 'too frequently', which is forbidden, 
 % ----- then it will be suspended
@@ -143,6 +127,7 @@ initiatedAt(suspended(Cons,consumer)=true, T1, T, T2) :-
 % ----- unless re-initiated in the meantime
 maxDurationUE(suspended(Ag,Role)=true, suspended(Ag,Role)=false, 3).
 
+
 % The elements of these domains are derived from the ground arguments of input entitites
 dynamicDomain(person(_)).
 dynamicDomain(person_pair(_,_)).
@@ -155,26 +140,26 @@ grounding(present_quote(M,C,_,_)):-
 grounding(accept_quote(C,M,_)):-
 	person_pair(M, C).
 grounding(send_EPO(Ag,_,_,_)):-
-	person(Ag).
+    person(Ag).
 grounding(send_goods(Ag,_,_,_,_)):-
-	person(Ag).
+    person(Ag).
 
 % Grounding of output entities:
 grounding(suspended(Ag,Role)=true):-
-	person(Ag),role_of(Ag,Role).
+    person(Ag),role_of(Ag,Role).
 grounding(quote(M,C,GD)=true):- 
-	person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
+	person_pair(M,C), role_of(C, consumer), role_of(M, merchant), \+ M=C, queryGoodsDescription(GD).
 grounding(contract(M,C,GD)=true):-
-	person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
+    person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
 grounding(contract(M,C,GD)=false):-
-	person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
+    person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ M=C, queryGoodsDescription(GD).
 grounding(pow(accept_quote(C,M,GD))=true):-
-	person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ C=M, queryGoodsDescription(GD).
+    person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ C=M, queryGoodsDescription(GD).
 grounding(per(present_quote(M,C))=false):-
-	person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ C=M.
+    person_pair(M,C),role_of(M,merchant), role_of(C,consumer), \+ C=M.
 grounding(obl(send_EPO(C,iServer,GD))=true):-
-	person(C),role_of(C,consumer), queryGoodsDescription(GD).
+    person(C),role_of(C,consumer), queryGoodsDescription(GD).
 grounding(obl(send_goods(M,iServer,GD))=true):-
-	person(M),role_of(M,merchant), queryGoodsDescription(GD).
+    person(M),role_of(M,merchant), queryGoodsDescription(GD).
 
 

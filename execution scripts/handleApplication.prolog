@@ -228,7 +228,7 @@ default(input_providers, voting, csv, ['../examples/voting/dataset/csv/voting.cs
 default(input_providers, voting, fifo, ['fifo1']).
 default(input_providers, voting, dynamic_predicates, ['../examples/voting/dataset/prolog/voting_data_generator.prolog']).
 
-default(input_providers, netbill, csv, ['../examples/netbill/dataset/csv/netbill.csv']).
+default(input_providers, netbill, csv, ['../examples/netbill/dataset/csv/netbill-100-2.csv']).
 default(input_providers, netbill, fifo, ['fifo1']).
 default(input_providers, netbill, dynamic_predicates, ['../examples/netbill/dataset/prolog/netbill_data_generator.prolog']).
 

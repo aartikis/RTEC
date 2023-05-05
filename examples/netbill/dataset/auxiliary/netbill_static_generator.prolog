@@ -17,12 +17,19 @@ role(merchant).
 role(consumer).
 
 % role allocation: 66% consumers, 10% merchants, 6% both roles, 30% no role
+%role_of(C, consumer) :- 
+%%agent(C),
+%TempC is C mod 3, TempC>0.
+%role_of(M, merchant) :- 
+%%agent(M),
+%TempM is M mod 10, TempM=0.
+
 role_of(C, consumer) :- 
 	%agent(C),
 	TempC is C mod 3, TempC>0.
 role_of(M, merchant) :- 
 	%agent(M),
-	TempM is M mod 10, TempM=0.
+	TempM is M mod 2, TempM=0.
 
 %queryGoodsDescription(book1).
 %queryGoodsDescription(book2).
@@ -31,6 +38,7 @@ role_of(M, merchant) :-
 %queryGoodsDescription(book7).
 %queryGoodsDescription(book10).
 queryGoodsDescription(book).
+queryGoodsDescription(music).
 
 
 price(_, 10).

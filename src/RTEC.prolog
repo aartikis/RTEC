@@ -437,7 +437,7 @@ notBrokenOrReInitiated(_, _, _, _).
 
 % we are looking in the interval [Ts,Te)
 brokenOnce(Index, F=V1, Ts, T, Te) :-
-	simpleFluent(F=V2), grounding(F=V2), \+V2=V1,
+	simpleFluent(F=V2), \+V2=V1, %grounding(F=V2), \+V2=V1,
 	startedBetween(Index, F=V2, Ts, T, Te), !.
 brokenOnce(_Index, F=V, Ts, T, Te) :-
 	terminatedAt(F=V, Ts, T, Te), !.

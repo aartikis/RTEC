@@ -1,4 +1,5 @@
 :-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
+:-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
 initiatedAt(punctuality(_4656,_4658)=punctual, _4668, -1, _4676) :-
      _4668=< -1,
      -1<_4676.
