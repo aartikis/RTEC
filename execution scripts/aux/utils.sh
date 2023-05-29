@@ -72,6 +72,9 @@ function input_parser (){
 	    --stream-rate=*)
 	      stream_rate="${arg#*=}"
 	      ;;
+	    --clock-tick=*)
+	      clock_tick="${arg#*=}"
+	      ;;
 		--event-description=*)
 		  event_description="${arg#=}"
 		  ;;
@@ -107,6 +110,7 @@ function set_prolog_command() {
 	[ -z $end_time ] || second_argument+=",end_time=$end_time" 
 	[ -z $input_mode ] || second_argument+=",input_mode=$input_mode" 
 	[ -z $stream_rate ] || second_argument+=",stream_rate=$stream_rate" 
+	[ -z $clock_tick ] || second_argument+=",clock_tick=$clock_tick" 
 	[ -z $results_directory ] || second_argument+=",results_directory='$results_directory'" 
 	# event_description and input_providers are are comma-separated strings. 
 	[ ${#input_providers[@]} -gt 0 ] && printf -v input_providers "'%s'," "${input_providers[@]}" &&  second_argument+=",input_providers=[${input_providers%,}]"

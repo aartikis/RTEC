@@ -95,13 +95,14 @@ default(results_directory, Application, Directory):-
 	atom_concat('../examples/', Application, Dir0),
 	atom_concat(Dir0, '/results/', Directory).
 
-default(goals, toy, []).
-default(goals, maritime, []).
-default(goals, caviar, []).
-default(goals, voting, []). 
-default(goals, netbill, []).
-default(goals, ctm, []).
-default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]).
+default(goals, toy, []):- !.
+default(goals, maritime, []):- !.
+default(goals, caviar, []):- !.
+default(goals, voting, []):- !.
+default(goals, netbill, []):- !.
+default(goals, ctm, []):- !.
+default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]):- !.
+default(goals, _Application, []).
 
 % The default event description files for each application. 
 % In order to run an application for a different value of this parameter, run:
@@ -177,13 +178,14 @@ default(stream_rate, feedback_loops, 1).
 % 	continuousQueries(ApplicationName, [sde_batch=SDEBatch]).
 % Note: this variable is only useful when running RTEC with the input mode: 'dynamic_predicates'.
 % 		The definition of the input_mode parameter is presented shortly.
-default(sde_batch, toy, 10).
-default(sde_batch, maritime, 86400).
-default(sde_batch, caviar, 1000).
-default(sde_batch, voting, 10).
-default(sde_batch, netbill, 10).
-default(sde_batch, ctm, 1000).
-default(sde_batch, feedback_loops, 10).
+default(sde_batch, toy, 10):- !.
+default(sde_batch, maritime, 86400):- !.
+default(sde_batch, caviar, 1000):- !.
+default(sde_batch, voting, 10):- !.
+default(sde_batch, netbill, 10):- !.
+default(sde_batch, ctm, 1000):- !.
+default(sde_batch, feedback_loops, 10):- !.
+default(sde_batch, _Application, 10).
 
 % todo: dynamic grounding should be on by default.
 % The default execution flags for each application. 
@@ -191,13 +193,14 @@ default(sde_batch, feedback_loops, 10).
 % 	dynamic_grounding_flag: 
 %	stream_order_flag:
 %	preprocessing_flag:
-default(dynamic_grounding_flag, toy, dynamicgrounding). 
-default(dynamic_grounding_flag, maritime, dynamicgrounding). 
-default(dynamic_grounding_flag, caviar, dynamicgrounding). 
-default(dynamic_grounding_flag, voting, dynamicgrounding). 
-default(dynamic_grounding_flag, netbill, dynamicgrounding). 
-default(dynamic_grounding_flag, ctm, dynamicgrounding). 
-default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+%default(dynamic_grounding_flag, toy, dynamicgrounding). 
+%default(dynamic_grounding_flag, maritime, dynamicgrounding). 
+%default(dynamic_grounding_flag, caviar, dynamicgrounding). 
+%default(dynamic_grounding_flag, voting, dynamicgrounding). 
+%default(dynamic_grounding_flag, netbill, dynamicgrounding). 
+%default(dynamic_grounding_flag, ctm, dynamicgrounding). 
+%default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+default(dynamic_grounding_flag, _Application, dynamicgrounding). 
 default(stream_order_flag, _Application, unordered). 
 default(preprocessing_flag, _Application, nopreprocessing). 
 
@@ -228,7 +231,7 @@ default(input_providers, voting, csv, ['../examples/voting/dataset/csv/voting.cs
 default(input_providers, voting, fifo, ['fifo1']).
 default(input_providers, voting, dynamic_predicates, ['../examples/voting/dataset/prolog/voting_data_generator.prolog']).
 
-default(input_providers, netbill, csv, ['../examples/netbill/dataset/csv/netbill-100-2.csv']).
+default(input_providers, netbill, csv, ['../examples/netbill/dataset/csv/netbill.csv']).
 default(input_providers, netbill, fifo, ['fifo1']).
 default(input_providers, netbill, dynamic_predicates, ['../examples/netbill/dataset/prolog/netbill_data_generator.prolog']).
 
