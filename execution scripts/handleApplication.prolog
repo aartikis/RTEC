@@ -186,7 +186,7 @@ default(sde_batch, voting, 10):- !.
 default(sde_batch, netbill, 10):- !.
 default(sde_batch, ctm, 1000):- !.
 default(sde_batch, feedback_loops, 10):- !.
-default(sde_batch, _, 10).
+default(sde_batch, _Application, 10).
 
 % todo: dynamic grounding should be on by default.
 % The default execution flags for each application. 

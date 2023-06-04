@@ -1,4 +1,5 @@
 :-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
+:-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
 initiatedAt(withinArea(_3162,_3164)=true, _3192, _3134, _3198) :-
      happensAtIE(entersArea(_3162,_3170),_3134),_3192=<_3134,_3134<_3198,
      areaType(_3170,_3164).

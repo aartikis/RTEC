@@ -1,4 +1,5 @@
 :-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
+:-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
 initiatedAt(quote(_3162,_3164,_3166)=true, _3186, _3134, _3192) :-
      happensAtIE(present_quote(_3162,_3164,_3166,_3176),_3134),
      _3186=<_3134,

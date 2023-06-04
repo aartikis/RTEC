@@ -114,7 +114,7 @@ broken(U, Ts, Tf, T) :-
 	terminatedAt(U, Ts, Tf, T).
 
 broken(F=V1, Ts, Tstar, T) :-
-	grounding(F=V2), \+V2=V1,
+	simpleFluent(F=V2), \+V2=V1,
 	initiatedAt(F=V2, Ts, Tstar, T). 
 	%(strong_initiates ; V1 \= V2).   
   
@@ -155,6 +155,8 @@ holdsForSimpleFluent(_U, [], _InitTime, _QueryTime, []) :- !.
 holdsForSimpleFluent(U, PeriodList, InitTime, QueryTime, InitList) :-
 	% compute the ending points within (Qi-WM,Qi]
 	computeEndingPoints(U, InitTime, QueryTime, TerminList),
+        %write('Initiation Points for '), write(U), write(': '), write(InitList), nl,
+        %write('Termination Points for '), write(U), write(': '), write(TerminList), nl,
 	makeIntervalsFromSEPoints(InitList, TerminList, PeriodList).
       
 

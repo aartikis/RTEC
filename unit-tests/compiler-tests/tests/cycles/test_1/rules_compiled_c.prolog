@@ -1,4 +1,5 @@
 :-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
+:-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
 initiatedAt(strength(_3162)=tired, _3204, _3134, _3210) :-
      happensAtIE(ends_working(_3162),_3134),_3204=<_3134,_3134<_3210,
      holdsAtCyclic(_3162,strength(_3162)=lowering,_3134).
