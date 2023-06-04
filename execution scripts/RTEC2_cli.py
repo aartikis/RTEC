@@ -110,8 +110,8 @@ def cli(use_case, path, prolog, start_time, end_time, window, step, dynamic_grou
 	
 	# Currently, the filesPath is *not* optional.
 	if len(filesPath)>0 and len(event_description)==0: # if the Prolog files have not been explicitly provided by the user.
-		default_event_description_directories = [filesPath + doubleSep + 'resources' + doubleSep + 'patterns', filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary', filesPath + doubleSep + 'dataset' + doubleSep + 'auxiliary']
-		event_description=list()
+		default_event_description_directories = [filesPath + doubleSep + 'resources' + doubleSep + 'auxiliary', filesPath + doubleSep + 'dataset' + doubleSep + 'auxiliary'] # filesPath + doubleSep + 'resources' + doubleSep + 'patterns'
+		event_description=[filesPath + doubleSep + 'resources' + doubleSep + 'patterns' + doubleSep + 'compiled_rules.prolog']
 		addFilesWithSuffixFromDirs(event_description, default_event_description_directories, '.prolog')
 	elif len(event_description)>0: 
 		event_description=list(event_description)

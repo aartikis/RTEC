@@ -25,13 +25,13 @@ brokenOnce: shall we enforce early that T2>T1?
 
 :- dynamic inertiaCheck/1.
 
-maxDuration(F=V, F=NewV, Duration) :-
-	maxDurationUE(F=V, F=NewV, Duration).	
+maxDuration(F=V, NewF=NewV, Duration) :-
+	maxDurationUE(F=V, NewF=NewV, Duration).	
 
 %%% initiatedAt(+U, +T1, -T, +T2) %%%	
 % initiatedAt/4 for deadline fluents	
-initiatedAt(F=NewV, T1, T, T2) :-
-        maxDuration(F=V, F=NewV, Duration),
+initiatedAt(NewF=NewV, T1, T, T2) :-
+        maxDuration(F=V, NewF=NewV, Duration),
         % do not evaluate dInitiatedAt/5 clauses to look for breaking points 
         % of F=V between an initiation of F=V and its deadline 
         % when the duration of F=V may be extended

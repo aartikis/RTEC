@@ -1,5 +1,3 @@
-:- dynamic person/1.
-
 initiatedAt(rich(_1882)=true, _1898, _1852, _1904) :-
      happensAtIE(win_lottery(_1882),_1852),
      _1898=<_1852,
@@ -20,23 +18,23 @@ holdsForSDFluent(happy(_1882)=true,_1852) :-
      holdsForProcessedSimpleFluent(_1882,location(_1882)=pub,_1914),
      union_all([_1898,_1914],_1852).
 
-grounding(go_to(_2154,_2156)) :- 
-     person(_2154),place(_2156).
+grounding(go_to(_2138,_2140)) :- 
+     person(_2138),place(_2140).
 
-grounding(lose_wallet(_2154)) :- 
-     person(_2154).
+grounding(lose_wallet(_2138)) :- 
+     person(_2138).
 
-grounding(win_lottery(_2154)) :- 
-     person(_2154).
+grounding(win_lottery(_2138)) :- 
+     person(_2138).
 
-grounding(location(_2160)=_2156) :- 
-     person(_2160),place(_2156).
+grounding(location(_2144)=_2140) :- 
+     person(_2144),place(_2140).
 
-grounding(rich(_2160)=true) :- 
-     person(_2160).
+grounding(rich(_2144)=true) :- 
+     person(_2144).
 
-grounding(happy(_2160)=true) :- 
-     person(_2160).
+grounding(happy(_2144)=true) :- 
+     person(_2144).
 
 inputEntity(win_lottery(_1912)).
 inputEntity(go_to(_1912,_1914)).
@@ -72,8 +70,3 @@ cachingOrder2(_2522, location(_2522)=_2518) :- % level: 1
 cachingOrder2(_3028, happy(_3028)=true) :- % level: 2
      person(_3028).
 
-collectGrounds([win_lottery(_2068), go_to(_2068,_2082), lose_wallet(_2068)],person(_2068)).
-
-dgrounded(rich(_2238)=true, person(_2238)).
-dgrounded(location(_2196)=_2192, person(_2196)).
-dgrounded(happy(_2164)=true, person(_2164)).

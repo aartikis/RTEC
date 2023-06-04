@@ -41,7 +41,7 @@ include_input = false
 [voting]
 # RTEC execution parameters 
 event_description = '../examples/voting/resources/patterns/rules.prolog'
-input_mode = "fifo"
+input_mode = "csv"
 input_providers = ['../examples/voting/dataset/csv/voting.csv']
 results_directory = "../examples/voting/results"
 window_size = 10
@@ -60,7 +60,7 @@ include_input = false
 [netbill]
 # RTEC execution parameters 
 event_description = '../examples/netbill/resources/patterns/rules.prolog'
-input_mode = "fifo"
+input_mode = "csv"
 input_providers = ['../examples/netbill/dataset/csv/netbill.csv']
 results_directory = "../examples/netbill/results"
 window_size = 10

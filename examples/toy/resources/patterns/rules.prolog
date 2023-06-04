@@ -14,7 +14,7 @@ holdsFor(happy(X)=true, I) :-
     union_all([I1,I2], I).
 
 % The elements of these domains are derived from the ground arguments of input entitites
-dynamicDomain(person(_)).
+%dynamicDomain(person(_)).
 
 % Grounding of input entities 
 grounding(go_to(Person, Place)) :- person(Person), place(Place).

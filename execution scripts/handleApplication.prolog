@@ -83,6 +83,7 @@ default(clock_tick, voting, 1).
 default(clock_tick, netbill, 1).
 default(clock_tick, ctm, 1).
 default(clock_tick, feedback_loops, 1).
+default(clock_tick, _, 1).
 
 
 % The default results directory for each application. 
@@ -95,13 +96,14 @@ default(results_directory, Application, Directory):-
 	atom_concat('../examples/', Application, Dir0),
 	atom_concat(Dir0, '/results/', Directory).
 
-default(goals, toy, []).
-default(goals, maritime, []).
-default(goals, caviar, []).
-default(goals, voting, []). 
-default(goals, netbill, []).
-default(goals, ctm, []).
-default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]).
+default(goals, toy, []):- !.
+default(goals, maritime, []):- !.
+default(goals, caviar, []):- !.
+default(goals, voting, []):- !.
+default(goals, netbill, []):- !.
+default(goals, ctm, []):- !.
+default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]):- !.
+default(goals, _Application, []).
 
 % The default event description files for each application. 
 % In order to run an application for a different value of this parameter, run:
@@ -177,13 +179,14 @@ default(stream_rate, feedback_loops, 1).
 % 	continuousQueries(ApplicationName, [sde_batch=SDEBatch]).
 % Note: this variable is only useful when running RTEC with the input mode: 'dynamic_predicates'.
 % 		The definition of the input_mode parameter is presented shortly.
-default(sde_batch, toy, 10).
-default(sde_batch, maritime, 86400).
-default(sde_batch, caviar, 1000).
-default(sde_batch, voting, 10).
-default(sde_batch, netbill, 10).
-default(sde_batch, ctm, 1000).
-default(sde_batch, feedback_loops, 10).
+default(sde_batch, toy, 10):- !.
+default(sde_batch, maritime, 86400):- !.
+default(sde_batch, caviar, 1000):- !.
+default(sde_batch, voting, 10):- !.
+default(sde_batch, netbill, 10):- !.
+default(sde_batch, ctm, 1000):- !.
+default(sde_batch, feedback_loops, 10):- !.
+default(sde_batch, _, 10).
 
 % todo: dynamic grounding should be on by default.
 % The default execution flags for each application. 
@@ -191,13 +194,14 @@ default(sde_batch, feedback_loops, 10).
 % 	dynamic_grounding_flag: 
 %	stream_order_flag:
 %	preprocessing_flag:
-default(dynamic_grounding_flag, toy, dynamicgrounding). 
-default(dynamic_grounding_flag, maritime, dynamicgrounding). 
-default(dynamic_grounding_flag, caviar, dynamicgrounding). 
-default(dynamic_grounding_flag, voting, dynamicgrounding). 
-default(dynamic_grounding_flag, netbill, dynamicgrounding). 
-default(dynamic_grounding_flag, ctm, dynamicgrounding). 
-default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+%default(dynamic_grounding_flag, toy, dynamicgrounding). 
+%default(dynamic_grounding_flag, maritime, dynamicgrounding). 
+%default(dynamic_grounding_flag, caviar, dynamicgrounding). 
+%default(dynamic_grounding_flag, voting, dynamicgrounding). 
+%default(dynamic_grounding_flag, netbill, dynamicgrounding). 
+%default(dynamic_grounding_flag, ctm, dynamicgrounding). 
+%default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+default(dynamic_grounding_flag, _Application, dynamicgrounding). 
 default(stream_order_flag, _Application, unordered). 
 default(preprocessing_flag, _Application, nopreprocessing). 
 
@@ -266,6 +270,7 @@ set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 
 handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals) :-
 	% Set window and step size
+	write(ParameterList), nl,
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
 	% Start and end times of reasoning
@@ -282,6 +287,7 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	% Set mode of receiving streams of input events
 	set_parameter(ParameterList, input_mode, App, InputMode),
 	set_parameter(ParameterList, input_providers, App, InputMode, InputProviders),
+
 	set_parameter(ParameterList, dynamic_grounding_flag, App, DynamicGroundingFlag),
 	set_parameter(ParameterList, stream_order_flag, App, StreamOrderFlag),
 	set_parameter(ParameterList, preprocessing_flag, App, PreprocessingFlag),
