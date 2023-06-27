@@ -111,6 +111,9 @@ compileEventDescription(InputDescription, OutputDescription):-
 	tell(OutputDescription),
 	processRules.
 
+% compile fi/3 should come first..
+% at this stage, the pre-compiled event description has already been asserted.
+% we should retract fi and extensible facts, and cancellationConditions rules, and assert their intermediate form.
 % compile initially/1 rules	
 compileEventDescription(_, _) :- compileInitially.
 % compile initiatedAt/2 rules
@@ -308,17 +311,21 @@ compileHappensAt :-
 
 compileMaxDuration :-
 	clause(maxDuration(F1=V1, F2=V2, R), Body),
-	write(maxDuration(F1=V1, F2=V2, R)), write(':-\n'),	
+	write(maxDuration(F1=V1, F2=V2, R)),
+        ((Body=true, \+ clause(grounding(F1=V1), _), \+ clause(grounding(F2=V2), _)) -> write('.\n\n') ; write(':-\n')),
 	(Body\=true -> (tab(5), write(Body), write(','), nl); true),
-	tab(5), write('grounding('), write(F1=V1), write('),\n'),
-	tab(5), write('grounding('), write(F2=V2), write(').\n\n'), fail.
+        (clause(grounding(F1=V1), _) -> (tab(5), write('grounding('), write(F1=V1), write('),\n')); true),
+        (clause(grounding(F2=V2), _) -> (tab(5), write('grounding('), write(F2=V2), write(').\n\n')); true),
+        fail.
 
 compileMaxDuration :-
 	clause(maxDurationUE(F1=V1, F2=V2, R), Body),
-	write(maxDurationUE(F1=V1, F2=V2, R)), write(':-\n'),
+	write(maxDurationUE(F1=V1, F2=V2, R)),
+        ((Body=true, \+ clause(grounding(F1=V1), _), \+ clause(grounding(F2=V2), _)) -> write('.\n\n') ; write(':-\n')),
 	(Body\=true -> (tab(5), write(Body), write(','), nl); true),
-	tab(5), write('grounding('), write(F1=V1), write('),\n'),
-	tab(5), write('grounding('), write(F2=V2), write(').\n\n'), fail.
+	(clause(grounding(F1=V1), _) -> (tab(5), write('grounding('), write(F1=V1), write('),\n')); true),
+        (clause(grounding(F2=V2), _) -> (tab(5), write('grounding('), write(F2=V2), write(').\n\n')); true),
+        fail.
 
 % compile cachingOrder/1 rules
 compileCachingOrder :-
@@ -1045,6 +1052,9 @@ assertInput(holdsAt(U, _)):-
 	!, assertSDF(U).
 assertInput(holdsFor(U, _)):-
 	!, assertSDF(U).
+% handle the case  
+%assertInput(P):-
+%outputEntityPredicate(P), !.
 % A body literal may be a compound term containing entity predicates.
 % For example, see the definition of auxMotionOutcomeEvent in voting.
 assertInput(F):-
@@ -1073,16 +1083,19 @@ assertSDF(_).
 
 % after freeing its variables, assert event as input entity
 assertE(E0):-
-	freeConstants(E0, E),
+	freeConstants(E0, E), 
 	\+ outputEntity(E), \+ inputEntity(E), !, 
 	assertz(event(E)), assertz(inputEntity(E)).
 % match anything
 assertE(_).
 
+%% freeConstants(+Entity, -EntityWithGroundArgs)
+% Case "Entity is a constant": EntityWithGroundArgs = Entity.
+% Case "Entity is a compound term": free recursively the arguments of Entity.
+freeConstants(C, C):-
+    atom(C), !.
 freeConstants(V, V):-
 	var(V), !.
-freeConstants(C, V):-
-	atom(C), !, var(V).
 freeConstants(F=V, F2=V):-
 	!, F=..[FName|Args],
 	% if an argument is a compound term, ground recursively.
@@ -1093,10 +1106,26 @@ freeConstants(E, E2):-
 	% if an argument is a compound term, ground recursively.
 	freeConstantsList(Args, NewArgs),
 	E2=..[EName|NewArgs].
+
 freeConstantsList([], []).
 freeConstantsList([Arg|R], [NewArg|NewR]):-
-	freeConstants(Arg, NewArg),
+	freeConstantsRec(Arg, NewArg),
 	freeConstantsList(R, NewR).
+
+freeConstantsRec(V, V):-
+	var(V), !.
+freeConstantsRec(C, V):-
+	atom(C), !, var(V).
+freeConstantsRec(F=V, F2=V):-
+	!, F=..[FName|Args],
+	% if an argument is a compound term, ground recursively.
+	freeConstantsList(Args, NewArgs),
+	F2=..[FName|NewArgs].
+freeConstantsRec(E, E2):-
+	!, E=..[EName|Args],
+	% if an argument is a compound term, ground recursively.
+	freeConstantsList(Args, NewArgs),
+	E2=..[EName|NewArgs].
 
 groundValue(F=V, F=V):-
 	nonvar(V), !.
@@ -1106,10 +1135,20 @@ groundValue(F=V, F=V):-
 
 % for the entities with no provided index/2 declaration, declare their first argument as their index.
 deriveIndices :-
-	findall(_, (event(E), \+ index(E, _), firstArgRec(E, FirstArg), assertz(index(E, FirstArg))), _),
-	findall(_, ((simpleFluent(F=V) ; sDFluent(F=V)), \+ index(F=V, _), firstArgRec(F, FirstArg), assertz(index(F=V, FirstArg))), _).
+	findall(_, (event(E), \+ index(E, _), findIndexOfEntity(E, FirstArg), assertz(index(E, FirstArg))), _),
+	findall(_, ((simpleFluent(F=V) ; sDFluent(F=V)), \+ index(F=V, _), findIndexOfEntity(F, FirstArg), assertz(index(F=V, FirstArg))), _).
 
-% first arg may be a compound term. So, we search first args recursively until it is not a compound term.
+% findIndexOfEntity(+Entity,-Index)
+% if entity has no args, then its event/fluent type is its index.
+findIndexOfEntity(C, C):-
+    atom(C), !.
+% if entity is a compound term, i.e., it has at least one argument, then search first args recursively until it is not a compound term.
+findIndexOfEntity(U, FirstArg):-
+	U=..[_, FirstArg0|_],
+	firstArgRec(FirstArg0, FirstArg).
+
+% firstArgRec(+Entity,-FirstArgFreed) Aux of: findIndexOfEntity/2.
+% first arg may be a compound term. So, we 
 firstArgRec(V, V):-
 	var(V), !.
 firstArgRec(C, V):-
@@ -1454,6 +1493,8 @@ writeCachingOrder :-
 % then write the corresponding rules and move to the next level.
 writeCachingOrder(Level):-
 	findall(Entity, (outputEntity(Entity), entityCachingLevel(Entity, Level)), Entities),
+        %write('Level: '), write(Level), nl,
+        %write('Entities: '), write(Entities), nl,
 	\+ Entities= [], !,
 	writeCachingOrderRulesOf(Entities, Level),
 	NextLevel is Level + 1,
@@ -1466,12 +1507,23 @@ writeCachingOrder(_).
 % writeCachingOrderRulesOf(+Entities)
 % write the cachingOrder2 rules of all given entities.
 writeCachingOrderRulesOf([], _Level).
-writeCachingOrderRulesOf([Entity0|Rest], Level):-
-	findall(Entity, (extractEntity(Entity, Entity0), !,
+writeCachingOrderRulesOf([Entity|Rest], Level):-
+        %findall(Entity, (extractEntity(Entity, Entity0), 
 	indexOf(Index, Entity),
-	clause(grounding(Entity), Body),
+        % If there is a grounding declaration for <Entity>:
+	clause(grounding(Entity), Body), !,
+        % Write cachingOrder2 rule with body "grounding" facts.
 	write('cachingOrder2('), write(Index), write(', '), write(Entity), write(') :-'), write(' % level: '), write(Level), nl, 
-	tab(5), write(Body), write('.'), nl, nl), _), 
+	tab(5), write(Body), write('.'), nl, nl, 
+	writeCachingOrderRulesOf(Rest, Level).
+writeCachingOrderRulesOf([Entity|Rest], Level):-
+        %findall(Entity, (extractEntity(Entity, Entity0), write('Entity: '), write(Entity), nl,
+	indexOf(Index, Entity),
+        % There is no grounding declaration for <Entity>:
+        %\+ clause(grounding(Entity), Body),
+        % So, write a cachingOrder2 fact:
+	write('cachingOrder2('), write(Index), write(', '), write(Entity), write(').'), write(' % level: '), write(Level), nl,
+        %tab(5), write(Body), write('.'), nl, nl), _), 
 	writeCachingOrderRulesOf(Rest, Level).
 
 assertCyclic:-
