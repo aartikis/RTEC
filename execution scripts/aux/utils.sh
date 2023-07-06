@@ -16,7 +16,7 @@ function get_all_defaults (){
 	[ -z $background_knowledge ] && background_knowledge=(`get_default_param $application background_knowledge`)
 	[ -z $input_mode ] && input_mode=`get_default_param $application input_mode`
 	[ -z $stream_rate ] && stream_rate=`get_default_param $application stream_rate`
-	[ -z $input ] && input_providers=(`get_default_param $application input_providers`)
+	[ -z $input_providers ] && input_providers=(`get_default_param $application input_providers`)
 	#[ "$input_mode" == "csv" ] && [ -z $input ] && input_providers=`get_default_param $application input_providers.csv`
 	#[ "$input_mode" == "fifo" ] && [ -z $input ] && input_providers=`get_default_param $application input_providers.fifo`
 	[ -z $dependency_graph ] &&  [ `get_default_param $application dependency_graph_flag` == "true" ] && dependency_graph="true" 
@@ -37,9 +37,9 @@ function input_parser (){
 	    --help)
 		  help
 		  ;;
-		--interactive)
-		  interactive_mode="true"
-		  ;;
+	    --interactive)
+	          interactive_mode="true"
+	  	  ;;
 	    --app=*)
 		  application="${arg#*=}" # "#*=" fetches all characters from the last occurrence of "=" until the end of the string
 		  ;;
@@ -88,14 +88,15 @@ function input_parser (){
 	      goal+=("'${arg#*=}'")
 	      ;;
 	    --background-knowledge=*)
-	      background_knowledge+=("'${arg#*=}'")
+	      background_knowledge+=("${arg#*=}")
 	      ;;
 		--input=*)
-		  input_providers+=("'${arg#*=}'")
+		  input_providers+=("${arg#*=}")
 		  ;;
 	  esac
 	done
 }
+
 
 function set_prolog_command() {
 	# This function is called after compilation. So, the compiled event description is available in the following file:
