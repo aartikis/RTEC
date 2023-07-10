@@ -79,7 +79,7 @@ function input_parser (){
 		  event_description="${arg#=}"
 		  ;;
 	    --results-directory=*)
-	      results_directory="'${arg#*=}'"
+	      results_directory="${arg#*=}"
 	      ;;
 		# the following flags are RTEC parameters that may be used multiple times in one execution. 
 		# e.g. ./run_rtec.sh --app=caviar --input=path/to/first/event/stream --input=path/to/second/event/stream
