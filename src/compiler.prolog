@@ -14,7 +14,7 @@
 :- discontiguous compileHoldsAtTree/3, findChildren/3. 
 
 % these predicates may appear discontiguously in the input rules and declarations files.
-:- discontiguous event/1, inputEntity/1, index/2, simpleFluent/1, outputEntity/1, sDFluent/1, initiatedAt/2, terminatedAt/2, holdsFor/3, grounding/1, dgrounded/2, initiatedAt/4, terminatedAt/4, maxDurationUE/3, maxDuration/3, holdsFor/2, initially/1, initiates/3, terminates/3.
+:- discontiguous event/1, inputEntity/1, index/2, simpleFluent/1, outputEntity/1, sDFluent/1, initiatedAt/2, terminatedAt/2, holdsFor/3, happensAt/2, grounding/1, dgrounded/2, initiatedAt/4, terminatedAt/4, maxDurationUE/3, maxDuration/3, holdsFor/2, initially/1, initiates/3, terminates/3.
 
 % these predicates may or may not appear in the input rules and declarations files.
 :- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1, internalEntity/1, simpleFluent/1, sDFluent/1, event/1, outputEntity/1, inputEntity/1, index/2, dynamicDomain/1.
@@ -331,6 +331,7 @@ compileMaxDuration :-
         (clause(grounding(F2=V2), _) -> (tab(5), write('grounding('), write(F2=V2), write(').\n\n')); true),
         fail.
 
+% unused
 % compile cachingOrder/1 rules
 compileCachingOrder :-
 	cachingOrder(Entity),
@@ -342,18 +343,20 @@ compileCachingOrder :-
 % compile collectIntervals/1 rules
 compileCollectIntervals :-
 	collectIntervals(F=V),
-	clause(grounding(F=V), Body),
 	indexOf(Index, F=V),	 
-	write('collectIntervals2('), write(Index), write(', '), write(F=V), write(') :-'), nl, 
-	tab(5), write(Body), write('.'), nl, nl, fail.
+	write('collectIntervals2('), write(Index), write(', '), write(F=V), write(')'),
+	(clause(grounding(F=V), Body) -> (write(' :-'), nl, tab(5), write(Body), write('.'), nl, nl)
+				      ;  write('.\n\n')),
+	fail.
 
 % compile buildFromPoints/1 rules
 compileBuildFromPoints :-
 	buildFromPoints(F=V),
-	clause(grounding(F=V), Body),
 	indexOf(Index, F=V),	 
-	write('buildFromPoints2('), write(Index), write(', '), write(F=V), write(') :-'), nl, 
-	tab(5), write(Body), write('.'), nl, nl, fail.
+	write('buildFromPoints2('), write(Index), write(', '), write(F=V), write(')'),
+	(clause(grounding(F=V), Body) -> (write(' :-'), nl, tab(5), write(Body), write('.'), nl, nl)
+				       ;  write('.\n\n')),
+	fail.
 	
 %compile for anything other than the EC predicates
 compileAnythingElse(InputDescription) :-
