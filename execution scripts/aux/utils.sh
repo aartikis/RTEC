@@ -76,7 +76,7 @@ function input_parser (){
 	      clock_tick="${arg#*=}"
 	      ;;
 		--event-description=*)
-		  event_description="${arg#=}"
+		  event_description="${arg#*=}"
 		  ;;
 	    --results-directory=*)
 	      results_directory="${arg#*=}"
