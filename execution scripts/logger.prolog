@@ -96,13 +96,14 @@ logWindowStats(LogFileStream, RecTimes, InputList, (OutputListOutFVpairs,OutputL
 printRecognitions(CEIntervalsFile, CurrentTime, WM) :-
 	open(CEIntervalsFile, append, CEIntervalsStream),
 	StartTime is CurrentTime-WM,
+	NextStartTime is StartTime+1,
+	NextCurrentTime is CurrentTime+1,
 	findall((F=V,L2), 
 		(
 		outputEntity(F=V),
                 holdsFor(F=V,L),
                 L\==[],
-				L2=L
-				%intersect_all([L,[(StartTime,CurrentTime)]],L2)
+                intersect_all([L,[(NextStartTime,NextCurrentTime)]],L2)
                 ), 
               CEIntervals),
 	writeCEs(CEIntervalsStream, CEIntervals),
@@ -162,6 +163,7 @@ printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs
 	write('Output Entities (# timepoints)		: '), writeln(OutLD),
 	writeln('=========================================================').
 
+%% multiline arguments to format may produce an error in some Prolog engines, e.g., YAP 7.3
 printLogo:- 
 	format("                                                                 
 	8 888888888o. 8888888 8888888888 8 8888888888       ,o888888o.    

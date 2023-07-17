@@ -11,16 +11,16 @@
 %:- ['prolog/agent9000.prolog'].
 %:- ['prolog/agent10000.prolog'].
 
-assert_n_agents(N):- N>0, N1 is N-1, N1=0, assert(agent(N1)).
-assert_n_agents(N):- N>0, N1 is N-1, assert(agent(N1)), assert_n_agents(N1).
+%assert_n_agents(N):- N>0, N1 is N-1, N1=0, assert(agent(N1)).
+%assert_n_agents(N):- N>0, N1 is N-1, assert(agent(N1)), assert_n_agents(N1).
 
 role(chair).
 role(voter).
 
 % the two lines below should be used when using the data generator
 % 91% voters, 10% chairs, 9% both roles, 8% no role
-role_of(Ag,chair) :- agent(Ag), Temp is Ag mod 10, Temp=0.
-role_of(Ag,voter) :- agent(Ag), Temp is Ag mod 11, Temp>0.
+role_of(Ag,chair) :- person(Ag), Temp is Ag mod 10, Temp=0.
+role_of(Ag,voter) :- person(Ag), Temp is Ag mod 11, Temp>0.
 
 % motion/1 is used for data generation; 
 % queryMotion/1 is the subset of motion/1 used for narrative assimilation 

@@ -19,10 +19,6 @@
 %				Set to '-1' to avoid using retractall.   
 % ClockTick: temporal distance between two consecutive time-points, SDEBatch: the input narrative size asserted in a single batch
 
-%% Default values for Biological Feedback Loops application.
-
-
-
 % Default window size for supported applications.
 % In order to run an application for a different value of this parameter, run:
 % 	continuousQueries(ApplicationName, [window_size=WindowSize]).
@@ -68,7 +64,7 @@ default(start_time, feedback_loops, 0).
 % For example: 
 % 	continuousQueries(toy, [end_time=30]).
 default(end_time, toy, 50).
-default(end_time, maritime, 1448834400).
+default(end_time, maritime, 1459461585). % 1448834400).
 default(end_time, caviar, 1007000).
 default(end_time, voting, 100).
 default(end_time, netbill, 100).
@@ -87,6 +83,7 @@ default(clock_tick, voting, 1).
 default(clock_tick, netbill, 1).
 default(clock_tick, ctm, 1).
 default(clock_tick, feedback_loops, 1).
+default(clock_tick, _, 1).
 
 % Default memory size for allen relations.
 default(allen_memory, toy, 10).
@@ -108,48 +105,55 @@ default(results_directory, Application, Directory):-
 	atom_concat('../examples/', Application, Dir0),
 	atom_concat(Dir0, '/results/', Directory).
 
-default(goals, toy, []).
-default(goals, maritime, []).
-default(goals, caviar, []).
-default(goals, voting, [assert_n_agents(1000)]).
-default(goals, netbill, [assert_n_agents(1000)]).
-default(goals, ctm, []).
-default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]).
+default(goals, toy, []):- !.
+default(goals, maritime, []):- !.
+default(goals, caviar, []):- !.
+default(goals, voting, []):- !.
+default(goals, netbill, []):- !.
+default(goals, ctm, []):- !.
+default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]):- !.
+default(goals, _Application, []).
 
 % The default event description files for each application. 
 % In order to run an application for a different value of this parameter, run:
 %   continuousQueries(ApplicationName, [event_description_files=EventDescriptionFiles]).
 default(event_description_files, toy, Files):-
-	Files=['../examples/toy/resources/patterns/toy_rules_compiled.prolog', 
-			'../examples/toy/resources/patterns/toy_declarations.prolog',
-			'../examples/toy/dataset/auxiliary/toy_var_domain.prolog'].
+	Files=['../examples/toy/resources/patterns/compiled_rules.prolog'].
+	%'../examples/toy/resources/patterns/toy_declarations.prolog'].
+			%'../examples/toy/dataset/auxiliary/toy_var_domain.prolog'].
 
 default(event_description_files, maritime, Files):-
-	Files=['../examples/maritime/resources/patterns/maritime_rules_compiled.prolog', 
-			'../examples/maritime/resources/patterns/maritime_declarations.prolog',
+	Files=['../examples/maritime/resources/patterns/compiled_rules.prolog', 
+	%'../examples/maritime/resources/patterns/maritime_rules_compiled.prolog',
+	%	'../examples/maritime/resources/patterns/maritime_declarations.prolog',
 			'../examples/maritime/resources/auxiliary/compare.prolog',
 			'../examples/maritime/resources/auxiliary/loadStaticData.prolog'].
 
 default(event_description_files, caviar, Files):-
-	Files=['../examples/caviar/resources/patterns/caviar_rules_compiled.prolog', 
-			'../examples/caviar/resources/patterns/caviar_declarations.prolog',
-			'../examples/caviar/resources/auxiliary/pre-processing.prolog',
-			'../examples/caviar/dataset/auxiliary/list-of-ids.prolog'].
+	Files=['../examples/caviar/resources/patterns/compiled_rules.prolog', 
+			%'../examples/caviar/resources/patterns/caviar_declarations.prolog',
+			%'../examples/caviar/resources/patterns/caviar_rules_compiled.prolog',
+			'../examples/caviar/resources/auxiliary/pre-processing.prolog'].
+			%'../examples/caviar/dataset/auxiliary/list-of-ids.prolog'].
 
 default(event_description_files, voting, Files):-
-	Files=['../examples/voting/resources/patterns/voting_rules_compiled_dg.prolog', 
-			'../examples/voting/resources/patterns/voting_declarations_dg.prolog',
+	Files=[ '../examples/voting/resources/patterns/compiled_rules.prolog', 
+			%'../examples/voting/resources/patterns/voting_rules_compiled.prolog', 
+			%'../examples/voting/resources/patterns/precompiled_rules.prolog', 
+			%'../examples/voting/resources/patterns/voting_declarations.prolog',
 			'../examples/voting/dataset/auxiliary/voting_static_generator.prolog'].
 
 default(event_description_files, netbill, Files):-
-	Files=['../examples/netbill/resources/patterns/netbill_rules_compiled_dg.prolog', 
-			'../examples/netbill/resources/patterns/netbill_declarations_dg.prolog',
+	Files=['../examples/netbill/resources/patterns/compiled_rules.prolog', 
+	%'../examples/netbill/resources/patterns/netbill_declarations.prolog',
+	%	'../examples/netbill/resources/patterns/netbill_rules_compiled.prolog',
 			'../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog'].
 
 default(event_description_files, ctm, Files):-
-	Files=['../examples/ctm/resources/patterns/ctm_rules_compiled.prolog', 
-			'../examples/ctm/resources/patterns/ctm_declarations.prolog',
-			'../examples/ctm/dataset/auxiliary/vehicles.prolog'].
+	Files=['../examples/ctm/resources/patterns/compiled_rules.prolog'].
+			%'../examples/ctm/resources/patterns/ctm_rules_compiled.prolog',
+			%'../examples/ctm/resources/patterns/ctm_declarations.prolog'].
+			%'../examples/ctm/dataset/auxiliary/vehicles.prolog'].
 
 default(event_description_files, feedback_loops, Files):-
 	Files=['../examples/feedback_loops/resources/patterns/feedback_loops_rules_compiled.prolog', 
@@ -184,26 +188,29 @@ default(stream_rate, feedback_loops, 1).
 % 	continuousQueries(ApplicationName, [sde_batch=SDEBatch]).
 % Note: this variable is only useful when running RTEC with the input mode: 'dynamic_predicates'.
 % 		The definition of the input_mode parameter is presented shortly.
-default(sde_batch, toy, 10).
-default(sde_batch, maritime, 86400).
-default(sde_batch, caviar, 1000).
-default(sde_batch, voting, 10).
-default(sde_batch, netbill, 10).
-default(sde_batch, ctm, 1000).
-default(sde_batch, feedback_loops, 10).
+default(sde_batch, toy, 10):- !.
+default(sde_batch, maritime, 86400):- !.
+default(sde_batch, caviar, 1000):- !.
+default(sde_batch, voting, 10):- !.
+default(sde_batch, netbill, 10):- !.
+default(sde_batch, ctm, 1000):- !.
+default(sde_batch, feedback_loops, 10):- !.
+default(sde_batch, _Application, 10).
 
+% todo: dynamic grounding should be on by default.
 % The default execution flags for each application. 
 % The meaning of these flags is described below:
 % 	dynamic_grounding_flag: 
 %	stream_order_flag:
 %	preprocessing_flag:
-default(dynamic_grounding_flag, toy, nodynamicgrounding). 
-default(dynamic_grounding_flag, maritime, dynamicgrounding). 
-default(dynamic_grounding_flag, caviar, nodynamicgrounding). 
-default(dynamic_grounding_flag, voting, dynamicgrounding). 
-default(dynamic_grounding_flag, netbill, dynamicgrounding). 
-default(dynamic_grounding_flag, ctm, nodynamicgrounding). 
-default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+%default(dynamic_grounding_flag, toy, dynamicgrounding). 
+%default(dynamic_grounding_flag, maritime, dynamicgrounding). 
+%default(dynamic_grounding_flag, caviar, dynamicgrounding). 
+%default(dynamic_grounding_flag, voting, dynamicgrounding). 
+%default(dynamic_grounding_flag, netbill, dynamicgrounding). 
+%default(dynamic_grounding_flag, ctm, dynamicgrounding). 
+%default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+default(dynamic_grounding_flag, _Application, dynamicgrounding). 
 default(stream_order_flag, _Application, unordered). 
 default(preprocessing_flag, _Application, nopreprocessing). 
 
@@ -272,6 +279,7 @@ set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 
 handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals, AllenMem) :-
 	% Set window and step size
+	write(ParameterList), nl,
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
 	% Start and end times of reasoning
@@ -288,6 +296,7 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	% Set mode of receiving streams of input events
 	set_parameter(ParameterList, input_mode, App, InputMode),
 	set_parameter(ParameterList, input_providers, App, InputMode, InputProviders),
+
 	set_parameter(ParameterList, dynamic_grounding_flag, App, DynamicGroundingFlag),
 	set_parameter(ParameterList, stream_order_flag, App, StreamOrderFlag),
 	set_parameter(ParameterList, preprocessing_flag, App, PreprocessingFlag),
