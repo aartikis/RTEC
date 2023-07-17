@@ -17,9 +17,9 @@ holdsFor(happy(X)=true, I) :-
 %dynamicDomain(person(_)).
 
 % Grounding of input entities 
-grounding(go_to(Person, Place)) :- person(Person), place(Place).
-grounding(lose_wallet(Person)) :- person(Person).
 grounding(win_lottery(Person)) :- person(Person).
+grounding(lose_wallet(Person)) :- person(Person).
+grounding(go_to(Person, Place)) :- person(Person), place(Place).
 
 % Grounding of output entities
 grounding(location(Person)=Place) :- person(Person), place(Place).

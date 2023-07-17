@@ -309,58 +309,58 @@ test(56):-
 	).
 
 test(sintmeets):-
-	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(2,5),(5,7)], meets, 10, 10, 10, 0, (6,11), null, []).
+	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(2,5),(5,7)], meets, 0, 10, 0, (6,11), null, []).
 
 test(sintoverlaps):-
-	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(2,5),(5,7)], overlaps, 10, 10, 10, 0, (6,11), null, []).
+	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(2,5),(5,7)], overlaps, 0, 10, 0, (6,11), null, []).
 
 test(sintbefore1):-
-	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(8,11)], before, 10, 10, 10, 6, (6,11), (8,11), [(3,5)]).
+	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(8,11)], before, 0, 10, 6, (6,11), (8,11), [(3,5)]).
 
 test(sintbefore2):-
-	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(8,11)], before, 10, 10, 10, 5, (6,11), null, []).
+	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(8,11)], before, 0, 10, 5, (6,11), null, []).
 
 test(sintstarts):-
-	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(6,11)], starts, 10, 10, 10, 0, (6,11), (6,11), []).
+	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(6,11)], starts, 0, 10, 0, (6,11), (6,11), []).
 
 test(sintequal):-
-	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(6,11)], equal, 10, 10, 10, 0, (6,11), (6,11), []).
+	allen_intervals_to_cache([(1,3),(3,5),(6,11)], [(1,2),(6,11)], equal, 0, 10, 0, (6,11), (6,11), []).
 
 test(sintfinishes):-
-	allen_intervals_to_cache([(1,3),(3,5),(8,11)], [(1,2),(6,11)], finishes, 10, 10, 10, 0, (8,11), (6,11), []).
+	allen_intervals_to_cache([(1,3),(3,5),(8,11)], [(1,2),(6,11)], finishes, 0, 10, 0, (8,11), (6,11), []).
 
 test(sintduring):-
-	allen_intervals_to_cache([(1,3),(3,5),(8,11)], [(1,2),(6,11)], during, 10, 10, 10, 0, (8,11), (6,11), []).
+	allen_intervals_to_cache([(1,3),(3,5),(8,11)], [(1,2),(6,11)], during, 0, 10, 0, (8,11), (6,11), []).
 
 test(tintfinishes):-
-	allen_intervals_to_cache([(1,3),(3,5),(8,10)], [(1,2),(6,11)], finishes, 10, 10, 10, 0, null, (6,11), []).
+	allen_intervals_to_cache([(1,3),(3,5),(8,10)], [(1,2),(6,11)], finishes, 0, 10, 0, null, (6,11), []).
 
 test(tintmeets1):-
-	allen_intervals_to_cache([(1,3),(3,7)], [(1,2),(6,11)], meets, 10, 10, 10, 0, null, (6,11), [(3,7)]).
+	allen_intervals_to_cache([(1,3),(3,7)], [(1,2),(6,11)], meets, 0, 10, 0, null, (6,11), [(3,7)]).
 
 test(tintmeets2):-
-	allen_intervals_to_cache([(1,3),(3,6)], [(1,2),(6,11)], meets, 10, 10, 10, 0, null, null, []).
+	allen_intervals_to_cache([(1,3),(3,6)], [(1,2),(6,11)], meets, 0, 10, 0, null, null, []).
 
 test(tintstarts1):-
-	allen_intervals_to_cache([(1,3),(6,7)], [(1,2),(6,11)], starts, 10, 10, 10, 0, null, (6,11), [(6,7)]).
+	allen_intervals_to_cache([(1,3),(6,7)], [(1,2),(6,11)], starts, 0, 10, 0, null, (6,11), [(6,7)]).
 
 test(tintstarts2):-
-	allen_intervals_to_cache([(1,3),(6,9),(10,11)], [(1,2),(10,11)], starts, 10, 10, 10, 0, (10,11), (10,11), []).
+	allen_intervals_to_cache([(1,3),(6,9),(10,11)], [(1,2),(10,11)], starts, 0, 10, 0, (10,11), (10,11), []).
 
 test(tintequal):-
-	allen_intervals_to_cache([(1,3),(6,9),(8,11)], [(1,2),(8,11)], equal, 10, 10, 10, 0, (8,11), (8,11), []).
+	allen_intervals_to_cache([(1,3),(6,9),(8,11)], [(1,2),(8,11)], equal, 0, 10, 0, (8,11), (8,11), []).
 
 test(tintoverlaps1):-
-	allen_intervals_to_cache([(1,3),(6,8)], [(1,2),(7,11)], overlaps, 10, 10, 10, 0, null, (7,11), [(6,8)]).
+	allen_intervals_to_cache([(1,3),(6,9)], [(1,2),(7,11)], overlaps, 0, 10, 0, null, (7,11), [(6,9)]).
 
 test(tintoverlaps2):-
-	allen_intervals_to_cache([(1,3),(6,9),(8,11)], [(1,2),(10,11)], overlaps, 10, 10, 10, 0, (8,11), (10,11), []).
+	allen_intervals_to_cache([(1,3),(6,9),(8,11)], [(1,2),(10,11)], overlaps, 0, 10, 0, (8,11), (10,11), []).
 
 test(tintduring1):-
-	allen_intervals_to_cache([(1,3),(4,5),(6,9),(8,11)], [(1,2),(2,11)], during, 10, 10, 10, 0, (8,11), (2,11), [(4,5),(6,9)]).
+	allen_intervals_to_cache([(1,3),(4,5),(6,9),(8,11)], [(1,2),(2,11)], during, 0, 10, 0, (8,11), (2,11), [(4,5),(6,9)]).
 
 test(tintduring2):-
-	allen_intervals_to_cache([(1,3)], [(7,11)], during, 10, 10, 10, 0, null, (7,11), []).
+	allen_intervals_to_cache([(1,3)], [(7,11)], during, 0, 10, 0, null, (7,11), []).
 
 %test(104):-
 %	allen_intervals_to_cache([([(2,3),(3,5),(9,11)],[(1,5),(6,7)]),([(14,18)],[(7,13),(14,18)])], [], 10, 10, 10, during, 0, [ [[(2,3), [(1,5)]]], [[(9,11),[(7,13)]]] ]).

@@ -18,14 +18,14 @@ holdsForSDFluent(happy(_1882)=true,_1852) :-
      holdsForProcessedSimpleFluent(_1882,location(_1882)=pub,_1914),
      union_all([_1898,_1914],_1852).
 
-grounding(go_to(_2138,_2140)) :- 
-     person(_2138),place(_2140).
+grounding(win_lottery(_2138)) :- 
+     person(_2138).
 
 grounding(lose_wallet(_2138)) :- 
      person(_2138).
 
-grounding(win_lottery(_2138)) :- 
-     person(_2138).
+grounding(go_to(_2138,_2140)) :- 
+     person(_2138),place(_2140).
 
 grounding(location(_2144)=_2140) :- 
      person(_2144),place(_2140).
@@ -67,6 +67,6 @@ cachingOrder2(_2538, rich(_2538)=true) :- % level: 1
 cachingOrder2(_2522, location(_2522)=_2518) :- % level: 1
      person(_2522),place(_2518).
 
-cachingOrder2(_3028, happy(_3028)=true) :- % level: 2
-     person(_3028).
+cachingOrder2(_2682, happy(_2682)=true) :- % level: 2
+     person(_2682).
 

@@ -318,6 +318,179 @@ holdsFor(pilotOps(Vessel1, Vessel2)=true, I) :-
     holdsFor(withinArea(Vessel2, nearCoast)=true, Iw2),
     relative_complement_all(Ii,[Iw1, Iw2], I).
 
+%-------- disappearedInArea ---------------------------%
+holdsFor(disappearedInArea(Vessel, AreaType)=true, I):-
+	holdsFor(withinArea(Vessel, AreaType)=true, Iwa),
+	holdsFor(gap(Vessel)=farFromPorts, Ig),
+	meets(Iwa, Ig, union, I).
+
+%-------- stoppedWithinArea ---------------------------%
+holdsFor(stoppedWithinArea(Vessel, AreaType)=true, I):-
+	holdsFor(withinArea(Vessel, AreaType)=true, Iwa),
+	holdsFor(stopped(Vessel)=farFromPorts, Is),
+	during(Is, Iwa, source, I).
+
+%-------- stoppedMeetsGap ---------------------------%
+holdsFor(stoppedMeetsGap(Vessel)=true, I):-
+	holdsFor(stopped(Vessel)=farFromPorts, Is),
+	holdsFor(gap(Vessel)=farFromPorts, Ig),
+	meets(Is, Ig, union, I).
+
+%-------- highSpeedNCBeforeDrifting ---------------------------%
+holdsFor(highSpeedNCBeforeDrifting(Vessel)=true, I):-
+	holdsFor(highSpeedNearCoast(Vessel)=true, Ih),
+	holdsFor(drifting(Vessel)=true, Id),
+	before(Ih, Id, union, I).
+
+%-------- dangerNearCoast ---------------------------%
+holdsFor(dangerNearCoast(Vessel)=true, I):-
+	holdsFor(highSpeedNearCoast(Vessel)=true, Ih),
+	holdsFor(drifting(Vessel)=true, Id),
+	overlaps(Ih, Id, union, I).
+
+%-------- gainingSpeed ---------------------------%
+holdsFor(gainingSpeed(Vessel)=true, I):-
+	holdsFor(Vessel, movingSpeed(Vessel)=below, Ib),
+	holdsFor(Vessel, movingSpeed(Vessel)=normal, In),
+	meets(Ib, In, union, I).
+
+%-------- speedChangeAbove ---------------------------%
+holdsFor(speedChangeAbove(Vessel)=true, I):-
+	holdsFor(Vessel, changingSpeed(Vessel)=true, Ic),
+	holdsFor(Vessel, movingSpeed(Vessel)=above, Ia),
+	starts(Ic, Ia, relative_complement_inverse, I).
+
+%-------- collisionDanger ---------------------------%
+holdsFor(collisionDanger(Vessel1, Vessel2)=true, I):- 
+    holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true,Ip),
+    holdsFor(Vessel1, movingSpeed(Vessel1)=above, Imsa1),
+    holdsFor(Vessel2, movingSpeed(Vessel2)=above, Imsa2),
+union_all([Imsa1,Imsa2],Imsa),
+    overlaps(Imsa, Ip, intersection, I).
+
+%-------- suspiciousRendezVous ---------------------------%
+holdsFor(suspiciousRendezVous(Vessel1, Vessel2)=true, I):-
+    holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true,Ip),
+    holdsFor(Vessel1, gap(Vessel1)=_, Ig1),
+    holdsFor(Vessel2, gap(Vessel2)=_, Ig2),
+    union_all([Ig1,Ig2], Ig),
+    during(Ig, Ip, lhs, I).
+
+%-------- anchoredFarFromPorts ---------------------------%
+holdsFor(anchoredFarFromPorts(Vessel)=true,I) :-
+    holdsFor(Vessel, anchoredOrMoored(Vessel)=true, Iaom),
+    holdsFor(Vessel,stopped(Vessel)=farFromPorts,Isf),
+    holdsFor(Vessel,withinArea(Vessel,anchorage)=true,Ia),
+    intersect_all([Isf,Ia],Isfa),
+	equal(Iaom, Isfa, lhs, I).
+
+%-------- anchoredNearPorts ---------------------------%
+holdsFor(anchoredNearPorts(Vessel)=true,I) :-
+    holdsFor(Vessel, anchoredOrMoored(Vessel)=true, Iaom),
+    holdsFor(Vessel,stopped(Vessel)=nearPorts,Isn),
+    equal(Iaom, Isn, lhs, I).
+
+%-------- tuggingStartsProximity ---------------------------%
+holdsFor(tuggingStartsProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,tugging(Vessel1,Vessel2)=true, It),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	starts(It, Ip, lhs, I).
+
+%-------- tuggingFinishesProximity ---------------------------%
+holdsFor(tuggingFinishesProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,tugging(Vessel1,Vessel2)=true, It),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	finishes(It, Ip, lhs, I).
+
+%-------- tuggingEqualProximity ---------------------------%
+holdsFor(tuggingEqualProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,tugging(Vessel1,Vessel2)=true, It),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	equal(It, Ip, lhs, I).
+
+%-------- rendezVousStartsProximity ---------------------------%
+holdsFor(rendezVousStartsProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,rendezVous(Vessel1,Vessel2)=true, Ir),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	starts(Ir, Ip, lhs, I).
+
+%-------- rendezVousFinishesProximity ---------------------------%
+holdsFor(rendezVousFinishesProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,rendezVous(Vessel1,Vessel2)=true, Ir),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	finishes(Ir, Ip, lhs, I).
+
+%-------- rendezVousEqualProximity ---------------------------%
+holdsFor(rendezVousEqualProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,rendezVous(Vessel1,Vessel2)=true, Ir),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	equal(Ir, Ip, lhs, I).
+
+%-------- pilotOpsStartsProximity ---------------------------%
+holdsFor(pilotOpsStartsProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	starts(Ipo, Ip, lhs, I).
+
+%-------- pilotOpsFinishesProximity ---------------------------%
+holdsFor(pilotOpsFinishesProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	finishes(Ipo, Ip, lhs, I).
+
+%-------- pilotOpsEqualProximity ---------------------------%
+holdsFor(pilotOpsEqualProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	equal(Ipo, Ip, lhs, I).
+
+% movingSpeed rel underay patterns	
+%-------- movingSpeedStartsUnderway---------------------------%
+holdsFor(movingSpeedStartsUnderway(Vessel)=Speed,I):-
+	holdsFor(Vessel,underWay(Vessel)=true, Iu),
+	holdsFor(Vessel,movingSpeed(Vessel)=Speed, Ims),
+	starts(Ims, Iu, lhs, I).
+
+%-------- movingSpeedFinishesUnderway ---------------------------%
+holdsFor(movingSpeedFinishesUnderway(Vessel)=Speed,I):-
+	holdsFor(Vessel,underWay(Vessel)=true, Iu),
+	holdsFor(Vessel,movingSpeed(Vessel)=Speed, Ims),
+	finishes(Ims, Iu, lhs, I).
+
+%-------- movingSpeedEqualUnderway ---------------------------%
+holdsFor(movingSpeedEqualUnderway(Vessel)=Speed,I):-
+	holdsFor(Vessel,underWay(Vessel)=true, Iu),
+	holdsFor(Vessel,movingSpeed(Vessel)=Speed, Ims),
+	equal(Ims, Iu, lhs, I).
+
+%-------- pilotOpsEqualProximity ---------------------------%
+holdsFor(pilotOpsEqualProximity(Vessel1,Vessel2)=true,I):-
+	holdsFor(Vessel1,pilotOps(Vessel1,Vessel2)=true, Ipo),
+	holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true, Ip),
+	equal(Ipo, Ip, lhs, I).
+
+%-------- driftingWhileTugging ---------------------------%
+holdsFor(driftingWhileTugging(Vessel1, Vessel2)=true, I):-
+	holdsFor(Vessel1, tugging(Vessel1, Vessel2)=true, It),
+	holdsFor(Vessel1, drifting(Vessel1)=true, Id1),
+	holdsFor(Vessel2, drifting(Vessel2)=true, Id2),
+	union_all([Id1,Id2], Id),
+	during(It, Id, union, I).
+
+%-------- fishingTripInArea ---------------------------%
+holdsFor(fishingTripInArea(Vessel)=true, I):-
+    holdsFor(Vessel, withinArea(Vessel, nearPorts)=true, Iwa), 
+    holdsFor(Vessel, withinArea(Vessel, fishing)=true, Iwaf),
+	before(Iwa, Iwaf, union, Ifishing1),
+    before(Ifishing1, Iwa, union, I).
+
+%-------- fishingTripTrawling ---------------------------%
+holdsFor(fishingTripTrawling(Vessel)=true, I):-
+    holdsFor(Vessel, withinArea(Vessel, nearPorts)=true, Iwa), 
+    holdsFor(Vessel, trawling(Vessel)=true, It),
+    before(Iwa, It, union, Ifishing1),
+    before(Ifishing1, Iwa, union, I).
+
 % proximity is an input statically determined fluent.
 % its instances arrive in the form of intervals.
 collectIntervals(proximity(_,_)=true).
@@ -389,6 +562,58 @@ grounding(trawling(Vessel)=true):-
 	vessel(Vessel).
 grounding(loitering(Vessel)=true):-
 	vessel(Vessel).
+grounding(disappearedInArea(Vessel, AreaType)=true):-
+	vessel(Vessel), areaType(AreaType).
+grounding(stoppedWithinArea(Vessel, AreaType)=true):-
+	vessel(Vessel), areaType(AreaType).
+grounding(stoppedMeetsGap(Vessel)=true):-
+	vessel(Vessel).
+grounding(highSpeedNCBeforeDrifting(Vessel)=true):-
+	vessel(Vessel).
+grounding(dangerNearCoast(Vessel)=true):-
+	vessel(Vessel).
+grounding(gainingSpeed(Vessel)=true):-
+	vessel(Vessel).
+grounding(speedChangeAbove(Vessel)=true):-
+	vessel(Vessel).
+grounding(anchoredFarFromPorts(Vessel)=true):-
+	vessel(Vessel).
+grounding(anchoredNearPorts(Vessel)=true):-
+	vessel(Vessel).
+grounding(tuggingStartsProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(tuggingFinishesProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(tuggingEqualProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(rendezVousStartsProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(rendezVousFinishesProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(rendezVousEqualProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(pilotOpsStartsProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(pilotOpsFinishesProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(pilotOpsEqualProximity(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(movingSpeedStartsUnderway(Vessel)=below):-
+	vessel(Vessel).
+grounding(movingSpeedFinishesUnderway(Vessel)=below):-
+	vessel(Vessel).
+grounding(movingSpeedEqualUnderway(Vessel)=below):-
+	vessel(Vessel).
+grounding(collisionDanger(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(suspiciousRendezVous(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(driftingWhileTugging(Vessel, Vessel2)=true):-
+    vpair(Vessel, Vessel2).
+grounding(fishingTripInArea(Vessel)=true):-
+    vessel(Vessel).
+grounding(fishingTripTrawling(Vessel)=true):-
+    vessel(Vessel).
 
 needsGrounding(_, _, _) :-
 	fail.
