@@ -24,23 +24,20 @@ holdsFor(happy(P)=true, I):-
 	holdsFor(at_location(P)=pub, Ip),
 	allen(during, Id, Ip, source, true, I).
 
-List I is the list of maximal intervals computed as the intersection of all intervals id and ip in lists Id and Ip, 
-such that id takes place `during' ip, that is: 
+The output list of maximal intervals I contains the intervals of Id that are `during' some of Ip. 
+For the following case, I would contain id. 
 
 id       ------------------
 ip    ---------------------------
 
 The signature of an interval relation, e.g., `during', is the following:
-	rel(+InputList1, +InputList2, +ResultType, -BoolResult, -OutputList)
+	rel(+InputList1, +InputList2, +ResultType, -OutputList)
 InputList1, InputList2 and OutputList are lists of maximal intervals.
-ResultType specifies the operation applied to the sublists of the input lists including all intervals
-		   satisfying the requested relation.
-The possible values of ResultType are `lhs', `rhs', `union', `intersection', `relative_complement_inverse'
-BoolResult is `true' if there is at least one pair of intervals from the input lists satisfying the requested relation.
-			  `false' otherwise.
+ResultType specifies the operation applied to the sublists of the input lists including all intervals satisfying the requested relation.
+The possible values of ResultType are `lhs'/`source', `rhs'/`target', `union', `intersection', `relative_complement' and `relative_complement_inverse'
+
 rel is either `before', `meets', `starts', `finishes', `during', `overlaps' or `equal'.
-Note: ``Inverse relations, such as `during_inverse', are NOT defined.
-		 The user may use an inverse relation by swapping the positions of the input lists when using a stardard relation.
+Note: ``Inverse relations, such as `during_inverse', are NOT defined. The user may use an inverse relation by swapping the positions of the input lists when using a stardard relation.
 
 It is not possible to express such patterns with the previously supported interval manipulation operations of RTEC, which 
 are union_all, intersect_all, and relative_complement_all, without any (expensive) post processing techniques. 
@@ -52,49 +49,29 @@ The addition of interval relations in RTEC leads to more succinct and intuitive 
 without compromising complexity.
 
 Notes: 
-- The algorithm assumes that both input lists are *temporally sorted* contain *maximal intervals*.
+- The algorithm assumes that both input lists are *temporally sorted* and contain *maximal intervals*.
 	Since maximal intervals are non-overlapping, sorting in terms of either starting or ending point, yield the same list.	
 - All intervals are *right-open*, i.e., if I=(S,E), I includes the time-points {S, S+1, ..., E-1}
-													S is the starting point of I and E-1 is its ending point.
+	S is the starting point of I and E-1 is its ending point.
 
-********************************* Technical Notes ****************************************************
-
-The algorithm leverages the fact that the input lists are sorted. The satisfaction of an interval relation between two intervals 
-implies addition information regarding the relations satisfied with the remaining intervals of the rhs list. 
-
-Suppose that L1 and L2 are the two input lists and (S1, E1)\in L1, (S2, E2)\in L2. The following implications hold:
-
-If (S1, E1) before (S2, E2), then (S1, E1) before (S2', E2'), where (S2', E2') > (S2, E2), i.e., (S2', E2') is after (S2, E2) in the temporally sorted list L2
-		
-If (S1, E1) meets (S2, E2), then (S1, E1) before (S2', E2') > (S2, E2)
-		
-If (S1, E1) starts (S2, E2), then (S1, E1) before (S2', E2') > (S2, E2)
-		
-If (S1, E1) finishes (S2, E2), then (S1, E1) before (S2', E2') > (S2, E2) % AND (S1', E1') > (S1, E1) is beforeInverse (S2, E2)
-		
-If (S1, E1) during (S2, E2), then (S1, E1) before (S2', E2') > (S2, E2)
-		
-If (S1, E1) overlaps (S2, E2), then (S1, E1) before (S2', E2') > (S2, E2)
-		
-If (S1, E1) equal (S2, E2), then (S1, E1) before (S2', E2') > (S2, E2) % AND (S1', E1') > (S1, E1) is beforeInverse (S2, E2)
-
-The algorithm presented below minimises redundant computations by leveraging these implications.
-
-*******************************************************************************************************/
+*/
 
 % atomic_relation(+I1, +I2, +Rel).
 % Checks if the given interval relation is satisfied between two given intervals. 
 % <Rel>: "before", "meets", "starts", "finishes", "during", "overlaps", "equal".
+% All intervals are right-open.
 
 atomic_relation((_S1, E1), (S2, _E2), before):-
-	S2>=E1. %% Intervals are right-open.
+	S2>=E1. 
 
-%atomic_relation((_S1, E1), (S2, _E2), meets):-
+% Contiguous Before
+%atomic_relation((_S1, E1), (S2, _E2), contiguous_before):-
 %		E1=S2.
+
 atomic_relation((S1, E1), (S2, _E2), meets):-
 	\+ E1=inf,
-	prevTimePoint(E1, E1Prev), %% Intervals are right-open. 
-	\+ S1=E1Prev, % if I1 is a unit interval, the relation should be starts.
+	prevTimePoint(E1, E1Prev), 
+	\+ S1=E1Prev, % if (S1, E1) is a unit interval, the relation should be starts.
 	E1Prev=S2.
 
 atomic_relation((S1, E1), (S2, E2), starts):-
@@ -107,7 +84,11 @@ atomic_relation((S1, E1), (S2, E2), during):-
 	S1>S2, E1<E2.
 
 atomic_relation((S1, E1), (S2, E2), overlaps):-
-	S1<S2, E1>S2, E1<E2.
+	S1<S2,
+	\+ E1=inf,
+	prevTimePoint(E1, E1Prev),
+	E1Prev>S2, % if E1Prev and S2 were equal, we would have meets.
+	E1<E2.
 
 atomic_relation((S1, E1), (S2, E2), equal):-
 	S1=S2, E1=E2.
@@ -264,7 +245,8 @@ unwind_tuples_simple(Tuples, Rel, L1, L2):-
 %		intersection: return the intersection of the intervals in Srel and Trel
 %		relative_complement: return all subintervals of intervals in Srel which are not part of any interval of Trel
 %		relative_complement_inverse: return all subintervals of intervals in Trel which are not part of any interval of Srel
-% -  Cache 
+% -  Cache the required source intervals, source interval segment and target interval segment.
+%    Index=i means that we are caching the intervals/segments required for the ith allen operation in the rule defining F=V.
 
 allen(F=V, Index, Rel, SList0, TList0, OutputType, IsItSatisfied, OutputListOfIntervals):-
 	retract(cachedIntervalsAllen(F=V, Index, CachedSourceSegment, CachedTargetSegment, CachedSourceIntervals)), !,
@@ -326,10 +308,6 @@ apply_return_type(relative_complement_inverse, L1, L2, L):-
     relative_complement_all(L1, [L2], L).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WINDOWING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% New windowing allen here
-%
-%
 
 windowing_allen(F=V, Index, SList, TList, Rel):-
 	retrieveParams(InitTime, Step, AllenMem), 
@@ -426,138 +404,4 @@ retrieveParams(InitTime, Step, AllenMem):-
 	initTime(InitTime),
 	step(Step),
 	allenMemory(AllenMem).
-
-%% The predicates below are only used for experiments.
-
-% allen_window(+IntervalsInAllWindows, +CachedL1, +QueryTime, +WindowSize, +Step, +Rel, +MemorySize, -TuplesInAllWindows)
-% IntervalsInAllWindows: A list containing one pair of lists of maximal intervals for each window. Form: [(L1OfFirstWindow, L2OfFirstWindow), ...]
-% CachedL1: A list of maximal intervals for list L1 which was cached after the execution of the previous window.
-% QueryTime: Current query time of RTEC.
-% WindowSize: Window size parameter of RTEC.
-% StepSize: Step size parameter of RTEC.
-% Rel: one of allen's interval relations to be computed. 
-% 	   choose `all' to compute all thirteen relations. 
-% MemorySize: In case of `before' or `all', all intervals from the start of the stream must be cached to guarantee correctness.
-%			  As a compomise with performance, we cache all intervals starting after NextWindowStart - MemorySize.
-% TuplesInAllWindows: One list of computed tuples for each window. 
-%	   see compute_allen_relations for the format of the computed tuples.
-
-allen_window([], _, _, _, _, _, _, []):-!.
-	
-allen_window([(CurrL1,L2)|IntervalsOfRemainingWindows], CachedL1, QueryTime, WindowSize, Step, Rel, MemorySize, [TuplesInWindow|RestTuples]):-
-	% Merge the cached intervals of the first list with the intervals of the current window 
-	append_without_duplicates(CachedL1, CurrL1, L1),
-	% Compute the all tuples of intervals in the current window.	
-	allen_relations(L1, L2, Rel, TuplesInWindow), 
-	% Compute query time of the next window and cache the required intervals.
-	NextQueryTime is QueryTime + Step, 
-	WindowStart is QueryTime - WindowSize,
-	NextWindowStart is NextQueryTime - WindowSize,
-	(L2=[], !, allen_window(IntervalsOfRemainingWindows, L1, NextQueryTime, WindowSize, Step, Rel, MemorySize, RestTuples); 
-	earliest_interval_start(L2, WindowStart, NextWindowStart, EarliestL2Start),!,
-	findIntervalsToCache(L1, EarliestL2Start, Rel, MemorySize, NextWindowStart, NextCachedL1),
-	allen_window(IntervalsOfRemainingWindows, NextCachedL1, NextQueryTime, WindowSize, Step, Rel, MemorySize, RestTuples)).
-
-% naive comparison --- delete afterwards %%%
-window_full_memory([], _, _, _, _, _, _, []):-!.
-	
-window_full_memory([(CurrL1,CurrL2)|IntervalsOfRemainingWindows], CachedL1, CachedL2, QueryTime, WindowSize, Step, Rel, [TuplesInWindow|RestTuples]):-
-	% Merge the cached intervals of the first list with the intervals of the current window 
-	append_without_duplicates(CachedL1, CurrL1, L1),
-	append_without_duplicates(CachedL2, CurrL2, L2),
-	% Compute the all tuples of intervals in the current window.	
-	compute_allen_relations(L1, L2, Rel, TuplesInWindow), 
-	% Compute query time of the next window and cache the required intervals.
-	NextQueryTime is QueryTime + Step, 
-	window_full_memory(IntervalsOfRemainingWindows, L1, L2, NextQueryTime, WindowSize, Step, Rel, RestTuples).
-
-
-% Old code below. It handles the specific case where intervals arrive at their ending point. The whole interval is available at the window containing its ending point.
-%
-/*
-%windowing_allen(+F=V, +Slist, +Tlist, +Rel)
-% Computes the intervals that should be cached for the execution of the next window for the computation of F=V.
-% I will have to assert and retract qi. step, \omega and mem as global parameters.
-windowing_allen(F=V, SList, TList, Rel):-
-	write('Before Retrieve Params'), nl,
-	retrieveParams(QueryTime, WindowSize, Step, AllenMem), 
-	write('After Retrieve Params'), nl,
-	WindowStart is QueryTime - WindowSize,
-	NextWindowStart is QueryTime + Step - WindowSize,
-	earliest_interval_start(TList, WindowStart, NextWindowStart, EarliestStart),
-	write('Tearliest: '), write(EarliestStart), nl,
-	findIntervalsToCache(SList, EarliestStart, Rel, AllenMem, NextWindowStart, IntervalsToCache),
-	write('Intervals to Cache: '), write(IntervalsToCache), nl,
-	(IntervalsToCache=[], ! ; assertz(cachedIntervalsAllen(F=V, IntervalsToCache))).
-
-retrieveParams(QueryTime, WM, Step, AllenMem):-
-	queryTime(QueryTime),
-	write(QueryTime), nl,
-	windowSize(WM),
-	write(WM), nl,
-	step(Step),
-	write(Step), nl,
-	allenMemory(AllenMem),
-	write(AllenMem), nl.
-
-% earliest_interval_start(+List, +WindowStart, +NextWindowStart, -EarliestStart)
-% Given a sorted list of maximal interval <List> that have occurred in the past,
-% this predicate calculates the earliest time-point which may be the starting point
-% of interval for list <List> arriving later in the stream.
-% Because <List> contains *maximal* intervals, this earliest time-point is the 
-% next time-point after the ending point of the last interval ending before the next window.
-earliest_interval_start([], WindowStart, _NextWindowStart, WindowStart).
-earliest_interval_start([(_S,E)], _WindowStart, NextWindowStart, EarliestStart):-
-	E < NextWindowStart, !, 
-	EarliestStart is E + 1.
-earliest_interval_start([(_S,_E)], WindowStart, _NextWindowStart, WindowStart).
-earliest_interval_start([(_S1,E1),(_S2,E2)|_RestIntervals], _WindowStart, NextWindowStart, EarliestStart):- 
-	E1 < NextWindowStart,
-	E2 > NextWindowStart, !,
-	EarliestStart is E1 + 1.
-earliest_interval_start([(_S1,_E1),(S2,E2)|RestIntervals], WindowStart, NextWindowStart, EarliestStart):- 
-	earliest_interval_start([(S2,E2)|RestIntervals], WindowStart, NextWindowStart, EarliestStart).
-
-% findIntervalsToCache(+ListOfIntervals, +EarliestStart, +Rel, +MemorySize, +WindowStart, +NextWindowStart, -IntervalsToCache)
-% Intervals are cached depending on (i) the selected relation <Rel> 
-%									(ii) the relative position between <EarliestStart> and its endpoints.
-findIntervalsToCache([], _EarliestStart, _Rel, _MemorySize, _NextWindowStart, []).
-% When Rel is equal or finishes, we do not cache any intervals.
-findIntervalsToCache([_|_], _EarliestStart, equal, _MemorySize, _NextWindowStart, []):- !.
-findIntervalsToCache([_|_], _EarliestStart, finishes, _MemorySize, _NextWindowStart, []):- !.
-% if the current interval ends after the start of the next window, then it will be re-computed at the next query time. 
-% So, do not cache this interval, as well as all the remaining intervals.
-findIntervalsToCache([(_S,E)|_RestIntervals], _EarliestStart, _Rel, _MemorySize, NextWindowStart, []):-
-	E > NextWindowStart, !.
-findIntervalsToCache([(S,E)|RestIntervals], EarliestStart, meets, _MemorySize, _NextWindowStart, [(S,E)|RestIntervals]):-
-	E >= EarliestStart, !.
-findIntervalsToCache([(S,E)|RestIntervals], EarliestStart, overlaps, _MemorySize, _NextWindowStart, [(S,E)|RestIntervals]):-
-	E > EarliestStart, !.
-findIntervalsToCache([(S,E)|RestIntervals], EarliestStart, starts, _MemorySize, _NextWindowStart, [(S,E)|RestIntervals]):-
-	S >= EarliestStart, !.
-findIntervalsToCache([(S,E)|RestIntervals], EarliestStart, during, _MemorySize, _NextWindowStart, [(S,E)|RestIntervals]):-
-	S > EarliestStart, !.
-% before is a special case.
-% In order to have 100% when computing before, we should keep the entire history of source intervals. 
-% This is not doable in a streaming setting.
-% As a compromise, we keep all intervals ending at most <MemorySize> time-points before the start of the next window.
-findIntervalsToCache([(S,E)|RestIntervals], _EarliestStart, before, MemorySize, NextWindowStart, [(S,E)|RestIntervals]):-
-	MemoryStart is NextWindowStart - MemorySize,
-	E >= MemoryStart, !.
-% Note: findIntervalsToCache for `all' follows the definition of the most general case, i.e., before
-%findIntervalsToCache([(S,E)|RestIntervals], _EarliestStart, all, MemorySize, NextWindowStart, [(S,E)|RestIntervals]):-
-%	MemoryStart is NextWindowStart - MemorySize,
-%	S > MemoryStart, !.
-findIntervalsToCache([(_S,_E)|RestIntervals], EarliestStart, Rel, MemorySize, NextWindowStart, LCached):-
-	findIntervalsToCache(RestIntervals, EarliestStart, Rel, MemorySize, NextWindowStart, LCached).	
-
-append_without_duplicates([], LCurr, LCurr):- !.
-append_without_duplicates(LCached, [], LCached):- !.
-append_without_duplicates([(S, E)|RestCached], [(S, E)|RestCurr], [(S, E)|Rest]):- 
-	!, append_without_duplicates(RestCached, RestCurr, Rest).
-append_without_duplicates([(S, _E1)|RestCached], [(S, E)|RestCurr], [(S, E)|Rest]):- 
-	!, append_without_duplicates(RestCached, RestCurr, Rest).
-append_without_duplicates([(S, E)|RestCached], Curr, [(S, E)|Rest]):- 
-	!, append_without_duplicates(RestCached, Curr, Rest).
-*/	
 

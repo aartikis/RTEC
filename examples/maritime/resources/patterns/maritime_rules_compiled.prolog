@@ -338,6 +338,26 @@ holdsForSDFluent(pilotOps(Vessel1,Vessel2)=true,I) :-
     holdsForProcessedSimpleFluent(Vessel2,withinArea(Vessel2,nearCoast)=true,Inc2),
     relative_complement_all(Ii,[Inc1,Inc2],I).
 
+
+%%%%
+% The compiler is currently agnostic to the allen predicate.
+% I use the compiled version of allen directly. 
+%
+% Allen Relations as:
+% - Interval operators:
+%	Compute the interval pairs satisfying the selected relation and then apply the output operation.
+% - Boolean conditions:
+% 	The second to last argument of the allen predicate has the following meaning:
+% 	- true -> at least one pair of intervals satisfies the relation.
+% 	- false -> no pair of intervals satisfies the relation.
+%   We could check whether the output list is empty or not to confirm this.
+%
+% The format of the allen predicate could be the following:
+% 	relationName(Is, It, Op, Iout)
+%
+% The first two arguments of the compiled version can be derived by the compiler, and the second to last argument is probably not needed.
+%%%% 
+
 %-------- The following patterns include Allen relations -----------%
 
 %-------- disappearedInArea ---------------------------%
@@ -371,7 +391,7 @@ holdsForSDFluent(dangerNearCoast(Vessel)=true, I):-
 	overlaps(dangerNearCoast(Vessel)=true, 1, Ih, Id, union, true, I).
 
 %-------- gainingSpeed ---------------------------%
-holdsForSDFluentn(gainingSpeed(Vessel)=true, I):-
+holdsForSDFluent(gainingSpeed(Vessel)=true, I):-
 	holdsForProcessedSimpleFluent(Vessel, movingSpeed(Vessel)=below, Ib),
 	holdsForProcessedSimpleFluent(Vessel, movingSpeed(Vessel)=normal, In),
 	meets(gainingSpeed(Vessel)=true, 1, Ib, In, union, true, I).

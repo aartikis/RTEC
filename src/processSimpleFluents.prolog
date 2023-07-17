@@ -114,8 +114,8 @@ broken(U, Ts, Tf, T) :-
 	terminatedAt(U, Ts, Tf, T).
 
 broken(F=V1, Ts, Tstar, T) :-
-	simpleFluent(F=V2), \+V2=V1,
-	initiatedAt(F=V2, Ts, Tstar, T). 
+	%simpleFluent(F=V2), \+V2=V1,
+	initiatedAt(F=V2, Ts, Tstar, T), \+V2=V1. 
 	%(strong_initiates ; V1 \= V2).   
   
 % strong_initiates.
