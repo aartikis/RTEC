@@ -1,72 +1,162 @@
-initiatedAt(rich(_1882)=true, _1898, _1852, _1904) :-
-     happensAtIE(win_lottery(_1882),_1852),
-     _1898=<_1852,
-     _1852<_1904.
+initiatedAt(rich(_5040)=true, _5056, _5010, _5062) :-
+     happensAtIE(win_lottery(_5040),_5010),
+     _5056=<_5010,
+     _5010<_5062.
 
-initiatedAt(location(_1882)=_1858, _1900, _1852, _1906) :-
-     happensAtIE(go_to(_1882,_1858),_1852),
-     _1900=<_1852,
-     _1852<_1906.
+initiatedAt(location(_5040)=_5016, _5058, _5010, _5064) :-
+     happensAtIE(go_to(_5040,_5016),_5010),
+     _5058=<_5010,
+     _5010<_5064.
 
-terminatedAt(rich(_1882)=true, _1898, _1852, _1904) :-
-     happensAtIE(lose_wallet(_1882),_1852),
-     _1898=<_1852,
-     _1852<_1904.
+terminatedAt(rich(_5040)=true, _5056, _5010, _5062) :-
+     happensAtIE(lose_wallet(_5040),_5010),
+     _5056=<_5010,
+     _5010<_5062.
 
-holdsForSDFluent(happy(_1882)=true,_1852) :-
-     holdsForProcessedSimpleFluent(_1882,rich(_1882)=true,_1898),
-     holdsForProcessedSimpleFluent(_1882,location(_1882)=pub,_1914),
-     union_all([_1898,_1914],_1852).
+holdsForSDFluent(happy(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,rich(_5040)=true,_5056),
+     holdsForProcessedSimpleFluent(_5040,location(_5040)=pub,_5072),
+     union_all([_5056,_5072],_5010).
 
-grounding(win_lottery(_2138)) :- 
-     person(_2138).
+holdsForSDFluent(rich_before_pub(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,rich(_5040)=true,_5056),
+     holdsForProcessedSimpleFluent(_5040,location(_5040)=pub,_5072),
+     before(rich_before_pub(_5040)=true,0,_5056,_5072,union,true,_5010).
 
-grounding(lose_wallet(_2138)) :- 
-     person(_2138).
+holdsForSDFluent(rich_starts_happy(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,rich(_5040)=true,_5056),
+     holdsForProcessedSDFluent(_5040,happy(_5040)=true,_5072),
+     starts(rich_starts_happy(_5040)=true,0,_5056,_5072,source,true,_5010).
 
-grounding(go_to(_2138,_2140)) :- 
-     person(_2138),place(_2140).
+holdsForSDFluent(rich_finishes_happy(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,rich(_5040)=true,_5056),
+     holdsForProcessedSDFluent(_5040,happy(_5040)=true,_5072),
+     finishes(rich_finishes_happy(_5040)=true,0,_5056,_5072,source,true,_5010).
 
-grounding(location(_2144)=_2140) :- 
-     person(_2144),place(_2140).
+holdsForSDFluent(pub_during_happy(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,location(_5040)=pub,_5056),
+     holdsForProcessedSDFluent(_5040,happy(_5040)=true,_5072),
+     during(pub_during_happy(_5040)=true,0,_5056,_5072,source,true,_5010).
 
-grounding(rich(_2144)=true) :- 
-     person(_2144).
+holdsForSDFluent(rich_overlaps_pub(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,rich(_5040)=true,_5056),
+     holdsForProcessedSimpleFluent(_5040,location(_5040)=pub,_5072),
+     overlaps(rich_overlaps_pub(_5040)=true,0,_5056,_5072,union,true,_5010).
 
-grounding(happy(_2144)=true) :- 
-     person(_2144).
+holdsForSDFluent(rich_equal_happy(_5040)=true,_5010) :-
+     holdsForProcessedSimpleFluent(_5040,rich(_5040)=true,_5056),
+     holdsForProcessedSDFluent(_5040,happy(_5040)=true,_5072),
+     equal(rich_equal_happy(_5040)=true,0,_5056,_5072,source,true,_5010).
 
-inputEntity(win_lottery(_1912)).
-inputEntity(go_to(_1912,_1914)).
-inputEntity(lose_wallet(_1912)).
+grounding(go_to(_5324,_5326)) :- 
+     person(_5324),place(_5326).
 
-outputEntity(rich(_1998)=true).
-outputEntity(location(_1998)=_1994).
-outputEntity(happy(_1998)=true).
+grounding(lose_wallet(_5324)) :- 
+     person(_5324).
 
-event(win_lottery(_2072)).
-event(go_to(_2072,_2074)).
-event(lose_wallet(_2072)).
+grounding(win_lottery(_5324)) :- 
+     person(_5324).
 
-simpleFluent(rich(_2158)=true).
-simpleFluent(location(_2158)=_2154).
+grounding(location(_5330)=_5326) :- 
+     person(_5330),place(_5326).
 
-sDFluent(happy(_2232)=true).
+grounding(rich(_5330)=true) :- 
+     person(_5330).
 
-index(go_to(_2298,_2240),_2240).
-index(win_lottery(_2240),_2240).
-index(lose_wallet(_2240),_2240).
-index(rich(_2240)=true,_2240).
-index(location(_2240)=_2300,_2240).
-index(happy(_2240)=true,_2240).
+grounding(happy(_5330)=true) :- 
+     person(_5330).
+
+grounding(rich_before_pub(_5330)=true) :- 
+     person(_5330).
+
+grounding(rich_before_pub_before_home(_5330)=true) :- 
+     person(_5330).
+
+grounding(rich_starts_happy(_5330)=true) :- 
+     person(_5330).
+
+grounding(rich_finishes_happy(_5330)=true) :- 
+     person(_5330).
+
+grounding(pub_during_happy(_5330)=true) :- 
+     person(_5330).
+
+grounding(rich_overlaps_pub(_5330)=true) :- 
+     person(_5330).
+
+grounding(rich_equal_happy(_5330)=true) :- 
+     person(_5330).
+
+inputEntity(win_lottery(_5064)).
+inputEntity(go_to(_5064,_5066)).
+inputEntity(lose_wallet(_5064)).
+inputEntity(rich_before_pub_before_home(_5070)=true).
+
+outputEntity(rich(_5150)=true).
+outputEntity(location(_5150)=_5146).
+outputEntity(happy(_5150)=true).
+outputEntity(rich_before_pub(_5150)=true).
+outputEntity(rich_starts_happy(_5150)=true).
+outputEntity(rich_finishes_happy(_5150)=true).
+outputEntity(pub_during_happy(_5150)=true).
+outputEntity(rich_overlaps_pub(_5150)=true).
+outputEntity(rich_equal_happy(_5150)=true).
+
+event(win_lottery(_5254)).
+event(go_to(_5254,_5256)).
+event(lose_wallet(_5254)).
+
+simpleFluent(rich(_5334)=true).
+simpleFluent(location(_5334)=_5330).
+
+sDFluent(happy(_5402)=true).
+sDFluent(rich_before_pub(_5402)=true).
+sDFluent(rich_starts_happy(_5402)=true).
+sDFluent(rich_finishes_happy(_5402)=true).
+sDFluent(pub_during_happy(_5402)=true).
+sDFluent(rich_overlaps_pub(_5402)=true).
+sDFluent(rich_equal_happy(_5402)=true).
+sDFluent(rich_before_pub_before_home(_5402)=true).
+
+index(go_to(_5504,_5452),_5452).
+index(win_lottery(_5452),_5452).
+index(lose_wallet(_5452),_5452).
+index(rich(_5452)=true,_5452).
+index(location(_5452)=_5506,_5452).
+index(happy(_5452)=true,_5452).
+index(rich_before_pub(_5452)=true,_5452).
+index(rich_starts_happy(_5452)=true,_5452).
+index(rich_finishes_happy(_5452)=true,_5452).
+index(pub_during_happy(_5452)=true,_5452).
+index(rich_overlaps_pub(_5452)=true,_5452).
+index(rich_equal_happy(_5452)=true,_5452).
+index(rich_before_pub_before_home(_5452)=true,_5452).
 
 
-cachingOrder2(_2538, rich(_2538)=true) :- % level: 1
-     person(_2538).
+cachingOrder2(_5774, rich(_5774)=true) :- % level: 1
+     person(_5774).
 
-cachingOrder2(_2522, location(_2522)=_2518) :- % level: 1
-     person(_2522),place(_2518).
+cachingOrder2(_5758, location(_5758)=_5754) :- % level: 1
+     person(_5758),place(_5754).
 
-cachingOrder2(_2682, happy(_2682)=true) :- % level: 2
-     person(_2682).
+cachingOrder2(_5944, happy(_5944)=true) :- % level: 2
+     person(_5944).
+
+cachingOrder2(_5928, rich_before_pub(_5928)=true) :- % level: 2
+     person(_5928).
+
+cachingOrder2(_5912, rich_overlaps_pub(_5912)=true) :- % level: 2
+     person(_5912).
+
+cachingOrder2(_6152, rich_starts_happy(_6152)=true) :- % level: 3
+     person(_6152).
+
+cachingOrder2(_6136, rich_finishes_happy(_6136)=true) :- % level: 3
+     person(_6136).
+
+cachingOrder2(_6120, pub_during_happy(_6120)=true) :- % level: 3
+     person(_6120).
+
+cachingOrder2(_6104, rich_equal_happy(_6104)=true) :- % level: 3
+     person(_6104).
 

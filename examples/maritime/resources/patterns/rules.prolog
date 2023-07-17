@@ -365,7 +365,7 @@ holdsFor(collisionDanger(Vessel1, Vessel2)=true, I):-
     holdsFor(Vessel1,proximity(Vessel1,Vessel2)=true,Ip),
     holdsFor(Vessel1, movingSpeed(Vessel1)=above, Imsa1),
     holdsFor(Vessel2, movingSpeed(Vessel2)=above, Imsa2),
-union_all([Imsa1,Imsa2],Imsa),
+    union_all([Imsa1,Imsa2],Imsa),
     overlaps(Imsa, Ip, intersection, I).
 
 %-------- suspiciousRendezVous ---------------------------%
@@ -382,7 +382,7 @@ holdsFor(anchoredFarFromPorts(Vessel)=true,I) :-
     holdsFor(Vessel,stopped(Vessel)=farFromPorts,Isf),
     holdsFor(Vessel,withinArea(Vessel,anchorage)=true,Ia),
     intersect_all([Isf,Ia],Isfa),
-	equal(Iaom, Isfa, lhs, I).
+    equal(Iaom, Isfa, lhs, I).
 
 %-------- anchoredNearPorts ---------------------------%
 holdsFor(anchoredNearPorts(Vessel)=true,I) :-

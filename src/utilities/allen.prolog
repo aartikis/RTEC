@@ -2,7 +2,8 @@
  *
 
 *************************************** Allen Relations ***********************************************
-The predicate allen/5 allows for Allen relations in the definitions of statically determined fluents.
+RTEC supports Allen relations in the definitions of statically determined fluents using the predicates:
+before/4, meets/4, starts/4, finishes/4, during/4, overlaps/4, equal/4.
 *******************************************************************************************************
 Maintained by: Periklis Mantenoglou
 ************************************ Example & Motivation *********************************************
@@ -22,7 +23,7 @@ This specification can be expressed using interval relation ``during'' with the 
 holdsFor(happy(P)=true, I):-
 	holdsFor(playing_darts(P)=true, Id),
 	holdsFor(at_location(P)=pub, Ip),
-	allen(during, Id, Ip, source, true, I).
+	during(Id, Ip, source, I).
 
 The output list of maximal intervals I contains the intervals of Id that are `during' some of Ip. 
 For the following case, I would contain id. 
@@ -50,7 +51,7 @@ without compromising complexity.
 
 Notes: 
 - The algorithm assumes that both input lists are *temporally sorted* and contain *maximal intervals*.
-	Since maximal intervals are non-overlapping, sorting in terms of either starting or ending point, yield the same list.	
+	Since maximal intervals are non-overlapping, sorting in terms of starting or ending point produces the same list.	
 - All intervals are *right-open*, i.e., if I=(S,E), I includes the time-points {S, S+1, ..., E-1}
 	S is the starting point of I and E-1 is its ending point.
 
