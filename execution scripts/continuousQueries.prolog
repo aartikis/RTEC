@@ -41,9 +41,9 @@
 %	event_description_files: a list of Prolog files containing at least two files: the compiled rules and the declarations of the application.
 %	goals: a list of Prolog queries to execute before running RTEC. 
 %	stream_rate: the expected rate at which the input streams have been sped up (only for 'fifo' mode). 
-%	---> WARNING: the value of stream_rate should agree with the speed rate of the input providers (named pipes).
+%	---> the value of stream_rate should agree with the speed rate of the input providers (named pipes).
 %	sde_batch: the default number of time-points each Prolog rule for asserting input events contains for supported applications.
-%	---> WARNING: only for input_mode=dynamic_predicates 
+%	---> only for input_mode=dynamic_predicates 
 %	dynamic_grounding_flag
 %	stream_order_flag
 %	preprocessing_flag

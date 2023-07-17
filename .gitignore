@@ -5,10 +5,14 @@ examples/caviar/results/*.txt
 examples/ctm/results/*.txt
 examples/maritime/results/*.txt
 examples/netbill/results/*.txt
+examples/netbill/dataset/prolog/netbill_dataset_generator/*
 examples/toy/results/*.txt
 examples/voting/results/*.txt
 examples/maritime/dataset/csv/*.csv
 examples/maritime-imis/*
+examples/*/resources/graphs/*.png
+examples/*/resources/graphs/*.dot
+examples/maritime/scripts/*
 ehthumbs.db
 Icon?
 Thumbs.db
@@ -21,3 +25,4 @@ venv/*
 build/*
 dist/*
 docs/old.md
+unit-tests/compiler-tests/tests.*/rules_compiled_c.prolog

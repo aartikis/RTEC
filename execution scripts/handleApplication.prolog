@@ -85,7 +85,6 @@ default(clock_tick, ctm, 1).
 default(clock_tick, feedback_loops, 1).
 default(clock_tick, _, 1).
 
-
 % The default results directory for each application. 
 % In order to run an application for a different value of this parameter, run:
 %   continuousQueries(ApplicationName, [results_directory=ResultsDirectory]).
@@ -280,6 +279,7 @@ set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 
 handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals, AllenMem) :-
 	% Set window and step size
+	write(ParameterList), nl,
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
 	% Start and end times of reasoning

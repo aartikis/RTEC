@@ -155,6 +155,8 @@ holdsForSimpleFluent(_U, [], _InitTime, _QueryTime, []) :- !.
 holdsForSimpleFluent(U, PeriodList, InitTime, QueryTime, InitList) :-
 	% compute the ending points within (Qi-WM,Qi]
 	computeEndingPoints(U, InitTime, QueryTime, TerminList),
+        %write('Initiation Points for '), write(U), write(': '), write(InitList), nl,
+        %write('Termination Points for '), write(U), write(': '), write(TerminList), nl,
 	makeIntervalsFromSEPoints(InitList, TerminList, PeriodList).
       
 

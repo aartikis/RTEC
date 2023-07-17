@@ -1,4 +1,5 @@
 :-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
+:-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.
 initiatedAt(status(_4656)=null, _4666, -1, _4674) :-
      _4666=< -1,
      -1<_4674.
