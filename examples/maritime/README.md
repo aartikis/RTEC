@@ -12,8 +12,4 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 - **results.** Directory of the execution logs.
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
 
-# Execution Instructions
 
-1. [Requirements](../../docs/requirements.md)
-2. [Running an Existing Application with a bash script](../../docs/existing-apps.md)
-3. [Running an Existing Application with the Command Line Interface](../../docs/cli-existing-apps.md)
