@@ -2,13 +2,13 @@
 
 This application describes a voting prodecure for multi-agent systems. The task of RTEC is to compute the maximal intervals during which a set of normative positions, e.g., institutionalised power, obligation, etc., of agents hold.
 
-Pitt J., Kamara L., Sergot M. and Artikis A. [Voting in Multi-Agent Systems](https://doi.org/10.1093/comjnl/bxh164). The Computer Journal, 49(2):156-170, 2006.
+Documentation about this application may be found in the paper below:
 
-Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition](http://cer.iit.demokritos.gr/publications/papers/2015/artikis-TKDE14.pdf). IEEE Transactions on Knowledge and Data Engineering (TKDE), 27(4):895-908, 2015.
+Mantenoglou P., Pitsikalis E. and Artikis A. [Stream Reasoning with Cycles]([http://cer.iit.demokritos.gr/publications/papers/2015/artikis-TKDE14.pdf](https://cer.iit.demokritos.gr/publications/papers/2022/KR2022-final.pdf)). In Proceedings of the 19th International Conference on Principles of Knowledge Representation and Reasoning (KR), 2022.
 
 # Directory Structure
+- **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
 - **dataset.** This folder contains a download link for several datasets for voting with a varying number of participating agents in ".csv" format. An example dataset with 1000 agents is packed with this repository. Note that only one of these datasets should be present in this folder at the time of executing RTEC.
 - **results.** Directory of the execution logs.
-- **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
 
 
