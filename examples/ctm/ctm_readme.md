@@ -8,7 +8,7 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Directory Structure
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
-- **dataset.** A sample synthetic dataset for CTM in RTEC format. The dataset concerns 100 public transport vehicles from the EU-funded PRONTO project. 
+- **dataset.** This folder contains a sample synthetic dataset for CTM in RTEC format. The dataset concerns 100 public transport vehicles from the EU-funded PRONTO project. 
 - **results.** Directory of the execution logs.
 
 
