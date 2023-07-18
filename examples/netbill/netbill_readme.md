@@ -11,4 +11,5 @@ Artikis A. and Sergot M. [Executable specification of open multi-agent systems](
 - **dataset.** This folder contains a download link for several datasets for NetBill with a varying number of participating agents in ".csv" format. An example dataset with 1000 agents is packed with this repository. 
 - **results.** Directory of the execution logs.
 
-
+# Execution Examples
+- ```.\run_rtec.sh --app=netbill --window-size=20 --step=20``` runs RTEC on NetBill for a window and step size equal to 20 time-points.

@@ -7,4 +7,5 @@ This example is illustrated in the [manual of RTEC](../../RTEC_manual.pdf).
 - **dataset.** A dataset for the toy example in RTEC format.
 - **results.** Directory of the execution logs.
 
-
+# Execution Examples
+- ```.\run_rtec.sh --app=toy --window-size=20 --step=20``` runs RTEC on the toy example for a window and step size equal to 20 time-points. 

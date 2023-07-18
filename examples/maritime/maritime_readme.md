@@ -13,3 +13,5 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 - **results.** Directory of the execution logs.
 
 
+# Execution Examples
+- ```.\run_rtec.sh --app=maritime --window-size=7200 --step=3600``` runs RTEC on the maritime application for a window size of 2 hours (7200 seconds) and a step size equal to 1 hour. In this, case RTEC is executed with overlapping windows, in order to accommodate delayed events.

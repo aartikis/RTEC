@@ -12,3 +12,5 @@ Mantenoglou P., Pitsikalis E. and Artikis A. [Stream Reasoning with Cycles](http
 - **results.** Directory of the execution logs.
 
 
+# Execution Examples
+- ```.\run_rtec.sh --app=voting --start_time=20 --end_time=80``` runs RTEC on our multi-agent voting protocol. Reasoning starts from time-point 20 and ends at time-point 80. 

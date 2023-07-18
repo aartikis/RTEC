@@ -1,6 +1,6 @@
 # Application
 
-Event recognition for City Transport Management (CTM).
+Activity recognition for public space surveillance using the [CAVIAR](http://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/) benchmark dataset.
 
 Documentation about this application may be found in this paper:
 
@@ -8,7 +8,8 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Directory Structure
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
-- **dataset.** A sample synthetic dataset for CTM in RTEC format. The dataset concerns 100 public transport vehicles from the EU-funded PRONTO project. 
+- **dataset.** The CAVIAR dataset in RTEC format.
 - **results.** Directory of the execution logs.
 
-
+# Execution Examples
+- ```.\run_rtec.sh --app=caviar --window-size=200 --step=200``` runs RTEC on the activity recognition application for a window and step size equal to 200 time-points.
