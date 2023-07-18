@@ -8,8 +8,3 @@ This example is illustrated in the [manual of RTEC](../../RTEC_manual.pdf).
 - **results.** Directory of the execution logs.
 
 
-# Execution Instructions
-
-1. [Requirements](../../docs/requirements.md)
-2. [Running an Existing Application with a bash script](../../docs/existing-apps.md)
-3. [Running an Existing Application with the Command Line Interface](../../docs/cli-existing-apps.md)
