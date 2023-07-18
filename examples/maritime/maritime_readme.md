@@ -9,7 +9,7 @@ In 13th International Conference on Distributed and Event-Based Systems (DEBS), 
 
 # Directory Structure
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
-- **dataset.** This folder contains a download link for a dataset which includes vessels sailing the area near the port of Brest for six months. After download the ".csv" file containing the dataset, place it in this folder. 
+- **dataset.** This folder contains a download link for a dataset which includes vessels sailing the area near the port of Brest for six months. After downloading the ".csv" file containing the dataset, place it in this folder. 
 - **results.** Directory of the execution logs.
 
 
