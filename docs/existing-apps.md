@@ -1,7 +1,7 @@
 ## Running RTEC with a bash execution script
 
 ### Running an Existing Application
-  1. **See the supported applications.** RTEC currently supports the applications that appear as table names in the file "execution scripts/defaults.toml". This is the configuration file of RTEC where we list the default execution parameters for each of the supported applications. For example, see the table corresponding to the "toy" application that we use as a running example in the [manual of RTEC](../RTEC_manual.pdf) below:
+  1. **See the supported applications.** RTEC currently supports the applications that appear as table names in the file "execution scripts/defaults.toml". This is the configuration file of RTEC where we list the default execution parameters for each of the supported applications. For instance, see the table corresponding to the "toy" application that we use as a running example in the [manual of RTEC](../RTEC_manual.pdf) below:
 
 ```
  [toy]
@@ -21,7 +21,7 @@
  dependency_graph_directory = '../examples/toy/resources/graphs'
  include_input = false
 ```
-&emsp;&ensp; According to the key-value pairs of the above table, the event description of the toy application is in the file "../examples/toy/resources/patterns/rules.prolog", while the input stream is in "../examples/toy/dataset/csv/toy_data.csv" and the results of RTEC are written in the directory "../examples/toy/results". See Sections 4 and 5 of the [user manual](../RTEC_manual.pdf) for the grammar of an event description and the supported format for the input providers. Moreover, the complete documentation of the parameters in the above table is provided in Section 6.
+&emsp;&ensp; According to the key-value pairs of the above table, the event description of the toy application is in the file "../examples/toy/resources/patterns/rules.prolog", while the input stream is in "../examples/toy/dataset/csv/toy_data.csv" and the results of RTEC are written in the directory "../examples/toy/results". See the [manual](../RTEC_manual.pdf) for the grammar of an event description, the supported format for the input providers, and the complete documentation of the parameters in the above table.
 
   2. **Run RTEC.** 
 
