@@ -10,6 +10,7 @@ function get_all_defaults (){
 	[ -z $start_time ] && start_time=`get_default_param $application start_time`
 	[ -z $end_time ] && end_time=`get_default_param $application end_time`
 	[ -z $clock_tick ] && clock_tick=`get_default_param $application clock_tick`
+	[ -z $output_mode ] && output_mode=`get_default_param $application output_mode`
 	[ -z $results_directory ] && results_directory=`get_default_param $application results_directory`
 	[ -z $goals ] && goals=`get_default_param $application goals`
 	[ -z $event_description ] && event_description=`get_default_param $application event_description`
@@ -41,22 +42,22 @@ function input_parser (){
 	          interactive_mode="true"
 	  	  ;;
 	    --app=*)
-		  application="${arg#*=}" # "#*=" fetches all characters from the last occurrence of "=" until the end of the string
-		  ;;
-		# the following parameters are compiler flags.
-		--dependency-graph)
-		  dependency_graph="true"
-		  ;;
-		--dependency-graph-directory=*)
-		  dependency_graph_directory="${arg#*=}"
-		  ;;
-		--include-input)
-		  include_input="true"
-		  ;;
-		# the following parameters concern the execution of RTEC 
-		--input-mode=*)
-		  input_mode="${arg#*=}"
-		  ;;
+              application="${arg#*=}" # "#*=" fetches all characters from the last occurrence of "=" until the end of the string
+              ;;
+            # the following parameters are compiler flags.
+            --dependency-graph)
+              dependency_graph="true"
+              ;;
+            --dependency-graph-directory=*)
+              dependency_graph_directory="${arg#*=}"
+              ;;
+            --include-input)
+              include_input="true"
+              ;;
+            # the following parameters concern the execution of RTEC 
+            --input-mode=*)
+              input_mode="${arg#*=}"
+              ;;
 	    --window-size=*)
 	      window_size="${arg#*=}"
 	      ;;
@@ -75,24 +76,27 @@ function input_parser (){
 	    --clock-tick=*)
 	      clock_tick="${arg#*=}"
 	      ;;
-		--event-description=*)
-		  event_description="${arg#*=}"
-		  ;;
+            --event-description=*)
+              event_description="${arg#*=}"
+              ;;
+            --output-mode=*)
+              output_mode="${arg#*=}"
+              ;;
 	    --results-directory=*)
 	      results_directory="${arg#*=}"
 	      ;;
-		# the following flags are RTEC parameters that may be used multiple times in one execution. 
-		# e.g. ./run_rtec.sh --app=caviar --input=path/to/first/event/stream --input=path/to/second/event/stream
-		# runs RTEC on the CAVIAR application with two input providers.
+            # the following flags are RTEC parameters that may be used multiple times in one execution. 
+            # e.g. ./run_rtec.sh --app=caviar --input=path/to/first/event/stream --input=path/to/second/event/stream
+            # runs RTEC on the CAVIAR application with two input providers.
 	    --goal=*)
 	      goal+=("'${arg#*=}'")
 	      ;;
 	    --background-knowledge=*)
 	      background_knowledge+=("${arg#*=}")
 	      ;;
-		--input=*)
-		  input_providers+=("${arg#*=}")
-		  ;;
+            --input=*)
+              input_providers+=("${arg#*=}")
+              ;;
 	  esac
 	done
 }
@@ -112,6 +116,7 @@ function set_prolog_command() {
 	[ -z $input_mode ] || second_argument+=",input_mode=$input_mode" 
 	[ -z $stream_rate ] || second_argument+=",stream_rate=$stream_rate" 
 	[ -z $clock_tick ] || second_argument+=",clock_tick=$clock_tick" 
+	[ -z $output_mode ] || second_argument+=",output_mode=$output_mode" 
 	[ -z $results_directory ] || second_argument+=",results_directory='$results_directory'" 
 	# event_description and input_providers are are comma-separated strings. 
 	[ ${#input_providers[@]} -gt 0 ] && printf -v input_providers "'%s'," "${input_providers[@]}" &&  second_argument+=",input_providers=[${input_providers%,}]"
@@ -122,35 +127,35 @@ function set_prolog_command() {
 }
 
 function exit_func () {
-	# invoked on early exit because of incorrect input.
+    # invoked on early exit because of incorrect input.
     # input: a flag indicating a problem with the provided input.	
-	case $1 in
-		noApp)
-			printf "No application provided.\n\n" && help_rtec_script && exit 1
-		;;
-		wrongApp)
-			printf "Provided application: '$2' is not the name of a dictionary in 'defaults.toml'.\n\n" && help_rtec_script && exit 1
-		;;
-		wrongInputMode)
-			printf "Provided input mode: '$2' is not supported. Please select 'csv' or 'fifo'.\n\n" && help_rtec_script && exit 1
-		;;
-		noEventDescriptionCompiler)
-			printf "No event description provided to the compiler of RTEC" && help_rtec_script && exit 1
-		;;
-		noDependencyGraphDirectoryCompiler)
-			printf "The dependency graph flag is set but no directory for the dependency graph has been provided.\n\n" && help_rtec_script && exit 1
-		;;
-		*)
-			help_rtec_script && exit 1
-		;;	
-	esac
+    case $1 in
+        noApp)
+            printf "No application provided.\n\n" && help_rtec_script && exit 1
+        ;;
+        wrongApp)
+            printf "Provided application: '$2' is not the name of a dictionary in 'defaults.toml'.\n\n" && help_rtec_script && exit 1
+        ;;
+        wrongInputMode)
+            printf "Provided input mode: '$2' is not supported. Please select 'csv' or 'fifo'.\n\n" && help_rtec_script && exit 1
+        ;;
+        noEventDescriptionCompiler)
+            printf "No event description provided to the compiler of RTEC" && help_rtec_script && exit 1
+        ;;
+        noDependencyGraphDirectoryCompiler)
+            printf "The dependency graph flag is set but no directory for the dependency graph has been provided.\n\n" && help_rtec_script && exit 1
+        ;;
+        *)
+            help_rtec_script && exit 1
+        ;;	
+    esac
 }
 
 function help_rtec_script {
-	# help message
-	printf "General usage instructions:\n"
-	printf "This script instructs RTEC to reason over the provided event description.\n"
-	printf "\tThe <app> parameter is mandatory and has to be the name of an application under '/examples'.\n"
+    # help message
+    printf "General usage instructions:\n"
+    printf "This script instructs RTEC to reason over the provided event description.\n"
+    printf "\tThe <app> parameter is mandatory and has to be the name of an application under '/examples'.\n"
     printf "\t\tApplications packed with RTEC: toy, caviar, ctm, maritime, voting, netbill.\n"
     printf "\t\tExamples: './run_rtec.sh --app=toy' and './run_rtec.sh --app=maritime'.\n\n"
     printf "Moreover, this script supports the following options: \n"
