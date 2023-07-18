@@ -4,7 +4,7 @@ This application describes a voting prodecure for multi-agent systems. The task 
 
 Documentation about this application may be found in the paper below:
 
-Mantenoglou P., Pitsikalis E. and Artikis A. [Stream Reasoning with Cycles]([http://cer.iit.demokritos.gr/publications/papers/2015/artikis-TKDE14.pdf](https://cer.iit.demokritos.gr/publications/papers/2022/KR2022-final.pdf)). In Proceedings of the 19th International Conference on Principles of Knowledge Representation and Reasoning (KR), 2022.
+Mantenoglou P., Pitsikalis E. and Artikis A. [Stream Reasoning with Cycles](https://cer.iit.demokritos.gr/publications/papers/2022/KR2022-final.pdf). In Proceedings of the 19th International Conference on Principles of Knowledge Representation and Reasoning (KR), 2022.
 
 # Directory Structure
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
