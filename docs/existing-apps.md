@@ -31,9 +31,4 @@
 
 3. **See the execution results.** The specified results directory includes a log file with statistics concerning the execution of RTEC and a file containing intervals recognised by RTEC in each window. 
 
-### Other examples of execution
-
-  1. ```.\run_rtec.sh --window-size=7200 --step=3600``` runs RTEC on the maritime application for a window size of 2 hours (7200 seconds) and a step size equal to 1 hour. In this, case RTEC is executed with overlapping windows, in order to accommodate delayed events.
-  2. ```.\run_rtec.sh --window-size=200 --step=200``` runs RTEC on the activity recognition application for a window and step size equal to 200 time-points.
-  3. ```.\run_rtec.sh --start_time=20 --end_time=80``` runs RTEC on our multi-agent voting protocol. Reasoning starts from time-point 20 and ends at time-point 80. 
 
