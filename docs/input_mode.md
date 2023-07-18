@@ -16,4 +16,4 @@ Case 3 may be selected in order to *simulate* a live stream using historical dat
 
 Note that each execution of RTEC uses the same file type for all input providers, i.e., it is not possible to process one live stream and one csv file with historical data in the same execution of RTEC. 
 
-The format of the input records is described in Section 5 of the [manual of RTEC](../RTEC_manual.pdf).
+The format of the input records is described in the [manual of RTEC](../RTEC_manual.pdf).
