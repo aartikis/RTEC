@@ -8,7 +8,7 @@ Artikis A., Sergot M. and Paliouras G. [An Event Calculus for Event Recognition]
 
 # Directory Structure
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
-- **dataset.** The CAVIAR dataset in RTEC format.
+- **dataset.** This folder contains the CAVIAR dataset in RTEC format.
 - **results.** Directory of the execution logs.
 
 # Execution Examples
