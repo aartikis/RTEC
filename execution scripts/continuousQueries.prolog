@@ -82,13 +82,9 @@ continuousQueries(App, ParamList) :-
 	executeUserGoals(Goals), % run queries requested by the user.
 	printLogo,
         init_input(InputMode, InputPaths, InputStreams, PointerPositions, InputThreadIDs),
-        write(InputThreadIDs), nl,
         init_log_file(LogFile),
 	QueryTime is StartReasoningTime + Step,
-        write(QueryTime),nl,
-        write(OutputMode), nl,
         init_output(OutputMode, ResultsFile, WM, Step, QueryTime, OutputThreadID),
-        write(OutputThreadID), nl,
 	%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile),
 	% initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
 	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
@@ -136,8 +132,6 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 	findall((EE,TT), (outputEntity(EE),happensAt(EE,TT)), OELT),
 	statistics(StatisticsFlag,[S2,_T2]),
 	% log the computed intervals of output entities
-        (OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions) ;
-         OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 	% log window execution time
  	S is S2-S1, %S=T2,
 	open(LogFile, append, LogFileStream),
@@ -152,9 +146,13 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 		NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
 		% (ii) sleep until the next query time 
 		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
+        	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions) ;
+         	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 		sleep_if_fifo(InputMode, Step, StreamRate, S),
 		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
 	;
+        	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions), thread_get_message(printRecognitionsOK(QueryTime)) ;
+         	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
 		QueryTime >= EndReasoningTime,
 		RecTimes = [S|InitRecTime],
@@ -188,14 +186,12 @@ init_log_file(LogFile):-
 
 % init_output(+OutputMode, +ResultsFile, +WM, +Step, +CurrentTime, -OutputThreadID),
 init_output(fifo, ResultsPipe, WM, Step, CurrentTime, OutputThreadID):-
-    write('Creating pipe...'), nl,
     create_pipe(ResultsPipe),
-    write('Pipe created!'), nl,
-    initWriterThread(ResultsPipe, WM, Step, CurrentTime, OutputThreadID).
+    thread_self(ERThreadID),
+    initWriterThread(ResultsPipe, WM, Step, CurrentTime, ERThreadID, OutputThreadID).
 
 init_output(file, ResultsFile, _, _, _, -1):-
-    create_file(ResultsFile),
-    write('OK'), nl.
+    create_file(ResultsFile).
 
 % openFilesOrPipes(+InputMode, +InputPaths, -InputStreams, -PointerPositions, +LogFile, -LogFileStream, +ResultsFile, -ResultFileStream)
 %openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile):-
@@ -229,10 +225,8 @@ init_output(file, ResultsFile, _, _, _, -1):-
 % touch <File>, so that it exists as an empty file before the execution of the first window.
 %create_file(+File)
 create_file(File):-
-        write('Creating file: '), write(File),nl,
 	open(File, write, FileStream),
-	close(FileStream), 
-        write('OK'), nl.
+	close(FileStream).
 
 % touch <Pipe>, so that it exists as an empty file before the execution of the first window.
 %create_file(+File)
@@ -253,24 +247,22 @@ initLoaderThreads([InputPipe|RestPipes], [ThreadID|RestIDs]):-
 % Next, it writes the computed intervals into the output pipe.
 % This process is repeated until the thread receives a kill signal from the thread performing event recognition.
 %
-% initWriterThread(+OutputPipe, +WM, +Step, +CurrentTime, -OutputThreadID):-
-initWriterThread(OutputPipe, WM, Step, CurrentTime, OutputThreadID):-
-	thread_create(print_results_on_message(OutputPipe, WM, Step, CurrentTime), OutputThreadID).
-    %
-    %
-    %    close(OutputStream)
-print_results_on_message(OutputPipe, WM, Step, CurrentTime):-
-    open(OutputPipe, append, OutputStream),
-    print_results_on_message_loop(OutputStream, WM, Step, CurrentTime).
+% initWriterThread(+OutputPipe, +WM, +Step, +CurrentTime, +ERThreadID, -OutputThreadID):-
+initWriterThread(OutputPipe, WM, Step, CurrentTime, ERThreadID, OutputThreadID):-
+	thread_create(print_results_on_message(OutputPipe, WM, Step, CurrentTime, ERThreadID), OutputThreadID).
 
-% print_results_on_message_loop(+OutputStream, +WM, +Step, +CurrentTime)
-print_results_on_message_loop(OutputStream, WM, Step, CurrentTime):-
-    write('Waiting for message...'), nl,
+% print_results_on_message(+OutputPipe, +WM, +Step, +CurrentTime, +ERThreadID)
+print_results_on_message(OutputPipe, WM, Step, CurrentTime, ERThreadID):-
+    open(OutputPipe, append, OutputStream),
+    print_results_on_message_loop(OutputStream, WM, Step, CurrentTime, ERThreadID).
+
+% print_results_on_message_loop(+OutputStream, +WM, +Step, +CurrentTime, +ERThreadID)
+print_results_on_message_loop(OutputStream, WM, Step, CurrentTime, ERThreadID):-
     thread_get_message(printRecognitions),
-    write('Message received!'), nl,
     printRecognitionsThread(OutputStream, CurrentTime, WM),
+    thread_send_message(ERThreadID, printRecognitionsOK(CurrentTime)),
     NextTime is CurrentTime + Step,
-    print_results_on_message_loop(OutputStream, WM, Step, NextTime).
+    print_results_on_message_loop(OutputStream, WM, Step, NextTime, ERThreadID).
 
 % Open one input stream for each input file, while maintaining the reading position in the stream.
 % openInputCSVFiles(+InputFiles, -InputStreams, -PointerPositions)
@@ -360,11 +352,11 @@ sleep_if_fifo(InputMode, Step, StreamRate, S):-
 	
 sleep_until_query_time(SleepTimeSec):-
 	statistics(walltime,[TBeforeSleep,_T1]),	
-	write('About to sleep for '), write(SleepTimeSec), write(' seconds.'), nl,
+	write('Output entity processing thread is about to sleep for '), write(SleepTimeSec), write(' seconds.'), nl,
 	sleep(SleepTimeSec),
 	statistics(walltime,[TAfterSleep,_T2]),
 	TSleep is (TAfterSleep - TBeforeSleep)/1000,
-	write('I slept for '), write(TSleep), write(' seconds.'), nl.
+	write('Output entity processing thread slept for '), write(TSleep), write(' seconds.'), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Assert narrative (SDEs)

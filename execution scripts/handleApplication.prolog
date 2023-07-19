@@ -306,8 +306,8 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	set_parameter(ParameterList, sde_batch, App, SDEBatch),
 	set_parameter(ParameterList, goals, App, Goals),
 	atom_concat(ResultsDir, '/log', ResultsDirLog),
-	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode], LogFile), % execution logs file
-	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode], ResultsFile). % recognised intervals file
+	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], LogFile), % execution logs file
+	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], ResultsFile). % recognised intervals file
 
 %% Auxiliary predicates to differentiate input/result files based on the parameter of the experiment. %%
 %% Usage:   add_info(+PrefixStr, +SuffixStr, +ParametersList, -FinalStr)							  %%
