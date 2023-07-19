@@ -1,9 +1,9 @@
-# Toy example
+# A toy example with Allen relations
 
-This example is illustrated in the [manual of RTEC](../../RTEC_manual.pdf).
+In this toy example, the task is to detect the intervals during which a person is entering a door.
 
 # Directory Structure
-- **dataset.** A toy dataset in RTEC format.
+- **dataset.** An example dataset in RTEC format.
 - **results.** Directory of the execution logs.
 - **resources.** Original and compiled patterns along with declarations and auxiliary domain knowledge.
 
