@@ -76,13 +76,13 @@ default(end_time, feedback_loops, 100).
 % 	continuousQueries(ApplicationName, [clock_tick=ClockTick]).
 % WARNING: Changing the value of clock_tick in existing applications may affect the 
 % 		   correctness of the results.
-default(clock_tick, toy, 1).
-default(clock_tick, maritime, 1).
-default(clock_tick, caviar, 40).
-default(clock_tick, voting, 1).
-default(clock_tick, netbill, 1).
-default(clock_tick, ctm, 1).
-default(clock_tick, feedback_loops, 1).
+default(clock_tick, toy, 1):- !.
+default(clock_tick, maritime, 1):- !.
+default(clock_tick, caviar, 40):- !.
+default(clock_tick, voting, 1):- !.
+default(clock_tick, netbill, 1):- !.
+default(clock_tick, ctm, 1):- !.
+default(clock_tick, feedback_loops, 1):- !.
 default(clock_tick, _, 1).
 
 
@@ -95,6 +95,15 @@ default(clock_tick, _, 1).
 default(results_directory, Application, Directory):-
 	atom_concat('../examples/', Application, Dir0),
 	atom_concat(Dir0, '/results/', Directory).
+
+default(output_mode, toy, file):- !.
+default(output_mode, maritime, file):- !.
+default(output_mode, caviar, file):- !.
+default(output_mode, voting, file):- !.
+default(output_mode, netbill, file):- !.
+default(output_mode, ctm, file):- !.
+default(output_mode, feedback_loops, file):- !.
+default(output_mode, _, file).
 
 default(goals, toy, []):- !.
 default(goals, maritime, []):- !.
@@ -278,7 +287,7 @@ set_parameter([ParameterName=Value|_T], ParameterName, _Application, _InputMode,
 set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 	set_parameter(T, ParameterName, Application, InputMode, Value).	
 
-handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals, AllenMem) :-
+handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, OutputMode, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals, AllenMem) :-
 	% Set window and step size
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
@@ -289,6 +298,8 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	set_parameter(ParameterList, clock_tick, App, ClockTick),
 	% The rate at which the input stream have been sped up (in 'fifo' mode)
 	set_parameter(ParameterList, stream_rate, App, StreamRate),
+        % Set output mode: regular file or named pipe.
+	set_parameter(ParameterList, output_mode, App, OutputMode),
 	% Set directory for writing logs and the recognised intervals
 	set_parameter(ParameterList, results_directory, App, ResultsDir),
 	% Set prolog files to be consulted
@@ -296,7 +307,6 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	% Set mode of receiving streams of input events
 	set_parameter(ParameterList, input_mode, App, InputMode),
 	set_parameter(ParameterList, input_providers, App, InputMode, InputProviders),
-
 	set_parameter(ParameterList, dynamic_grounding_flag, App, DynamicGroundingFlag),
 	set_parameter(ParameterList, stream_order_flag, App, StreamOrderFlag),
 	set_parameter(ParameterList, preprocessing_flag, App, PreprocessingFlag),
@@ -306,8 +316,8 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	set_parameter(ParameterList, goals, App, Goals),
 	set_parameter(ParameterList, allen_memory, App, AllenMem),
 	atom_concat(ResultsDir, '/log', ResultsDirLog),
-	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode], LogFile), % execution logs file
-	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode], ResultsFile). % recognised intervals file
+	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], LogFile), % execution logs file
+	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], ResultsFile). % recognised intervals file
 
 %% Auxiliary predicates to differentiate input/result files based on the parameter of the experiment. %%
 %% Usage:   add_info(+PrefixStr, +SuffixStr, +ParametersList, -FinalStr)							  %%
