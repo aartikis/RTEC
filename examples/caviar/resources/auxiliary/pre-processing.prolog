@@ -28,7 +28,7 @@ aux2(Threshold, List, QueryTime, Id1, Id2) :-
 	setof(T, member((T,Threshold),List), PointList), !,
 	% below 40 represents the temporal distance between two consecutive time-points
 	makeIntervalsFromAllPoints(PointList, 40, QueryTime, [], L),
-	assert(iePList(Id1, distance(Id1,Id2,Threshold)=true, L, [])).
+	assertz(iePList(Id1, distance(Id1,Id2,Threshold)=true, L, [])).
 
 % do not assert empty list of distance intervals
 aux2(_Threshold, _List, _QueryTime, _Id1, _Id2).

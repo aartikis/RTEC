@@ -11,8 +11,8 @@
 %:- ['prolog/agent9000.prolog'].
 %:- ['prolog/agent10000.prolog'].
 
-%assert_n_agents(N):- N>0, N1 is N-1, N1=0, assert(agent(N1)).
-%assert_n_agents(N):- N>0, N1 is N-1, assert(agent(N1)), assert_n_agents(N1).
+%assert_n_agents(N):- N>0, N1 is N-1, N1=0, assertz(agent(N1)).
+%assert_n_agents(N):- N>0, N1 is N-1, assertz(agent(N1)), assert_n_agents(N1).
 
 role(chair).
 role(voter).

@@ -88,7 +88,7 @@ dealWithInputFluents(E, Start, End, InitTime, _NewInitTime) :-
 dealWithInputFluents(E, Start, End, _InitTime, NewInitTime) :-
 	retract(holdsForIESI(E,(Start,End))), !, 
 	\+ NewInitTime=End,
-	assert(holdsForIESI(E,(NewInitTime,End))). 
+	assertz(holdsForIESI(E,(NewInitTime,End))). 
 
 
 % stop looking after InitTime=Qi-WM
@@ -122,7 +122,7 @@ dealWithInputFluentsI(U, InitTime, NewInitTime) :-
 		End>InitTime, 
 		\+ NewInitTime=End,
 		retract(holdsForIESI(U, (Start, End))), 
-		assert(holdsForIESI(U, (NewInitTime, End)))
+		assertz(holdsForIESI(U, (NewInitTime, End)))
 	).
 
 %% zip predicate %% 
@@ -197,7 +197,7 @@ processIEBuildFP(Index, F=V, _InitTime, QueryTime) :-
 updateiePList(_Index, _U, [], []) :- !.
 
 updateiePList(Index, F=V, NewPeriods, BrokenPeriod) :- 
-	assert(iePList(Index, F=V, NewPeriods, BrokenPeriod)).
+	assertz(iePList(Index, F=V, NewPeriods, BrokenPeriod)).
 
 
 %%%%%%% holdsForIE --- collectIntervals

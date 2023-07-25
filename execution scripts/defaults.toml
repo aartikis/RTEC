@@ -25,8 +25,8 @@ event_description = '../examples/maritime/resources/patterns/rules.prolog'
 input_mode = "csv"
 input_providers = ['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']
 results_directory = "../examples/maritime/results"
-window_size = 86400 # 1 day = 86400 seconds
-step = 86400
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
 start_time = 1443650400 
 end_time = 1448834400
 clock_tick = 1
@@ -99,7 +99,7 @@ include_input = false
 # RTEC execution parameters 
 event_description = '../examples/ctm/resources/patterns/rules.prolog'
 input_mode = "csv"
-input_providers = ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv    /internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv'    , '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/    csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']
+input_providers = ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv'    , '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']
 results_directory = "../examples/ctm/results"
 window_size = 10000
 step = 10000
@@ -108,7 +108,7 @@ end_time = 50000
 clock_tick = 1
 goals = []
 background_knowledge = ['../examples/ctm/dataset/auxiliary/vehicles.prolog']
-stream_rate = 1
+stream_rate = 5000
 # Compiler parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/ctm/resources/graphs'

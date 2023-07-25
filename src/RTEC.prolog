@@ -128,33 +128,33 @@ updateSDE/4.
 
 
 initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, TemporalDistance) :-
-	assert(temporalDistance(TemporalDistance)), 
+	assertz(temporalDistance(TemporalDistance)), 
 	% Assert threshold for forget and dynamic grounding mechanisms here 
 	% to avoid carrying these values forever 
-	assert(eventsPerTimepointThreshold(-1)), 
-	assert(groundTermOverlapThreshold(-1)), %
-	(InputFlag=ordered, assert(input(InputFlag)) ; assert(input(unordered))),
+	assertz(eventsPerTimepointThreshold(-1)), 
+	assertz(groundTermOverlapThreshold(-1)), %
+	(InputFlag=ordered, assertz(input(InputFlag)) ; assertz(input(unordered))),
 	% if we need dynamic grounding then dynamicGrounding/1 is already defined
 	% so there is no need to assert anything here
-	(DynamicGroundingFlag=dynamicgrounding ; assert(noDynamicGrounding)),	
+	(DynamicGroundingFlag=dynamicgrounding ; assertz(noDynamicGrounding)),	
 	% if we need preprocessing then preProcessing/1 is already defined
 	% so there is no need to assert anything here
-	(PreProcessingFlag=preprocessing ; assert(preProcessing(_))), !.
+	(PreProcessingFlag=preprocessing ; assertz(preProcessing(_))), !.
 
 
 initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, ForgetThreshold, DynamicGroundingThreshold, TemporalDistance) :-
-	assert(temporalDistance(TemporalDistance)), 
+	assertz(temporalDistance(TemporalDistance)), 
 	% Assert threshold for forget and dynamic grounding mechanisms here 
 	% to avoid carrying these values forever 
-	assert(eventsPerTimepointThreshold(ForgetThreshold)), 
-	assert(groundTermOverlapThreshold(DynamicGroundingThreshold)), %
-	(InputFlag=ordered, assert(input(InputFlag)) ; assert(input(unordered))),
+	assertz(eventsPerTimepointThreshold(ForgetThreshold)), 
+	assertz(groundTermOverlapThreshold(DynamicGroundingThreshold)), %
+	(InputFlag=ordered, assertz(input(InputFlag)) ; assertz(input(unordered))),
 	% if we need dynamic grounding then dynamicGrounding/1 is already defined
 	% so there is no need to assert anything here
-	(DynamicGroundingFlag=dynamicgrounding ; assert(noDynamicGrounding)),	
+	(DynamicGroundingFlag=dynamicgrounding ; assertz(noDynamicGrounding)),	
 	% if we need preprocessing then preProcessing/1 is already defined
 	% so there is no need to assert anything here
-	(PreProcessingFlag=preprocessing ; assert(preProcessing(_))), !.
+	(PreProcessingFlag=preprocessing ; assertz(preProcessing(_))), !.
 
 
 /************************************* EVENT RECOGNITION *************************************/
@@ -162,8 +162,8 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Forget
 
 eventRecognition(QueryTime, WM) :-
 	InitTime is QueryTime-WM,
-	assert(initTime(InitTime)),
-	assert(queryTime(QueryTime)),
+	assertz(initTime(InitTime)),
+	assertz(queryTime(QueryTime)),
     % delete input entities that have taken place before or on Qi-WM
 	forget(InitTime),
 	% calculate the items for which we will perform reasoning
@@ -229,7 +229,7 @@ deadlines1(F=V, Duration, InitTime) :-
 	% find the deadline attempt that satisfies conditions (b) and (c) mentioned above
 	% this predicate is defined below
 	findDeadlineAttempt(ListofDeadlineAttempts, Attempt, InitTime, Duration), 
-	assert( evTList(Index, attempt(F=V), Attempt) ).
+	assertz( evTList(Index, attempt(F=V), Attempt) ).
 	
 % === find the deadline attempt that satisfies conditions (b) and (c) mentioned above	 ===
 findDeadlineAttempt([], [], _, _) :- !.	
@@ -282,7 +282,7 @@ deadlines1(F=V, Duration, InitTime) :-
 	prevTimePoint(S,PrevS), EarlyT=PrevS, 
 	% ListofDeadlineAttempts is sorted
 	!,
-	assert( evTList(Index, attempt(F=V), [Attempt]) ).
+	assertz( evTList(Index, attempt(F=V), [Attempt]) ).
 
 % deadlines2/1 computes and stores the deadline attempts
 
@@ -363,7 +363,7 @@ assertInitiallyCyclic :-
 	    simpleFPList(Index, F=V, I1, I2),
 	    amalgamatePeriods(I2, I1, I),
 	    tinIntervals(NextInitTime, I),
-	    assert(initiallyCyclic(F=V))), 
+	    assertz(initiallyCyclic(F=V))), 
 	  _).
 assertInitiallyCyclic :-
 	 % InitTime=<0
@@ -373,12 +373,12 @@ assertInitiallyCyclic :-
 	    grounding(F=V),
 	    %initially(F=V),
 	    initiatedAt(F=V, -1, -1, 0),
-	    assert(initiallyCyclic(F=V))), 
+	    assertz(initiallyCyclic(F=V))), 
 	  _).
 	  
 assertCyclic(Index, F=V) :- 
 	  cyclic(F=V), !,
-	  assert(processedCyclic(Index, F=V)).
+	  assertz(processedCyclic(Index, F=V)).
 assertCyclic(_, _).
 
 % T is ground when evaluating holdsAt
@@ -471,17 +471,17 @@ addStartingPoint(Index, F=V, InitPoint) :-
 	retract(startingPoints(Index, F=V, SPoints)), !,
 	nextTimePoint(InitPoint, SPoint),
 	insertNo(SPoint, SPoints, NewSPoints),
-	assert(startingPoints(Index, F=V, NewSPoints)).
+	assertz(startingPoints(Index, F=V, NewSPoints)).
 addStartingPoint(Index, F=V, InitPoint) :-
 	nextTimePoint(InitPoint, SPoint),
-	assert(startingPoints(Index, F=V, [SPoint])).
+	assertz(startingPoints(Index, F=V, [SPoint])).
 	
 addCyclicPoint(Index, F=V, T, Val) :-
 	retract(storedCyclicPoints(Index, F=V, OldCPoints)), !, 
 	insertTuple((T,Val), OldCPoints, NewCPoints),
-	assert(storedCyclicPoints(Index, F=V, NewCPoints)).
+	assertz(storedCyclicPoints(Index, F=V, NewCPoints)).
 addCyclicPoint(Index, F=V, T, Val) :-
-	assert(storedCyclicPoints(Index, F=V, [(T,Val)])).	
+	assertz(storedCyclicPoints(Index, F=V, [(T,Val)])).	
 
 insertNo(X, [], [X]).
 insertNo(X, [X|Rest], [X|Rest]) :- !.
