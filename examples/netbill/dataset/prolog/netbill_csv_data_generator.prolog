@@ -251,5 +251,5 @@ assertMsg([H|Tail], RecipientList, RecipientNo, MessageHeader, Topic, Time) :-
 	nth0(Temp, RecipientList, RandomRecipient),
 	flatten([MessageHeader, H, RandomRecipient, Topic], FlatMsg),
 	Message =.. FlatMsg,
-	assert(happensAtIE(Message, Time)),
+	assertz(happensAtIE(Message, Time)),
 	assertMsg(Tail, RecipientList, RecipientNo, MessageHeader, Topic, Time).

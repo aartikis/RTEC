@@ -115,7 +115,7 @@ removeOutdated:-
 % assert_grounding(+Term)
 assert_grounding([]).
 assert_grounding([Term|Other]):-
-    assert(Term),
+    assertz(Term),
     assert_grounding(Other).
 
 

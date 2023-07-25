@@ -103,49 +103,49 @@ assertMsg([H|Tail], RecipientList, RecipientNo, MessageHeader, Topic, Time) :-
 	nth0(Temp, RecipientList, RandomRecipient),
 	flatten([MessageHeader, H, RandomRecipient, Topic], FlatMsg),
 	Message =.. FlatMsg,
-	assert(happensAtIE(Message, Time)),
+	assertz(happensAtIE(Message, Time)),
 	assertMsg(Tail, RecipientList, RecipientNo, MessageHeader, Topic, Time).
 
 /*
 updateSDE(Start, End) :-
 	%%%%%%%%%%%%%%%%%%%%%%%% request books %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%% requesting quotes from merchants; non-consumers and merchants also make requests
-	findall((C,M),	(agent(C), role_of(M,merchant), \+M=C, random(R), R>0.9, assert(happensAtIE(request_quote(C,M,book), Start))), _),
+	findall((C,M),	(agent(C), role_of(M,merchant), \+M=C, random(R), R>0.9, assertz(happensAtIE(request_quote(C,M,book), Start))), _),
 	%%%%%%%%%%%%%%%%%%% present quotes for books %%%%%%%%%%%%%%%%%%%%%%% 
 	StartPlus1 is Start+1,	
 	%% merchants present quotes to consumers
-	findall((M,C),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.7, assert(happensAtIE(present_quote(M,C,book,10), StartPlus1))), _),
+	findall((M,C),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.7, assertz(happensAtIE(present_quote(M,C,book,10), StartPlus1))), _),
 	%% merchants present quotes to non-consumers
-	findall((M,C),	(agent(C), \+role_of(C,consumer), \+role_of(C,merchant), role_of(M,merchant), \+M=C, random(R), R>0.9, assert(happensAtIE(present_quote(M,C,book,10), StartPlus1))), _),
+	findall((M,C),	(agent(C), \+role_of(C,consumer), \+role_of(C,merchant), role_of(M,merchant), \+M=C, random(R), R>0.9, assertz(happensAtIE(present_quote(M,C,book,10), StartPlus1))), _),
 	%% unexpected behaviour: non-merchants present quotes to consumers (with the aim of deception)
-	findall((M,C),	(role_of(C,consumer), agent(M), \+role_of(M,merchant), \+M=C, random(R), R>0.95, assert(happensAtIE(present_quote(M,C,book,10), StartPlus1))), _),	
+	findall((M,C),	(role_of(C,consumer), agent(M), \+role_of(M,merchant), \+M=C, random(R), R>0.95, assertz(happensAtIE(present_quote(M,C,book,10), StartPlus1))), _),	
 	%%%%%%%%%%%%%%%%% present quotes for music %%%%%%%%%%%%%%%%%%%%%%%%%
 	StartPlus2 is Start+2,
 	%% merchants present quotes to consumers
-	findall((M,C),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.7, assert(happensAtIE(present_quote(M,C,music,10), StartPlus2))), _),
+	findall((M,C),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.7, assertz(happensAtIE(present_quote(M,C,music,10), StartPlus2))), _),
 	%% merchants present quotes to non-consumers
-	findall((M,C),	(agent(C), \+role_of(C,consumer), \+role_of(C,merchant), role_of(M,merchant), \+M=C, random(R), R>0.9, assert(happensAtIE(present_quote(M,C,music,10), StartPlus2))), _),
+	findall((M,C),	(agent(C), \+role_of(C,consumer), \+role_of(C,merchant), role_of(M,merchant), \+M=C, random(R), R>0.9, assertz(happensAtIE(present_quote(M,C,music,10), StartPlus2))), _),
 	%% unexpected behaviour: non-merchants present quotes to consumers (with the aim of deception)
-	findall((M,C),	(role_of(C,consumer), agent(M), \+role_of(M,merchant), \+M=C, random(R), R>0.95, assert(happensAtIE(present_quote(M,C,music,10), StartPlus2))), _),
+	findall((M,C),	(role_of(C,consumer), agent(M), \+role_of(M,merchant), \+M=C, random(R), R>0.95, assertz(happensAtIE(present_quote(M,C,music,10), StartPlus2))), _),
 	%%%%%%%%%%%%%%%%%%%%%% request music %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	StartPlus3 is Start+3,	
 	%% requesting quotes from merchants; non-consumers and merchants also make requests
-	findall((C,M),	(agent(C), role_of(M,merchant), \+M=C, random(R), R>0.9, assert(happensAtIE(request_quote(C,M,music), StartPlus3))), _),
+	findall((C,M),	(agent(C), role_of(M,merchant), \+M=C, random(R), R>0.9, assertz(happensAtIE(request_quote(C,M,music), StartPlus3))), _),
 	%%%%%%%%%%%%%%%%%%%%% accept quotes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	StartPlus6 is Start+6,   
 	%% consumers accepting quotes (but we are agnostic wrt the existence of quotes)
-	findall((C,M),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.8, assert(happensAtIE(accept_quote(C,M,book), StartPlus6))), _),
-	findall((C,M),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.8, assert(happensAtIE(accept_quote(C,M,music), StartPlus6))), _),
+	findall((C,M),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.8, assertz(happensAtIE(accept_quote(C,M,book), StartPlus6))), _),
+	findall((C,M),	(role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.8, assertz(happensAtIE(accept_quote(C,M,music), StartPlus6))), _),
 	%% unexpected behaviour: non-consumers accept quotes
-	findall((C,M),	(agent(C), \+role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.95, assert(happensAtIE(accept_quote(C,M,book), StartPlus6))), _),
-	findall((C,M),	(agent(C), \+role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.95, assert(happensAtIE(accept_quote(C,M,music), StartPlus6))), _),
+	findall((C,M),	(agent(C), \+role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.95, assertz(happensAtIE(accept_quote(C,M,book), StartPlus6))), _),
+	findall((C,M),	(agent(C), \+role_of(C,consumer), role_of(M,merchant), \+M=C, random(R), R>0.95, assertz(happensAtIE(accept_quote(C,M,music), StartPlus6))), _),
 	%%%%%%%%%%%%%%%%%%% send EPOs and goods %%%%%%%%%%%%%%%%%%%%%%%%%%%
 	StartPlus7 is Start+7, 	
-	findall(C,	(role_of(C,consumer), random(R), R>0.8, assert(happensAtIE(send_EPO(C,iServer,book,10), StartPlus7))), _),
-	findall(C,	(role_of(C,consumer), random(R), R>0.8, assert(happensAtIE(send_EPO(C,iServer,music,10), StartPlus7))), _),
+	findall(C,	(role_of(C,consumer), random(R), R>0.8, assertz(happensAtIE(send_EPO(C,iServer,book,10), StartPlus7))), _),
+	findall(C,	(role_of(C,consumer), random(R), R>0.8, assertz(happensAtIE(send_EPO(C,iServer,music,10), StartPlus7))), _),
 	StartPlus8 is Start+8,
-	findall(M,	(role_of(M,merchant), random(R), R>0.7, assert(happensAtIE(send_goods(M,iServer,book,key,dec), StartPlus8))), _),
-	findall(M,	(role_of(M,merchant), random(R), R>0.7, assert(happensAtIE(send_goods(M,iServer,music,key,dec), StartPlus8))), _).
+	findall(M,	(role_of(M,merchant), random(R), R>0.7, assertz(happensAtIE(send_goods(M,iServer,book,key,dec), StartPlus8))), _),
+	findall(M,	(role_of(M,merchant), random(R), R>0.7, assertz(happensAtIE(send_goods(M,iServer,music,key,dec), StartPlus8))), _).
 
 
 */

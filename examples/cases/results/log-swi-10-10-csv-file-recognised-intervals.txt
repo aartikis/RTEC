@@ -1,0 +1,7 @@
+recognitions(predictions,fa,[[p],true],[(2,11)]).
+recognitions(predictions,fc,[[p],true],[(4,9)]).
+
+recognitions(predictions,fa,[[p],true],[(11,16)]).
+recognitions(predictions,fb,[[p],true],[(13,14)]).
+recognitions(predictions,caseB,[[p],true],[(11,16)]).
+

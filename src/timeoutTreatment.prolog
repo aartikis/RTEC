@@ -98,7 +98,7 @@ deadlineConditions(Index, F=V, T1, T2) :-
 	\+ startedBetween4(Index, F=V, T1, NextT2),
 	% assert inertiaCheck flag to avoid going through dinitiatedAt/5 clauses
 	% in the evaluation of brokenOnceRange 
-	assert(inertiaCheck(F=V)),
+	assertz(inertiaCheck(F=V)),
 	\+ brokenOnceRange(Index, F=V, T1, T2), !,
 	% retract the above flag
 	retract(inertiaCheck(F=V)).

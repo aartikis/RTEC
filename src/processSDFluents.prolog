@@ -32,4 +32,4 @@ setTheSceneSDFluent(_EPList, _InitTime, []).
 updatesdFPList(_Index, _U, [], []) :- !.
 
 updatesdFPList(Index, F=V, NewPeriods, BrokenPeriod) :- 
-	assert(sdFPList(Index, F=V, NewPeriods, BrokenPeriod)).
+	assertz(sdFPList(Index, F=V, NewPeriods, BrokenPeriod)).

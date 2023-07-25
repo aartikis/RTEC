@@ -1,0 +1,18 @@
+[cases]
+# RTEC execution parameters 
+event_description = '../examples/cases/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/cases/dataset/csv/data.csv']
+results_directory = "../examples/cases/results"
+window_size = 10
+step = 10
+start_time = 0
+end_time = 20
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/cases/dataset/auxiliary/var_domain.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/cases/resources/graphs'
+include_input = false

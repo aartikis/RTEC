@@ -13,3 +13,5 @@ While in the root folder of RTEC, open a terminal and follow the instructions be
 
 
 To remove RTEC from your system, run ``` pip3 uninstall RTEC2 ```. In Windows, run ``` py -m pip uninstall RTEC2```.
+
+[🠔](contents.md)

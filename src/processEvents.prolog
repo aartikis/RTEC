@@ -15,4 +15,4 @@ processEvent(Index, E) :-
 updateevTList(_Index, _E, []) :- !.
 
 updateevTList(Index, E, ListofTimePoints) :- 
-	assert(evTList(Index, E, ListofTimePoints)).
+	assertz(evTList(Index, E, ListofTimePoints)).
