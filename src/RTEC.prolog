@@ -145,7 +145,6 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Tempor
 
 
 initialiseRecognition(Step, InputFlag, DynamicGroundingFlag, PreProcessingFlag, ForgetThreshold, DynamicGroundingThreshold, TemporalDistance, AllenMem) :-
-	assertz(step(Step)),
 	assert(temporalDistance(TemporalDistance)), 
 	% Assert threshold for forget and dynamic grounding mechanisms here 
 	% to avoid carrying these values forever 
@@ -158,6 +157,7 @@ initialiseRecognition(Step, InputFlag, DynamicGroundingFlag, PreProcessingFlag, 
 	% if we need preprocessing then preProcessing/1 is already defined
 	% so there is no need to assert anything here
 	(PreProcessingFlag=preprocessing ; assert(preProcessing(_))), 
+	assertz(step(Step)),
 	assertz(allenMemory(AllenMem)), !.
 
 
