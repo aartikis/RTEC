@@ -84,7 +84,7 @@ check(deadlines,_N,Found):-
 %%%%%% cycles cases %%%%%%
 
 % S-W=0 full
-testcase(cycles_strength_1,cycles,1,[[]],(21,21,0,21), unordered, nodynamicgrounding, nopreprocessing, 1).
+testcase(cycles_strength_1,cycles,1,[[(19,inf)]],(21,21,0,21), unordered, nodynamicgrounding, nopreprocessing, 1).
 % S-W=-1
 testcase(cycles_strength_1,cycles,2,[[(0,10),(19,inf)]],(21,22,0,21), unordered, nodynamicgrounding, nopreprocessing, 1).
 

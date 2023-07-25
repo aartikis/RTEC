@@ -8,3 +8,4 @@ To execute RTEC, you need, at the very least:
 
 Optionally, you may install [GraphViz](https://graphviz.org/) for generating the dependency graph of an RTEC program.
 
+[🠔](contents.md)

@@ -9,3 +9,5 @@
 - Mantenoglou P., Pitsikalis M. and Artikis A., [Complex Event Recognition with Allen relations](https://cer.iit.demokritos.gr/publications/papers/2023/kr_allen.pdf).
   In 20th International Conference on Principles of Knowledge Representation and Reasoning (KR), 2023.
 - [Manual of RTEC](../RTEC_manual.pdf).
+
+[🠔](contents.md)
