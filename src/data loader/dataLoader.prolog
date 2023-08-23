@@ -65,6 +65,32 @@ Notes:
 % when they are not defined. 
 :- dynamic needsGrounding/3, points/1.
 
+% Block on tcp_accept until a client connects to the socket. Then, open the socket to read the input stream that was written in the socket by the client. Read as many rows as you can, that is, until an empty row is discovered. Finally, close the stream and block again, until another client connects.
+%
+read_loop_on_socket_fd(AcceptFd):-
+	% Block until a client pushes some events into the socket.
+	tcp_accept(AcceptFd, Slave, _Peer),
+	% Open the stream containing the events pushed by the client.
+	tcp_open_socket(Slave, StreamPair),
+	stream_pair(StreamPair, InStream, _OutStream),
+	set_input(InStream),
+	% Read all events included in the pushed stream.
+	read_rows_until_empty(InStream),
+	% Close the stream.
+	close(InStream),
+	% Loop back, and block until new events arrive.
+	read_loop_on_socket_fd(AcceptFd).
+
+read_rows_until_empty(InStream):-
+	% Read the first line of the stream,
+	get_row_from_line(InStream, Row),
+	(Row=[] ->  true % If Row is empty, i.e., end_of_file, return. 
+		;
+				write('Received row: '), write(Row), nl,
+				getIEFromRowandAssertIt(Row), % assert event in Row.
+				read_rows_until_empty(InStream) % end_of_file has not been found, so continue reading from InStream, i.e., loop back.
+	).
+
 % Opens a named pipe, and then reads continuously from the pipe and asserts all input events
 % at the time that they are read, regardless of time-stamp 
 % loadIELiveStream(+PipeName)

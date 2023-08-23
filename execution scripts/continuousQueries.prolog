@@ -91,12 +91,12 @@ continuousQueries(App, ParamList) :-
 	initialiseRecognition(Step, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
 	QueryTime is StartReasoningTime + Step,
 	% In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
-	sleep_if_fifo(InputMode, Step, StreamRate, 0),
+	sleep_if_live_stream(InputMode, Step, StreamRate, 0),
 	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
 	%querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
 	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
 	% calculate and record the recognition time statistics
-	closeInput(InputMode, InputStreams, InputThreadIDs),
+	closeInput(InputMode, InputPaths, InputStreams, InputThreadIDs),
 	open(LogFile, append, LogFileStream),
 	logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
 	close(LogFileStream),
@@ -149,7 +149,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
         	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions) ;
          	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
-		sleep_if_fifo(InputMode, Step, StreamRate, S),
+		sleep_if_live_stream(InputMode, Step, StreamRate, S),
 		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
 	;
         	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions), thread_get_message(printRecognitionsOK(QueryTime)) ;
@@ -175,6 +175,14 @@ handleProlog(swi, runtime) :-
 init_input(fifo, InputPaths, [], [], InputThreadIDs):-
     initLoaderThreads(InputPaths, InputThreadIDs).
 
+% For inputMode=socket, we use a server-client architecture.
+% The InputProviders list contains one SocketName, which is initialised as a server socket from the side of RTEC.
+% Multiple processes (that possible live outside of Prolog) can connect as clients to the socket and push input events. 
+% RTEC creates a new execution thread which blocks until some client has pushed some events into the socket.
+% The thread reads the pushed events, asserts them in the knowledge base of RTEC and blocks again, until new events are pushed.
+init_input(socket, [SocketName], [], [], [ThreadID]):-
+	initSocketLoaderThread(SocketName, ThreadID).
+
 init_input(csv, InputPaths, InputStreams, PointerPositions, []):-
     openInputCSVFiles(InputPaths, InputStreams, PointerPositions).
 
@@ -194,35 +202,6 @@ init_output(fifo, ResultsPipe, WM, Step, CurrentTime, OutputThreadID):-
 init_output(file, ResultsFile, _, _, _, -1):-
     create_file(ResultsFile).
 
-% openFilesOrPipes(+InputMode, +InputPaths, -InputStreams, -PointerPositions, +LogFile, -LogFileStream, +ResultsFile, -ResultFileStream)
-%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile):-
-%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream):-
-	%open(LogFile, write, LogFileStream),
-	%open(ResultsFile, write, ResultsFileStream),
-        %(
-        %    OutputMode = fifo,
-        %    create_pipe(ResultsFile),
-        %    initWriterThread(ResultsFile, OutputThreadID)
-        %;
-        %OutputMode = file,
-        %create_file(ResultsFile)
-        %)
-        %(	
-        %% the dataset arrives in live stream(s)
-        %InputMode = fifo,
-        %%InputStreams = [],
-        %initLoaderThreads(InputPaths, InputStreams) % InputStreams contains thread ids in this case.
-        %;
-        %% the dataset is in csv file(s)
-        %InputMode = csv,
-        %openInputCSVFiles(InputPaths, InputStreams, PointerPositions)
-        %;
-        %% the dataset is in the form of Prolog assertions
-        %InputMode = dynamic_predicates,
-        %InputStreams = [], 		
-        %consultInputFiles(InputPaths)
-        %).
-
 % touch <File>, so that it exists as an empty file before the execution of the first window.
 %create_file(+File)
 create_file(File):-
@@ -241,6 +220,24 @@ initLoaderThreads([], []).
 initLoaderThreads([InputPipe|RestPipes], [ThreadID|RestIDs]):-
 	thread_create(loadIELiveStream(InputPipe), ThreadID),
 	initLoaderThreads(RestPipes, RestIDs).
+
+initSocketLoaderThread(SocketName, ThreadID):-
+	% Create a unix, i.e., local, socket.
+	unix_domain_socket(Socket),
+	write('Socket: '), write(Socket), nl,
+	% Create a socket in the current directory with name <SocketName>. 
+	tcp_bind(Socket, SocketName),
+	write('SocketName: '), write(SocketName), nl,
+	% The socket may have at most N clients. 
+	% TODO: Check how the value of N affects execution.
+	tcp_listen(Socket, 1000), % N = 1000
+	% Open the socket from the server side and fetch its input stream with file descriptor: <AcceptFd>.
+	tcp_open_socket(Socket, StreamPair),
+	stream_pair(StreamPair, AcceptFd, _),
+	write('AcceptFd: '), write(AcceptFd), nl,
+	% Create the thread that reads the input events that are being pushed by clients into the socket.
+	% The new thread runs in an infinite loop, which is defined in 'src/data loader/dataLoader.prolog'
+	thread_create(read_loop_on_socket_fd(AcceptFd), ThreadID).
 
 % Create a new execution thread for writing the computed intervals into the output named pipe.
 % This thread executes the predicate: sleep_and_write(OutputPipe, WM, CurrentTime). 
@@ -290,18 +287,25 @@ executeUserGoals([Goal|RestGoals]) :-
 % closeFiles(+datasetfilesstreams, +logfilestream, +resultsfilestream)
 % first case: there are no input streams, 
 % ie the dataset is in the form of Prolog assertions
-closeInput(dynamic_predicates, _, _).
+closeInput(dynamic_predicates, _, _, _).
 
 % second case: the dataset is in csv files;
 % in this case close each input stream;
-closeInput(csv, InputStreams, _) :-
+closeInput(csv, _, InputStreams, _) :-
 	closeStreamsList(InputStreams).
 
 % third case: fifo mode;
-% the InputStreams variable contains thread IDs;
-% destroy all threads
-closeInput(fifo, _, ThreadIDs) :-
+% Destroy all threads in list ThreadIDs.
+closeInput(fifo, _, _, ThreadIDs) :-
 	killThreads(ThreadIDs).
+
+% fourth case: socket mode;
+% Destroy all threads in ThreadIDs (we have one thread in this case).
+closeInput(socket, [SocketName], _, ThreadIDs) :-
+	killThreads(ThreadIDs),
+	write('Killed thread: '), write(ThreadIDs), nl,
+    process_create(path(rm), ['-f', SocketName], []),
+	write('Deleted socket: '), write(SocketName), nl.
 
 % The output stream was closed by printRecognitions.
 closeOutput(file, _).
@@ -342,13 +346,13 @@ verifyQueryTime(QueryTime, EndReasoningTime, EndReasoningTime) :-
 	writeln(' but QueryTime-WM remains the same.').
 
 % if fifo, sleep until the next query time 
-% sleep_if_fifo_between_windows(+InputMode, +Step, +StreamRate, +S)	
-sleep_if_fifo(InputMode, Step, StreamRate, S):-
+% sleep_if_live_stream_between_windows(+InputMode, +Step, +StreamRate, +S)	
+sleep_if_live_stream(InputMode, Step, StreamRate, S):-
 	(
-		InputMode = fifo, 
+		(InputMode = fifo ; InputMode = socket),
 		SleepTime is Step/StreamRate - S/1000,
 		sleep_until_query_time(SleepTime)
-	; 	\+ InputMode = fifo
+	; 	\+ InputMode = fifo, \+ InputMode = socket
 	).
 	
 sleep_until_query_time(SleepTimeSec):-
@@ -377,6 +381,9 @@ loadNarrative(InputMode, InputStreams, Start, End, PointerPositions, NewPointerP
 		;
 		% when using named pipes, the input is being read by another Prolog thread 
 		InputMode = fifo
+		;
+		% when using named pipes, the input is being read by another Prolog thread 
+		InputMode = socket
 	).
 
 

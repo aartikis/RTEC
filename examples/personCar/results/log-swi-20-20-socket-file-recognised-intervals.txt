@@ -1,0 +1,4 @@
+recognitions(predictions,entering_om,[[p1,c1],true],[(1,10)]).
+recognitions(predictions,far_from_overlaps_adjacent,[[p1,c1],true],[(1,7)]).
+recognitions(predictions,visible_car_not_person,[[p1,c1],true],[(6,10)]).
+

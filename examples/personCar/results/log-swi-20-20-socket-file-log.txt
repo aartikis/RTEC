@@ -1,0 +1,15 @@
++0
+
+Recognition Time average (ms)		: 0
+Recognition Time standard deviation (ms): 0.0
+Recognition Time worst (ms)		: 0
+
+Input Entities average			: 0
+Input Entities standard deviation	: 0.0
+
+Output Entities (average number of fluent-value pairs)	: 3
+Output Entities (standard deviation)	  		: 0.0
+Output Entities (average number of intervals)	: 3
+Output Entities (standard deviation)	  	: 0.0
+Output Entities (average number of timepoints)	: 19
+Output Entities (standard deviation)	 	: 0.0
