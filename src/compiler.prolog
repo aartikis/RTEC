@@ -864,30 +864,46 @@ compileConditions1(holdsFor(F=V,I), holdsForSDFluent(F=V,I), _Timespan, _Cyclic,
         copy_term(F=V, U1), sDFluent(U1), !.
 
 % allen predicates
+compileConditions1(allen(before, I1, I2, Outmode ,I), before(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount),
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(meets, I1, I2, Outmode ,I), meets(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(starts, I1, I2, Outmode ,I), starts(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(finishes, I1, I2, Outmode ,I), finishes(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(during, I1, I2, Outmode ,I), during(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(overlaps, I1, I2, Outmode ,I), overlaps(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(equal, I1, I2, Outmode ,I), equal(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+
 compileConditions1(before(I1, I2, Outmode ,I), before(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount),
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(meets(I1, I2, Outmode ,I), meets(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(starts(I1, I2, Outmode ,I), starts(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(finishes(I1, I2, Outmode ,I), finishes(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(during(I1, I2, Outmode ,I), during(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(overlaps(I1, I2, Outmode ,I), overlaps(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(equal(I1, I2, Outmode ,I), equal(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
@@ -1079,6 +1095,10 @@ deriveBodyInputs(\+Literal):-
 deriveBodyInputs(Literal):-
 	assertInput(Literal).
 
+% through recursive calls, the input may be a variable.
+% we do not assert anything in this case. 
+assertInput(V):-
+	var(V), !.
 % assert the statically determined fluent wrapped in a start/end event.
 assertInput(happensAt(start(U), _)):-
 	!, assertSDF(U).
@@ -1100,7 +1120,7 @@ assertInput(holdsFor(U, _)):-
 assertInput(F):-
 	F =.. [H1,H2|T], !,
 	assertInputAll([H1,H2|T]).
-% match anything
+% match anything (constant)
 assertInput(_).
 % assertInputEntity(+U)
 assertInputEntity(F=V):-
