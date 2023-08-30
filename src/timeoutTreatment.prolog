@@ -35,8 +35,8 @@ initiatedAt(NewF=NewV, T1, T, T2) :-
         % do not evaluate dInitiatedAt/5 clauses to look for breaking points 
         % of F=V between an initiation of F=V and its deadline 
         % when the duration of F=V may be extended
-	\+ inertiaCheck(F=V),
-	% initiatedAt incarnation for deadline fluents:
+		\+ inertiaCheck(F=V),
+		% initiatedAt incarnation for deadline fluents:
         dInitiatedAt(F=V, Duration, T1, T, T2).	
 
 %%% dInitiatedAt(+(F=V), +Duration, +T1, -T, +T2) %%%	

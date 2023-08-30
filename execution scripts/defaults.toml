@@ -1,4 +1,23 @@
-# Default values for the applications packed with RTEC.
+#Default values for the applications packed with RTEC.
+
+[dgexamples]
+# RTEC execution parameters 
+event_description = '../examples/dgexamples/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/dgexamples/dataset/csv/dgexamples_data.csv']
+results_directory = "../examples/dgexamples/results"
+window_size = 10
+step = 10
+start_time = 0
+end_time = 10
+clock_tick = 1
+goals = []
+background_knowledge = []
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/dgexamples/resources/graphs'
+include_input = false
 
 [toy]
 # RTEC execution parameters 
@@ -17,7 +36,7 @@ stream_rate = 1
 # Compiler parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/toy/resources/graphs'
-include_input = false
+include_input = true
 
 [maritime]
 # RTEC execution parameters 

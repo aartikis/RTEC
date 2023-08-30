@@ -1079,6 +1079,10 @@ deriveBodyInputs(\+Literal):-
 deriveBodyInputs(Literal):-
 	assertInput(Literal).
 
+% through recursive calls, the input may be a variable.
+% we do not assert anything in this case. 
+assertInput(V):-
+	var(V), !.
 % assert the statically determined fluent wrapped in a start/end event.
 assertInput(happensAt(start(U), _)):-
 	!, assertSDF(U).
@@ -1100,7 +1104,7 @@ assertInput(holdsFor(U, _)):-
 assertInput(F):-
 	F =.. [H1,H2|T], !,
 	assertInputAll([H1,H2|T]).
-% match anything
+% match anything (constant)
 assertInput(_).
 % assertInputEntity(+U)
 assertInputEntity(F=V):-
