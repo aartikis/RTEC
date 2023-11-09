@@ -171,11 +171,18 @@ function delete_fifos {
 	for fifo in ${fifos[@]}; do rm $fifo; done
 }
 
-function cleanup {
+function cleanup_fifos {
 # Kill all stream providers and then delete their corresponding pipes.
 # Should be used if RTEC is killed before terminating.
 	for id in ${ids[@]}; do kill $id; done
 	delete_fifos
+}
+
+function cleanup_socket {
+# Delete the socket created by RTEC.
+# Should be used if RTEC is killed before terminating.
+        quote_removed=${input_providers#\'}
+        rm ${quote_removed%\',}
 }
 
 function stream_provider (){
@@ -211,6 +218,34 @@ function stream_provider (){
 		' $input_csv
 }
 
+function socket_writer (){
+    input_csv=$1 # path/to/event/stream/csv
+    socket=$2
+    # stream_rate: The number of times the input stream is sped up. 
+    # For example, if stream_rate = 2, the input events are written into the pipe twice as fast.
+    [ $# -ge 3 ] && stream_rate=$3 || stream_rate=1 # if not provided, stream_rate = 1, by default.
+
+    # Set the socket
+    exec > "$socket" #At this point, the script waits for the socket to be created? 
+
+    # First, fetch the first line of the input csv to get the time-point of the first event. 
+    first_line=`head -1 $input_csv`
+    arrLine=(${first_line//|/ })
+    prev_time=${arrLine[1]}
+	
+    # Then, read the csv file line by line and write to the socket with awk, invoking the GNU sleep command when a time-stamp greater than the current one is detected.
+    # awk splits each line by the delimiter "|" and checks whether its timestamp ($2) is greater than the timestamp of the previous event (which is prev_time). 
+    # If so, the program waits for a time period equal to the temporal distance between these events in seconds. 
+    # Then, the input event is written into the socket. 
+    # If the timestamps of consecutive events are equal, the next input event is written into the socket immediately. 
+    nc -U $socket | 
+    awk -v stream_rate="$stream_rate" -v prev_time="$prev_time" '
+            BEGIN{FS = "|"} 
+            {if ($2>prev_time) {sleep_time=($2 - prev_time)/stream_rate; gsub(",",".",sleep_time); system("sleep " sleep_time); print $0} else {print $0} }
+            {prev_time=$2}
+            ' $input_csv
+}
+
 function start_fifos() {
 	fifos=()
 	#ids=()
@@ -222,8 +257,22 @@ function start_fifos() {
 		fifos+=("$fifo_name")
 		#ids+=($!)
 	done
-	trap cleanup INT # After this point, in case of SIGINT, kill stream providers and delete named pipes.
+	trap cleanup_fifos INT # After this point, in case of SIGINT, kill stream providers and delete named pipes.
 	input_providers=("${fifos[@]}")
+}
+
+function init_socket() {
+    csv_input_files=${input_providers[@]}
+    input_providers=(../examples/${application}/${application}.socket)
+}
+
+function start_socket_writers() {
+    for i in "${!csv_input_files[@]}"; do
+            # Run socket writer in the background
+            socket_writer ${csv_input_files["$i"]} ${input_providers[0]} ${stream_rate:-} & 
+    done
+    trap cleanup_socket INT # After this point, in case of SIGINT, kill stream providers and delete named pipes.
+    input_providers=("${socketName}")
 }
 
 function get_default_param (){

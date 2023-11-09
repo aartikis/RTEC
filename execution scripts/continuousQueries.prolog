@@ -177,7 +177,7 @@ init_input(fifo, InputPaths, [], [], InputThreadIDs):-
 
 % For inputMode=socket, we use a server-client architecture.
 % The InputProviders list contains one SocketName, which is initialised as a server socket from the side of RTEC.
-% Multiple processes (that possible live outside of Prolog) can connect as clients to the socket and push input events. 
+% Multiple processes (that possibly live outside of Prolog) can connect as clients to the socket and push input events. 
 % RTEC creates a new execution thread which blocks until some client has pushed some events into the socket.
 % The thread reads the pushed events, asserts them in the knowledge base of RTEC and blocks again, until new events are pushed.
 init_input(socket, [SocketName], [], [], [ThreadID]):-
@@ -223,18 +223,14 @@ initLoaderThreads([InputPipe|RestPipes], [ThreadID|RestIDs]):-
 
 initSocketLoaderThread(SocketName, ThreadID):-
 	% Create a unix, i.e., local, socket.
-	unix_domain_socket(Socket),
-	write('Socket: '), write(Socket), nl,
+        unix_domain_socket(Socket),
 	% Create a socket in the current directory with name <SocketName>. 
 	tcp_bind(Socket, SocketName),
-	write('SocketName: '), write(SocketName), nl,
 	% The socket may have at most N clients. 
-	% TODO: Check how the value of N affects execution.
 	tcp_listen(Socket, 1000), % N = 1000
 	% Open the socket from the server side and fetch its input stream with file descriptor: <AcceptFd>.
 	tcp_open_socket(Socket, StreamPair),
 	stream_pair(StreamPair, AcceptFd, _),
-	write('AcceptFd: '), write(AcceptFd), nl,
 	% Create the thread that reads the input events that are being pushed by clients into the socket.
 	% The new thread runs in an infinite loop, which is defined in 'src/data loader/dataLoader.prolog'
 	thread_create(read_loop_on_socket_fd(AcceptFd), ThreadID).
@@ -302,10 +298,8 @@ closeInput(fifo, _, _, ThreadIDs) :-
 % fourth case: socket mode;
 % Destroy all threads in ThreadIDs (we have one thread in this case).
 closeInput(socket, [SocketName], _, ThreadIDs) :-
-	killThreads(ThreadIDs),
-	write('Killed thread: '), write(ThreadIDs), nl,
-    process_create(path(rm), ['-f', SocketName], []),
-	write('Deleted socket: '), write(SocketName), nl.
+    killThreads(ThreadIDs),
+    process_create(path(rm), ['-f', SocketName], []).
 
 % The output stream was closed by printRecognitions.
 closeOutput(file, _).

@@ -86,9 +86,8 @@ read_rows_until_empty(InStream):-
 	get_row_from_line(InStream, Row),
 	(Row=[] ->  true % If Row is empty, i.e., end_of_file, return. 
 		;
-				write('Received row: '), write(Row), nl,
-				getIEFromRowandAssertIt(Row), % assert event in Row.
-				read_rows_until_empty(InStream) % end_of_file has not been found, so continue reading from InStream, i.e., loop back.
+        getIEFromRowandAssertIt(Row), % assert event in Row.
+        read_rows_until_empty(InStream) % end_of_file has not been found, so continue reading from InStream, i.e., loop back.
 	).
 
 % Opens a named pipe, and then reads continuously from the pipe and asserts all input events

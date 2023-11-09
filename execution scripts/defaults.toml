@@ -1,29 +1,10 @@
 # Default values for the applications packed with RTEC.
 
-[cybersecurity]
-# RTEC execution parameters
-event_description = '../examples/cybersecurity/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/cybersecurity/dataset/csv/data.csv']
-results_directory = "../examples/cybersecurity/results"
-window_size = 20
-step = 20
-start_time = 0
-end_time = 20
-clock_tick = 1
-goals = []
-background_knowledge = ['../examples/cybersecurity/dataset/auxiliary/var_domain.prolog']
-stream_rate = 1
-# Compiler parameters
-dependency_graph_flag = true
-dependency_graph_directory = '../examples/cybersecurity/resources/graphs'
-include_input = false
-
 [personCar]
 # RTEC execution parameters
 event_description = '../examples/personCar/resources/patterns/rules.prolog'
 input_mode = "socket"
-input_providers = ['personCar.socket']
+input_providers = ['../examples/personCar/dataset/csv/data.csv'] # ['../examples/personCar/dataset/personCar.socket']
 results_directory = "../examples/personCar/results"
 window_size = 20
 step = 20

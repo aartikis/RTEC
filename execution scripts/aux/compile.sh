@@ -42,13 +42,13 @@ Compiler=../src/compiler.prolog
 
 if [ -z $dependency_graph ]
 then
-	swipl -l ${Compiler} -g "compileED('${event_description}'),halt." && echo "Compiled event description: ${event_description}."
+	swipl -l ${Compiler} -g "compileED('${event_description}'),halt." # && echo "Compiled event description: ${event_description}."
 elif [ -z ${no_events} ]
 then
-	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',withEvents),halt." && echo "Compiled event description: ${event_description}."
-	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file && echo "Dependency graph: ${dependency_graph_png_file}."
+	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',withEvents),halt." # && echo "Compiled event description: ${event_description}."
+	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file # && echo "Dependency graph: ${dependency_graph_png_file}."
 else
-	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',withoutEvents),halt." && echo "Compiled event description: ${event_description}."
-	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file && echo "Dependency graph without input entities: ${dependency_graph_png_file}."
+	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',withoutEvents),halt." # && echo "Compiled event description: ${event_description}."
+	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file # && echo "Dependency graph without input entities: ${dependency_graph_png_file}."
 fi 
 
