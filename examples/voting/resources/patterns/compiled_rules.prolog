@@ -1,357 +1,357 @@
 :- dynamic person/1.
 
-initiatedAt(status(_1872)=null, _1882, -1, _1890) :-
-     _1882=< -1,
-     -1<_1890.
-
-initiatedAt(status(_1882)=proposed, _1928, _1852, _1934) :-
-     happensAtIE(propose(_1886,_1882),_1852),_1928=<_1852,_1852<_1934,
-     holdsAtCyclic(_1882,status(_1882)=null,_1852).
-
-initiatedAt(status(_1882)=voting, _1928, _1852, _1934) :-
-     happensAtIE(second(_1886,_1882),_1852),_1928=<_1852,_1852<_1934,
-     holdsAtCyclic(_1882,status(_1882)=proposed,_1852).
-
-initiatedAt(status(_1882)=voted, _1940, _1852, _1946) :-
-     happensAtIE(close_ballot(_1886,_1882),_1852),_1940=<_1852,_1852<_1946,
-     role_of(_1886,chair),
-     holdsAtCyclic(_1882,status(_1882)=voting,_1852).
-
-initiatedAt(status(_1882)=null, _1942, _1852, _1948) :-
-     happensAtIE(declare(_1886,_1882,_1890),_1852),_1942=<_1852,_1852<_1948,
-     role_of(_1886,chair),
-     holdsAtCyclic(_1882,status(_1882)=voted,_1852).
-
-initiatedAt(voted(_1882,_1884)=_1858, _1926, _1852, _1932) :-
-     happensAtIE(vote(_1882,_1884,_1858),_1852),_1926=<_1852,_1852<_1932,
-     holdsAtProcessedSimpleFluent(_1884,status(_1884)=voting,_1852).
-
-initiatedAt(voted(_1882,_1884)=null, _1910, _1852, _1916) :-
-     happensAtProcessedSimpleFluent(_1884,start(status(_1884)=null),_1852),
-     _1910=<_1852,
-     _1852<_1916.
-
-initiatedAt(outcome(_1882)=_1858, _1936, _1852, _1942) :-
-     happensAtIE(declare(_1886,_1882,_1858),_1852),_1936=<_1852,_1852<_1942,
-     holdsAtProcessedSimpleFluent(_1882,status(_1882)=voted,_1852),
-     role_of(_1886,chair).
-
-initiatedAt(auxPerCloseBallot(_1882)=true, _1908, _1852, _1914) :-
-     happensAtProcessedSimpleFluent(_1882,start(status(_1882)=voting),_1852),
-     _1908=<_1852,
-     _1852<_1914.
-
-initiatedAt(auxPerCloseBallot(_1882)=false, _1908, _1852, _1914) :-
-     happensAtProcessedSimpleFluent(_1882,start(status(_1882)=proposed),_1852),
-     _1908=<_1852,
-     _1852<_1914.
-
-initiatedAt(per(close_ballot(_1886,_1888))=true, _1936, _1852, _1942) :-
-     happensAtProcessedSimpleFluent(_1888,end(auxPerCloseBallot(_1888)=true),_1852),_1936=<_1852,_1852<_1942,
-     holdsAtProcessedSimpleFluent(_1888,status(_1888)=voting,_1852).
-
-initiatedAt(per(close_ballot(_1886,_1888))=false, _1914, _1852, _1920) :-
-     happensAtProcessedSimpleFluent(_1888,start(status(_1888)=voted),_1852),
-     _1914=<_1852,
-     _1852<_1920.
-
-initiatedAt(obl(declare(_1886,_1888,carried))=true, _1908, _1852, _1914) :-
-     happensAtProcessed(_1888,auxMotionOutcomeEvent(_1888,carried),_1852),
-     _1908=<_1852,
-     _1852<_1914.
-
-initiatedAt(obl(declare(_1886,_1888,carried))=false, _1916, _1852, _1922) :-
-     happensAtProcessedSimpleFluent(_1888,start(status(_1888)=null),_1852),
-     _1916=<_1852,
-     _1852<_1922.
+initiatedAt(status(_5032)=null, _5042, -1, _5050) :-
+     _5042=< -1,
+     -1<_5050.
+
+initiatedAt(status(_5042)=proposed, _5088, _5012, _5094) :-
+     happensAtIE(propose(_5046,_5042),_5012),_5088=<_5012,_5012<_5094,
+     holdsAtCyclic(_5042,status(_5042)=null,_5012).
+
+initiatedAt(status(_5042)=voting, _5088, _5012, _5094) :-
+     happensAtIE(second(_5046,_5042),_5012),_5088=<_5012,_5012<_5094,
+     holdsAtCyclic(_5042,status(_5042)=proposed,_5012).
+
+initiatedAt(status(_5042)=voted, _5100, _5012, _5106) :-
+     happensAtIE(close_ballot(_5046,_5042),_5012),_5100=<_5012,_5012<_5106,
+     role_of(_5046,chair),
+     holdsAtCyclic(_5042,status(_5042)=voting,_5012).
+
+initiatedAt(status(_5042)=null, _5102, _5012, _5108) :-
+     happensAtIE(declare(_5046,_5042,_5050),_5012),_5102=<_5012,_5012<_5108,
+     role_of(_5046,chair),
+     holdsAtCyclic(_5042,status(_5042)=voted,_5012).
+
+initiatedAt(voted(_5042,_5044)=_5018, _5086, _5012, _5092) :-
+     happensAtIE(vote(_5042,_5044,_5018),_5012),_5086=<_5012,_5012<_5092,
+     holdsAtProcessedSimpleFluent(_5044,status(_5044)=voting,_5012).
+
+initiatedAt(voted(_5042,_5044)=null, _5070, _5012, _5076) :-
+     happensAtProcessedSimpleFluent(_5044,start(status(_5044)=null),_5012),
+     _5070=<_5012,
+     _5012<_5076.
+
+initiatedAt(outcome(_5042)=_5018, _5096, _5012, _5102) :-
+     happensAtIE(declare(_5046,_5042,_5018),_5012),_5096=<_5012,_5012<_5102,
+     holdsAtProcessedSimpleFluent(_5042,status(_5042)=voted,_5012),
+     role_of(_5046,chair).
+
+initiatedAt(auxPerCloseBallot(_5042)=true, _5068, _5012, _5074) :-
+     happensAtProcessedSimpleFluent(_5042,start(status(_5042)=voting),_5012),
+     _5068=<_5012,
+     _5012<_5074.
+
+initiatedAt(auxPerCloseBallot(_5042)=false, _5068, _5012, _5074) :-
+     happensAtProcessedSimpleFluent(_5042,start(status(_5042)=proposed),_5012),
+     _5068=<_5012,
+     _5012<_5074.
+
+initiatedAt(per(close_ballot(_5046,_5048))=true, _5096, _5012, _5102) :-
+     happensAtProcessedSimpleFluent(_5048,end(auxPerCloseBallot(_5048)=true),_5012),_5096=<_5012,_5012<_5102,
+     holdsAtProcessedSimpleFluent(_5048,status(_5048)=voting,_5012).
+
+initiatedAt(per(close_ballot(_5046,_5048))=false, _5074, _5012, _5080) :-
+     happensAtProcessedSimpleFluent(_5048,start(status(_5048)=voted),_5012),
+     _5074=<_5012,
+     _5012<_5080.
+
+initiatedAt(obl(declare(_5046,_5048,carried))=true, _5068, _5012, _5074) :-
+     happensAtProcessed(_5048,auxMotionOutcomeEvent(_5048,carried),_5012),
+     _5068=<_5012,
+     _5012<_5074.
+
+initiatedAt(obl(declare(_5046,_5048,carried))=false, _5076, _5012, _5082) :-
+     happensAtProcessedSimpleFluent(_5048,start(status(_5048)=null),_5012),
+     _5076=<_5012,
+     _5012<_5082.
 
-initiatedAt(sanctioned(_1882)=true, _1932, _1852, _1938) :-
-     happensAtIE(close_ballot(_1882,_1888),_1852),_1932=<_1852,_1852<_1938,
-     \+holdsAtProcessedSimpleFluent(_1882,per(close_ballot(_1882,_1888))=true,_1852).
+initiatedAt(sanctioned(_5042)=true, _5092, _5012, _5098) :-
+     happensAtIE(close_ballot(_5042,_5048),_5012),_5092=<_5012,_5012<_5098,
+     \+holdsAtProcessedSimpleFluent(_5042,per(close_ballot(_5042,_5048))=true,_5012).
 
-initiatedAt(sanctioned(_1882)=true, _1962, _1852, _1968) :-
-     happensAtProcessedSimpleFluent(_1896,end(status(_1896)=voted),_1852),_1962=<_1852,_1852<_1968,
-     \+happensAtIE(declare(_1882,_1896,carried),_1852),
-     holdsAtProcessedSimpleFluent(_1882,obl(declare(_1882,_1896,carried))=true,_1852).
+initiatedAt(sanctioned(_5042)=true, _5122, _5012, _5128) :-
+     happensAtProcessedSimpleFluent(_5056,end(status(_5056)=voted),_5012),_5122=<_5012,_5012<_5128,
+     \+happensAtIE(declare(_5042,_5056,carried),_5012),
+     holdsAtProcessedSimpleFluent(_5042,obl(declare(_5042,_5056,carried))=true,_5012).
 
-initiatedAt(sanctioned(_1882)=true, _1966, _1852, _1972) :-
-     happensAtProcessedSimpleFluent(_1896,end(status(_1896)=voted),_1852),_1966=<_1852,_1852<_1972,
-     \+happensAtIE(declare(_1882,_1896,not_carried),_1852),
-     \+holdsAtProcessedSimpleFluent(_1882,obl(declare(_1882,_1896,carried))=true,_1852).
+initiatedAt(sanctioned(_5042)=true, _5126, _5012, _5132) :-
+     happensAtProcessedSimpleFluent(_5056,end(status(_5056)=voted),_5012),_5126=<_5012,_5012<_5132,
+     \+happensAtIE(declare(_5042,_5056,not_carried),_5012),
+     \+holdsAtProcessedSimpleFluent(_5042,obl(declare(_5042,_5056,carried))=true,_5012).
 
-terminatedAt(outcome(_1882)=_1858, _1908, _1852, _1914) :-
-     happensAtProcessedSimpleFluent(_1882,start(status(_1882)=proposed),_1852),
-     _1908=<_1852,
-     _1852<_1914.
+terminatedAt(outcome(_5042)=_5018, _5068, _5012, _5074) :-
+     happensAtProcessedSimpleFluent(_5042,start(status(_5042)=proposed),_5012),
+     _5068=<_5012,
+     _5012<_5074.
 
-holdsForSDFluent(pow(propose(_1886,_1888))=true,_1852) :-
-     holdsForProcessedSimpleFluent(_1888,status(_1888)=null,_1852).
+holdsForSDFluent(pow(propose(_5046,_5048))=true,_5012) :-
+     holdsForProcessedSimpleFluent(_5048,status(_5048)=null,_5012).
 
-holdsForSDFluent(pow(second(_1886,_1888))=true,_1852) :-
-     holdsForProcessedSimpleFluent(_1888,status(_1888)=proposed,_1852).
+holdsForSDFluent(pow(second(_5046,_5048))=true,_5012) :-
+     holdsForProcessedSimpleFluent(_5048,status(_5048)=proposed,_5012).
 
-holdsForSDFluent(pow(vote(_1886,_1888))=true,_1852) :-
-     holdsForProcessedSimpleFluent(_1888,status(_1888)=voting,_1852).
+holdsForSDFluent(pow(vote(_5046,_5048))=true,_5012) :-
+     holdsForProcessedSimpleFluent(_5048,status(_5048)=voting,_5012).
 
-holdsForSDFluent(pow(close_ballot(_1886,_1888))=true,_1852) :-
-     holdsForProcessedSimpleFluent(_1888,status(_1888)=voting,_1852).
+holdsForSDFluent(pow(close_ballot(_5046,_5048))=true,_5012) :-
+     holdsForProcessedSimpleFluent(_5048,status(_5048)=voting,_5012).
 
-holdsForSDFluent(pow(declare(_1886,_1888))=true,_1852) :-
-     holdsForProcessedSimpleFluent(_1888,status(_1888)=voted,_1852).
+holdsForSDFluent(pow(declare(_5046,_5048))=true,_5012) :-
+     holdsForProcessedSimpleFluent(_5048,status(_5048)=voted,_5012).
 
-happensAtEv(auxMotionOutcomeEvent(_1870,carried),_1852) :-
-     happensAtProcessedSimpleFluent(_1870,start(status(_1870)=voted),_1852),
-     findall(_1908,holdsAtProcessedSimpleFluent(_1908,voted(_1908,_1870)=aye,_1852),_1918),
-     length(_1918,_1924),
-     findall(_1908,holdsAtProcessedSimpleFluent(_1908,voted(_1908,_1870)=nay,_1852),_1950),
-     length(_1950,_1956),
-     _1924>=_1956.
+happensAtEv(auxMotionOutcomeEvent(_5030,carried),_5012) :-
+     happensAtProcessedSimpleFluent(_5030,start(status(_5030)=voted),_5012),
+     findall(_5068,holdsAtProcessedSimpleFluent(_5068,voted(_5068,_5030)=aye,_5012),_5078),
+     length(_5078,_5084),
+     findall(_5068,holdsAtProcessedSimpleFluent(_5068,voted(_5068,_5030)=nay,_5012),_5110),
+     length(_5110,_5116),
+     _5084>=_5116.
 
-maxDuration(status(_1886)=proposed,status(_1886)=null,10):-
-     grounding(status(_1886)=proposed),
-     grounding(status(_1886)=null).
+maxDuration(status(_5046)=proposed,status(_5046)=null,10):-
+     grounding(status(_5046)=proposed),
+     grounding(status(_5046)=null).
 
-maxDuration(status(_1886)=voting,status(_1886)=voted,10):-
-     grounding(status(_1886)=voting),
-     grounding(status(_1886)=voted).
+maxDuration(status(_5046)=voting,status(_5046)=voted,10):-
+     grounding(status(_5046)=voting),
+     grounding(status(_5046)=voted).
 
-maxDuration(status(_1886)=voted,status(_1886)=null,10):-
-     grounding(status(_1886)=voted),
-     grounding(status(_1886)=null).
-
-maxDuration(auxPerCloseBallot(_1886)=true,auxPerCloseBallot(_1886)=false,8):-
-     grounding(auxPerCloseBallot(_1886)=true),
-     grounding(auxPerCloseBallot(_1886)=false).
-
-maxDuration(sanctioned(_1886)=true,sanctioned(_1886)=false,4):-
-     grounding(sanctioned(_1886)=true),
-     grounding(sanctioned(_1886)=false).
-
-grounding(propose(_2190,_2192)) :- 
-     person(_2190),motion(_2192).
-
-grounding(second(_2190,_2192)) :- 
-     person(_2190),motion(_2192).
-
-grounding(vote(_2190,_2192,_2194)) :- 
-     person(_2190),motion(_2192).
-
-grounding(close_ballot(_2190,_2192)) :- 
-     person(_2190),motion(_2192).
-
-grounding(declare(_2190,_2192,_2194)) :- 
-     person(_2190),motion(_2192).
-
-grounding(status(_2196)=null) :- 
-     queryMotion(_2196).
-
-grounding(status(_2196)=proposed) :- 
-     queryMotion(_2196).
-
-grounding(status(_2196)=voting) :- 
-     queryMotion(_2196).
-
-grounding(status(_2196)=voted) :- 
-     queryMotion(_2196).
-
-grounding(voted(_2196,_2198)=aye) :- 
-     person(_2196),role_of(_2196,voter),queryMotion(_2198).
-
-grounding(voted(_2196,_2198)=nay) :- 
-     person(_2196),role_of(_2196,voter),queryMotion(_2198).
-
-grounding(auxMotionOutcomeEvent(_2190,_2192)) :- 
-     queryMotion(_2190).
-
-grounding(outcome(_2196)=carried) :- 
-     queryMotion(_2196).
-
-grounding(outcome(_2196)=not_carried) :- 
-     queryMotion(_2196).
-
-grounding(auxPerCloseBallot(_2196)=true) :- 
-     queryMotion(_2196).
-
-grounding(per(close_ballot(_2200,_2202))=true) :- 
-     person(_2200),role_of(_2200,chair),queryMotion(_2202).
-
-grounding(obl(declare(_2200,_2202,carried))=true) :- 
-     person(_2200),role_of(_2200,chair),queryMotion(_2202).
-
-grounding(sanctioned(_2196)=true) :- 
-     person(_2196),role_of(_2196,chair).
-
-grounding(auxPerCloseBallot(_2196)=false) :- 
-     queryMotion(_2196).
-
-grounding(per(close_ballot(_2200,_2202))=false) :- 
-     person(_2200),role_of(_2200,chair),queryMotion(_2202).
-
-grounding(obl(declare(_2200,_2202,carried))=false) :- 
-     person(_2200),role_of(_2200,chair),queryMotion(_2202).
-
-grounding(sanctioned(_2196)=false) :- 
-     person(_2196),role_of(_2196,chair).
-
-inputEntity(propose(_1912,_1914)).
-inputEntity(second(_1912,_1914)).
-inputEntity(close_ballot(_1912,_1914)).
-inputEntity(declare(_1912,_1914,_1916)).
-inputEntity(vote(_1912,_1914,_1916)).
-
-outputEntity(status(_2010)=proposed).
-outputEntity(status(_2010)=voting).
-outputEntity(status(_2010)=voted).
-outputEntity(status(_2010)=null).
-outputEntity(voted(_2010,_2012)=aye).
-outputEntity(voted(_2010,_2012)=nay).
-outputEntity(voted(_2010,_2012)=null).
-outputEntity(outcome(_2010)=carried).
-outputEntity(outcome(_2010)=not_carried).
-outputEntity(auxPerCloseBallot(_2010)=true).
-outputEntity(auxPerCloseBallot(_2010)=false).
-outputEntity(per(close_ballot(_2014,_2016))=true).
-outputEntity(per(close_ballot(_2014,_2016))=false).
-outputEntity(obl(declare(_2014,_2016,_2018))=true).
-outputEntity(obl(declare(_2014,_2016,_2018))=false).
-outputEntity(sanctioned(_2010)=true).
-outputEntity(sanctioned(_2010)=false).
-outputEntity(pow(propose(_2014,_2016))=true).
-outputEntity(pow(second(_2014,_2016))=true).
-outputEntity(pow(vote(_2014,_2016))=true).
-outputEntity(pow(close_ballot(_2014,_2016))=true).
-outputEntity(pow(declare(_2014,_2016))=true).
-outputEntity(auxMotionOutcomeEvent(_2004,_2006)).
-
-event(auxMotionOutcomeEvent(_2204,_2206)).
-event(propose(_2204,_2206)).
-event(second(_2204,_2206)).
-event(close_ballot(_2204,_2206)).
-event(declare(_2204,_2206,_2208)).
-event(vote(_2204,_2206,_2208)).
-
-simpleFluent(status(_2308)=proposed).
-simpleFluent(status(_2308)=voting).
-simpleFluent(status(_2308)=voted).
-simpleFluent(status(_2308)=null).
-simpleFluent(voted(_2308,_2310)=aye).
-simpleFluent(voted(_2308,_2310)=nay).
-simpleFluent(voted(_2308,_2310)=null).
-simpleFluent(outcome(_2308)=carried).
-simpleFluent(outcome(_2308)=not_carried).
-simpleFluent(auxPerCloseBallot(_2308)=true).
-simpleFluent(auxPerCloseBallot(_2308)=false).
-simpleFluent(per(close_ballot(_2312,_2314))=true).
-simpleFluent(per(close_ballot(_2312,_2314))=false).
-simpleFluent(obl(declare(_2312,_2314,_2316))=true).
-simpleFluent(obl(declare(_2312,_2314,_2316))=false).
-simpleFluent(sanctioned(_2308)=true).
-simpleFluent(sanctioned(_2308)=false).
-
-sDFluent(pow(propose(_2476,_2478))=true).
-sDFluent(pow(second(_2476,_2478))=true).
-sDFluent(pow(vote(_2476,_2478))=true).
-sDFluent(pow(close_ballot(_2476,_2478))=true).
-sDFluent(pow(declare(_2476,_2478))=true).
-
-index(auxMotionOutcomeEvent(_2504,_2564),_2504).
-index(propose(_2504,_2564),_2504).
-index(second(_2504,_2564),_2504).
-index(close_ballot(_2504,_2564),_2504).
-index(declare(_2504,_2564,_2566),_2504).
-index(vote(_2504,_2564,_2566),_2504).
-index(status(_2504)=proposed,_2504).
-index(status(_2504)=voting,_2504).
-index(status(_2504)=voted,_2504).
-index(status(_2504)=null,_2504).
-index(voted(_2504,_2570)=aye,_2504).
-index(voted(_2504,_2570)=nay,_2504).
-index(voted(_2504,_2570)=null,_2504).
-index(outcome(_2504)=carried,_2504).
-index(outcome(_2504)=not_carried,_2504).
-index(auxPerCloseBallot(_2504)=true,_2504).
-index(auxPerCloseBallot(_2504)=false,_2504).
-index(per(close_ballot(_2504,_2574))=true,_2504).
-index(per(close_ballot(_2504,_2574))=false,_2504).
-index(obl(declare(_2504,_2574,_2576))=true,_2504).
-index(obl(declare(_2504,_2574,_2576))=false,_2504).
-index(sanctioned(_2504)=true,_2504).
-index(sanctioned(_2504)=false,_2504).
-index(pow(propose(_2504,_2574))=true,_2504).
-index(pow(second(_2504,_2574))=true,_2504).
-index(pow(vote(_2504,_2574))=true,_2504).
-index(pow(close_ballot(_2504,_2574))=true,_2504).
-index(pow(declare(_2504,_2574))=true,_2504).
-
-cyclic(status(_2858)=proposed).
-cyclic(status(_2858)=voting).
-cyclic(status(_2858)=voted).
-cyclic(status(_2858)=null).
-
-cachingOrder2(_3030, status(_3030)=proposed) :- % level: 1
-     queryMotion(_3030).
-
-cachingOrder2(_3014, status(_3014)=voting) :- % level: 1
-     queryMotion(_3014).
-
-cachingOrder2(_2998, status(_2998)=voted) :- % level: 1
-     queryMotion(_2998).
-
-cachingOrder2(_2982, status(_2982)=null) :- % level: 1
-     queryMotion(_2982).
-
-cachingOrder2(_3480, voted(_3480,_3482)=aye) :- % level: 2
-     person(_3480),role_of(_3480,voter),queryMotion(_3482).
-
-cachingOrder2(_3462, voted(_3462,_3464)=nay) :- % level: 2
-     person(_3462),role_of(_3462,voter),queryMotion(_3464).
-
-cachingOrder2(_3444, voted(_3444,_3446)=null). % level: 2
-cachingOrder2(_3428, outcome(_3428)=carried) :- % level: 2
-     queryMotion(_3428).
-
-cachingOrder2(_3412, outcome(_3412)=not_carried) :- % level: 2
-     queryMotion(_3412).
-
-cachingOrder2(_3396, auxPerCloseBallot(_3396)=true) :- % level: 2
-     queryMotion(_3396).
-
-cachingOrder2(_3378, per(close_ballot(_3378,_3380))=false) :- % level: 2
-     person(_3378),role_of(_3378,chair),queryMotion(_3380).
-
-cachingOrder2(_3354, obl(declare(_3354,_3356,carried))=false) :- % level: 2
-     person(_3354),role_of(_3354,chair),queryMotion(_3356).
-
-cachingOrder2(_3332, pow(propose(_3332,_3334))=true). % level: 2
-cachingOrder2(_3310, pow(second(_3310,_3312))=true). % level: 2
-cachingOrder2(_3288, pow(vote(_3288,_3290))=true). % level: 2
-cachingOrder2(_3266, pow(close_ballot(_3266,_3268))=true). % level: 2
-cachingOrder2(_3244, pow(declare(_3244,_3246))=true). % level: 2
-cachingOrder2(_3222, auxMotionOutcomeEvent(_3222,_3224)) :- % level: 2
-     queryMotion(_3222).
-
-cachingOrder2(_3968, auxPerCloseBallot(_3968)=false) :- % level: 3
-     queryMotion(_3968).
-
-cachingOrder2(_3950, per(close_ballot(_3950,_3952))=true) :- % level: 3
-     person(_3950),role_of(_3950,chair),queryMotion(_3952).
-
-cachingOrder2(_3926, obl(declare(_3926,_3928,carried))=true) :- % level: 3
-     person(_3926),role_of(_3926,chair),queryMotion(_3928).
-
-cachingOrder2(_4192, sanctioned(_4192)=true) :- % level: 4
-     person(_4192),role_of(_4192,chair).
-
-cachingOrder2(_4306, sanctioned(_4306)=false) :- % level: 5
-     person(_4306),role_of(_4306,chair).
-
-collectGrounds([propose(_2184,_2198), second(_2184,_2198), close_ballot(_2184,_2198), declare(_2184,_2198,_2200), vote(_2184,_2198,_2200)],person(_2184)).
-
-dgrounded(voted(_2824,_2826)=aye, person(_2824)).
-dgrounded(voted(_2768,_2770)=nay, person(_2768)).
-dgrounded(per(close_ballot(_2584,_2586))=true, person(_2584)).
-dgrounded(per(close_ballot(_2524,_2526))=false, person(_2524)).
-dgrounded(obl(declare(_2462,_2464,carried))=true, person(_2462)).
-dgrounded(obl(declare(_2400,_2402,carried))=false, person(_2400)).
-dgrounded(sanctioned(_2352)=true, person(_2352)).
-dgrounded(sanctioned(_2308)=false, person(_2308)).
+maxDuration(status(_5046)=voted,status(_5046)=null,10):-
+     grounding(status(_5046)=voted),
+     grounding(status(_5046)=null).
+
+maxDuration(auxPerCloseBallot(_5046)=true,auxPerCloseBallot(_5046)=false,8):-
+     grounding(auxPerCloseBallot(_5046)=true),
+     grounding(auxPerCloseBallot(_5046)=false).
+
+maxDuration(sanctioned(_5046)=true,sanctioned(_5046)=false,4):-
+     grounding(sanctioned(_5046)=true),
+     grounding(sanctioned(_5046)=false).
+
+grounding(propose(_5378,_5380)) :- 
+     person(_5378),motion(_5380).
+
+grounding(second(_5378,_5380)) :- 
+     person(_5378),motion(_5380).
+
+grounding(vote(_5378,_5380,_5382)) :- 
+     person(_5378),motion(_5380).
+
+grounding(close_ballot(_5378,_5380)) :- 
+     person(_5378),motion(_5380).
+
+grounding(declare(_5378,_5380,_5382)) :- 
+     person(_5378),motion(_5380).
+
+grounding(status(_5384)=null) :- 
+     queryMotion(_5384).
+
+grounding(status(_5384)=proposed) :- 
+     queryMotion(_5384).
+
+grounding(status(_5384)=voting) :- 
+     queryMotion(_5384).
+
+grounding(status(_5384)=voted) :- 
+     queryMotion(_5384).
+
+grounding(voted(_5384,_5386)=aye) :- 
+     person(_5384),role_of(_5384,voter),queryMotion(_5386).
+
+grounding(voted(_5384,_5386)=nay) :- 
+     person(_5384),role_of(_5384,voter),queryMotion(_5386).
+
+grounding(auxMotionOutcomeEvent(_5378,_5380)) :- 
+     queryMotion(_5378).
+
+grounding(outcome(_5384)=carried) :- 
+     queryMotion(_5384).
+
+grounding(outcome(_5384)=not_carried) :- 
+     queryMotion(_5384).
+
+grounding(auxPerCloseBallot(_5384)=true) :- 
+     queryMotion(_5384).
+
+grounding(per(close_ballot(_5388,_5390))=true) :- 
+     person(_5388),role_of(_5388,chair),queryMotion(_5390).
+
+grounding(obl(declare(_5388,_5390,carried))=true) :- 
+     person(_5388),role_of(_5388,chair),queryMotion(_5390).
+
+grounding(sanctioned(_5384)=true) :- 
+     person(_5384),role_of(_5384,chair).
+
+grounding(auxPerCloseBallot(_5384)=false) :- 
+     queryMotion(_5384).
+
+grounding(per(close_ballot(_5388,_5390))=false) :- 
+     person(_5388),role_of(_5388,chair),queryMotion(_5390).
+
+grounding(obl(declare(_5388,_5390,carried))=false) :- 
+     person(_5388),role_of(_5388,chair),queryMotion(_5390).
+
+grounding(sanctioned(_5384)=false) :- 
+     person(_5384),role_of(_5384,chair).
+
+inputEntity(propose(_5066,_5068)).
+inputEntity(second(_5066,_5068)).
+inputEntity(close_ballot(_5066,_5068)).
+inputEntity(declare(_5066,_5068,_5070)).
+inputEntity(vote(_5066,_5068,_5070)).
+
+outputEntity(status(_5158)=proposed).
+outputEntity(status(_5158)=voting).
+outputEntity(status(_5158)=voted).
+outputEntity(status(_5158)=null).
+outputEntity(voted(_5158,_5160)=aye).
+outputEntity(voted(_5158,_5160)=nay).
+outputEntity(voted(_5158,_5160)=null).
+outputEntity(outcome(_5158)=carried).
+outputEntity(outcome(_5158)=not_carried).
+outputEntity(auxPerCloseBallot(_5158)=true).
+outputEntity(auxPerCloseBallot(_5158)=false).
+outputEntity(per(close_ballot(_5162,_5164))=true).
+outputEntity(per(close_ballot(_5162,_5164))=false).
+outputEntity(obl(declare(_5162,_5164,_5166))=true).
+outputEntity(obl(declare(_5162,_5164,_5166))=false).
+outputEntity(sanctioned(_5158)=true).
+outputEntity(sanctioned(_5158)=false).
+outputEntity(pow(propose(_5162,_5164))=true).
+outputEntity(pow(second(_5162,_5164))=true).
+outputEntity(pow(vote(_5162,_5164))=true).
+outputEntity(pow(close_ballot(_5162,_5164))=true).
+outputEntity(pow(declare(_5162,_5164))=true).
+outputEntity(auxMotionOutcomeEvent(_5152,_5154)).
+
+event(auxMotionOutcomeEvent(_5346,_5348)).
+event(propose(_5346,_5348)).
+event(second(_5346,_5348)).
+event(close_ballot(_5346,_5348)).
+event(declare(_5346,_5348,_5350)).
+event(vote(_5346,_5348,_5350)).
+
+simpleFluent(status(_5444)=proposed).
+simpleFluent(status(_5444)=voting).
+simpleFluent(status(_5444)=voted).
+simpleFluent(status(_5444)=null).
+simpleFluent(voted(_5444,_5446)=aye).
+simpleFluent(voted(_5444,_5446)=nay).
+simpleFluent(voted(_5444,_5446)=null).
+simpleFluent(outcome(_5444)=carried).
+simpleFluent(outcome(_5444)=not_carried).
+simpleFluent(auxPerCloseBallot(_5444)=true).
+simpleFluent(auxPerCloseBallot(_5444)=false).
+simpleFluent(per(close_ballot(_5448,_5450))=true).
+simpleFluent(per(close_ballot(_5448,_5450))=false).
+simpleFluent(obl(declare(_5448,_5450,_5452))=true).
+simpleFluent(obl(declare(_5448,_5450,_5452))=false).
+simpleFluent(sanctioned(_5444)=true).
+simpleFluent(sanctioned(_5444)=false).
+
+sDFluent(pow(propose(_5606,_5608))=true).
+sDFluent(pow(second(_5606,_5608))=true).
+sDFluent(pow(vote(_5606,_5608))=true).
+sDFluent(pow(close_ballot(_5606,_5608))=true).
+sDFluent(pow(declare(_5606,_5608))=true).
+
+index(auxMotionOutcomeEvent(_5634,_5688),_5634).
+index(propose(_5634,_5688),_5634).
+index(second(_5634,_5688),_5634).
+index(close_ballot(_5634,_5688),_5634).
+index(declare(_5634,_5688,_5690),_5634).
+index(vote(_5634,_5688,_5690),_5634).
+index(status(_5634)=proposed,_5634).
+index(status(_5634)=voting,_5634).
+index(status(_5634)=voted,_5634).
+index(status(_5634)=null,_5634).
+index(voted(_5634,_5694)=aye,_5634).
+index(voted(_5634,_5694)=nay,_5634).
+index(voted(_5634,_5694)=null,_5634).
+index(outcome(_5634)=carried,_5634).
+index(outcome(_5634)=not_carried,_5634).
+index(auxPerCloseBallot(_5634)=true,_5634).
+index(auxPerCloseBallot(_5634)=false,_5634).
+index(per(close_ballot(_5634,_5698))=true,_5634).
+index(per(close_ballot(_5634,_5698))=false,_5634).
+index(obl(declare(_5634,_5698,_5700))=true,_5634).
+index(obl(declare(_5634,_5698,_5700))=false,_5634).
+index(sanctioned(_5634)=true,_5634).
+index(sanctioned(_5634)=false,_5634).
+index(pow(propose(_5634,_5698))=true,_5634).
+index(pow(second(_5634,_5698))=true,_5634).
+index(pow(vote(_5634,_5698))=true,_5634).
+index(pow(close_ballot(_5634,_5698))=true,_5634).
+index(pow(declare(_5634,_5698))=true,_5634).
+
+cyclic(status(_5976)=proposed).
+cyclic(status(_5976)=voting).
+cyclic(status(_5976)=voted).
+cyclic(status(_5976)=null).
+
+cachingOrder2(_6142, status(_6142)=proposed) :- % level: 1
+     queryMotion(_6142).
+
+cachingOrder2(_6126, status(_6126)=voting) :- % level: 1
+     queryMotion(_6126).
+
+cachingOrder2(_6110, status(_6110)=voted) :- % level: 1
+     queryMotion(_6110).
+
+cachingOrder2(_6094, status(_6094)=null) :- % level: 1
+     queryMotion(_6094).
+
+cachingOrder2(_6586, voted(_6586,_6588)=aye) :- % level: 2
+     person(_6586),role_of(_6586,voter),queryMotion(_6588).
+
+cachingOrder2(_6568, voted(_6568,_6570)=nay) :- % level: 2
+     person(_6568),role_of(_6568,voter),queryMotion(_6570).
+
+cachingOrder2(_6550, voted(_6550,_6552)=null). % level: 2
+cachingOrder2(_6534, outcome(_6534)=carried) :- % level: 2
+     queryMotion(_6534).
+
+cachingOrder2(_6518, outcome(_6518)=not_carried) :- % level: 2
+     queryMotion(_6518).
+
+cachingOrder2(_6502, auxPerCloseBallot(_6502)=true) :- % level: 2
+     queryMotion(_6502).
+
+cachingOrder2(_6484, per(close_ballot(_6484,_6486))=false) :- % level: 2
+     person(_6484),role_of(_6484,chair),queryMotion(_6486).
+
+cachingOrder2(_6460, obl(declare(_6460,_6462,carried))=false) :- % level: 2
+     person(_6460),role_of(_6460,chair),queryMotion(_6462).
+
+cachingOrder2(_6438, pow(propose(_6438,_6440))=true). % level: 2
+cachingOrder2(_6416, pow(second(_6416,_6418))=true). % level: 2
+cachingOrder2(_6394, pow(vote(_6394,_6396))=true). % level: 2
+cachingOrder2(_6372, pow(close_ballot(_6372,_6374))=true). % level: 2
+cachingOrder2(_6350, pow(declare(_6350,_6352))=true). % level: 2
+cachingOrder2(_6328, auxMotionOutcomeEvent(_6328,_6330)) :- % level: 2
+     queryMotion(_6328).
+
+cachingOrder2(_7068, auxPerCloseBallot(_7068)=false) :- % level: 3
+     queryMotion(_7068).
+
+cachingOrder2(_7050, per(close_ballot(_7050,_7052))=true) :- % level: 3
+     person(_7050),role_of(_7050,chair),queryMotion(_7052).
+
+cachingOrder2(_7026, obl(declare(_7026,_7028,carried))=true) :- % level: 3
+     person(_7026),role_of(_7026,chair),queryMotion(_7028).
+
+cachingOrder2(_7286, sanctioned(_7286)=true) :- % level: 4
+     person(_7286),role_of(_7286,chair).
+
+cachingOrder2(_7394, sanctioned(_7394)=false) :- % level: 5
+     person(_7394),role_of(_7394,chair).
+
+collectGrounds([propose(_5332,_5346), second(_5332,_5346), close_ballot(_5332,_5346), declare(_5332,_5346,_5348), vote(_5332,_5346,_5348)],person(_5332)).
+
+dgrounded(voted(_5966,_5968)=aye, person(_5966)).
+dgrounded(voted(_5910,_5912)=nay, person(_5910)).
+dgrounded(per(close_ballot(_5726,_5728))=true, person(_5726)).
+dgrounded(per(close_ballot(_5666,_5668))=false, person(_5666)).
+dgrounded(obl(declare(_5604,_5606,carried))=true, person(_5604)).
+dgrounded(obl(declare(_5542,_5544,carried))=false, person(_5542)).
+dgrounded(sanctioned(_5494)=true, person(_5494)).
+dgrounded(sanctioned(_5450)=false, person(_5450)).

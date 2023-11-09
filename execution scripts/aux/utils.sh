@@ -261,7 +261,7 @@ function start_fifos() {
 }
 
 function init_socket() {
-    csv_input_files=${input_providers[@]}
+    csv_input_files=(${input_providers[@]})
     input_providers=(../examples/${application}/${application}.socket)
 }
 
@@ -269,7 +269,7 @@ function start_socket_writers() {
     init_socket
     for i in "${!csv_input_files[@]}"; do
             # Run socket writer in the background
-            socket_writer ${csv_input_files["$i"]} $input_providers ${stream_rate:-} & 
+            socket_writer ${csv_input_files["$i"]} ${input_providers[0]} ${stream_rate:-} & 
     done
     trap cleanup_socket INT # After this point, in case of SIGINT, kill stream providers and delete named pipes.
 }

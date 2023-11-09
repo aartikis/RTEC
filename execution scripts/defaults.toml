@@ -48,11 +48,11 @@ results_directory = "../examples/toy/results"
 window_size = 50
 step = 50
 start_time = 0
-end_time = 30
+end_time = 50
 clock_tick = 1
 goals = []
 background_knowledge = ['../examples/toy/dataset/auxiliary/toy_var_domain.prolog']
-stream_rate = 1
+stream_rate = 5
 # Compiler parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/toy/resources/graphs'
@@ -81,7 +81,7 @@ include_input = false
 [voting]
 # RTEC execution parameters 
 event_description = '../examples/voting/resources/patterns/rules.prolog'
-input_mode = "csv"
+input_mode = "fifo"
 input_providers = ['../examples/voting/dataset/csv/voting.csv']
 output_mode = "file"
 results_directory = "../examples/voting/results"
@@ -121,7 +121,7 @@ include_input = false
 [caviar]
 # RTEC execution parameters 
 event_description = '../examples/caviar/resources/patterns/rules.prolog'
-input_mode = "csv"
+input_mode = "socket"
 input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
 output_mode = "file"
 results_directory = "../examples/caviar/results"
