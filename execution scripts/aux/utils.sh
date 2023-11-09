@@ -1,6 +1,4 @@
 #!/bin/bash
-
-
 function get_all_defaults (){
 	# input: a supported application
 	# effects: the parameters of RTEC that were not provided by the user have been assigned their default values 
@@ -225,25 +223,26 @@ function socket_writer (){
     # For example, if stream_rate = 2, the input events are written into the pipe twice as fast.
     [ $# -ge 3 ] && stream_rate=$3 || stream_rate=1 # if not provided, stream_rate = 1, by default.
 
-    # Set the socket
-    exec > "$socket" #At this point, the script waits for the socket to be created? 
-
     # First, fetch the first line of the input csv to get the time-point of the first event. 
     first_line=`head -1 $input_csv`
     arrLine=(${first_line//|/ })
     prev_time=${arrLine[1]}
-	
+
+    until [ -S $socket ]
+    do 
+        :
+    done
+
     # Then, read the csv file line by line and write to the socket with awk, invoking the GNU sleep command when a time-stamp greater than the current one is detected.
     # awk splits each line by the delimiter "|" and checks whether its timestamp ($2) is greater than the timestamp of the previous event (which is prev_time). 
     # If so, the program waits for a time period equal to the temporal distance between these events in seconds. 
     # Then, the input event is written into the socket. 
     # If the timestamps of consecutive events are equal, the next input event is written into the socket immediately. 
-    nc -U $socket | 
     awk -v stream_rate="$stream_rate" -v prev_time="$prev_time" '
             BEGIN{FS = "|"} 
             {if ($2>prev_time) {sleep_time=($2 - prev_time)/stream_rate; gsub(",",".",sleep_time); system("sleep " sleep_time); print $0} else {print $0} }
             {prev_time=$2}
-            ' $input_csv
+            ' $input_csv | nc -U $socket
 }
 
 function start_fifos() {
@@ -267,12 +266,12 @@ function init_socket() {
 }
 
 function start_socket_writers() {
+    init_socket
     for i in "${!csv_input_files[@]}"; do
             # Run socket writer in the background
-            socket_writer ${csv_input_files["$i"]} ${input_providers[0]} ${stream_rate:-} & 
+            socket_writer ${csv_input_files["$i"]} $input_providers ${stream_rate:-} & 
     done
     trap cleanup_socket INT # After this point, in case of SIGINT, kill stream providers and delete named pipes.
-    input_providers=("${socketName}")
 }
 
 function get_default_param (){

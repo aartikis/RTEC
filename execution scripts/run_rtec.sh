@@ -44,7 +44,7 @@ compile_command="./aux/compile.sh --event-description=${event_description} "
 [ ! -z $dependency_graph ] && compile_command+="--dependency-graph "
 [ ! -z $dependency_graph_directory ] && compile_command+="--dependency-graph-directory=${dependency_graph_directory} "
 [ -z $include_input ] && compile_command+="--no-events"
-echo "Executing: $compile_command"
+#echo "Executing: $compile_command"
 $compile_command
 case $? in 
 	0)
@@ -64,7 +64,4 @@ set_prolog_command
 echo "Executing: $prolog_command"
 $prolog_command 
 
-wait $RTEC_PID
-
 [ $input_mode == "fifo" ] && delete_fifos
-[ $input_mode == "socket" ] && cleanup_socket

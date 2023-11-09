@@ -242,7 +242,7 @@ assertFluent(Row) :-
 	% check that the fluent should be represented by means of holdsAtIE
 	% points/1 is defined in the declarations of an event description
 	% points(Fluent=Value), !,
-	points(Fluent=Value), !, 
+	points(Fluent=Value), !,
 	assertz( holdsAtIE(Fluent=Value, OccurenceTime) ).
 	
 % distill from Row the durative instance of Fluent=Value and assert it in the RTEC format 
