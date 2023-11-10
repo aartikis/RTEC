@@ -50,10 +50,8 @@ holdsFor(rich_equal_happy(X)=true, I) :-
     holdsFor(happy(X)=true, Ih),
     equal(Ir, Ih, source, I).
 
-
-
 % The elements of these domains are derived from the ground arguments of input entitites
-%dynamicDomain(person(_)).
+dynamicDomain(person(_)).
 
 % Grounding of input entities 
 grounding(go_to(Person, Place)) :- person(Person), place(Place).

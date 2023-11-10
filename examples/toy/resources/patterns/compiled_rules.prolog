@@ -1,3 +1,5 @@
+:- dynamic person/1.
+
 initiatedAt(rich(_5042)=true, _5058, _5012, _5064) :-
      happensAtIE(win_lottery(_5042),_5012),
      _5058=<_5012,
@@ -48,44 +50,44 @@ holdsForSDFluent(rich_equal_happy(_5042)=true,_5012) :-
      holdsForProcessedSDFluent(_5042,happy(_5042)=true,_5074),
      equal(rich_equal_happy(_5042)=true,0,_5058,_5074,source,true,_5012).
 
-grounding(go_to(_5326,_5328)) :- 
-     person(_5326),place(_5328).
+grounding(go_to(_5342,_5344)) :- 
+     person(_5342),place(_5344).
 
-grounding(lose_wallet(_5326)) :- 
-     person(_5326).
+grounding(lose_wallet(_5342)) :- 
+     person(_5342).
 
-grounding(win_lottery(_5326)) :- 
-     person(_5326).
+grounding(win_lottery(_5342)) :- 
+     person(_5342).
 
-grounding(location(_5332)=_5328) :- 
-     person(_5332),place(_5328).
+grounding(location(_5348)=_5344) :- 
+     person(_5348),place(_5344).
 
-grounding(rich(_5332)=true) :- 
-     person(_5332).
+grounding(rich(_5348)=true) :- 
+     person(_5348).
 
-grounding(happy(_5332)=true) :- 
-     person(_5332).
+grounding(happy(_5348)=true) :- 
+     person(_5348).
 
-grounding(rich_before_pub(_5332)=true) :- 
-     person(_5332).
+grounding(rich_before_pub(_5348)=true) :- 
+     person(_5348).
 
-grounding(rich_before_pub_before_home(_5332)=true) :- 
-     person(_5332).
+grounding(rich_before_pub_before_home(_5348)=true) :- 
+     person(_5348).
 
-grounding(rich_starts_happy(_5332)=true) :- 
-     person(_5332).
+grounding(rich_starts_happy(_5348)=true) :- 
+     person(_5348).
 
-grounding(rich_finishes_happy(_5332)=true) :- 
-     person(_5332).
+grounding(rich_finishes_happy(_5348)=true) :- 
+     person(_5348).
 
-grounding(pub_during_happy(_5332)=true) :- 
-     person(_5332).
+grounding(pub_during_happy(_5348)=true) :- 
+     person(_5348).
 
-grounding(rich_overlaps_pub(_5332)=true) :- 
-     person(_5332).
+grounding(rich_overlaps_pub(_5348)=true) :- 
+     person(_5348).
 
-grounding(rich_equal_happy(_5332)=true) :- 
-     person(_5332).
+grounding(rich_equal_happy(_5348)=true) :- 
+     person(_5348).
 
 inputEntity(win_lottery(_5066)).
 inputEntity(go_to(_5066,_5068)).
@@ -160,3 +162,14 @@ cachingOrder2(_6122, pub_during_happy(_6122)=true) :- % level: 3
 cachingOrder2(_6106, rich_equal_happy(_6106)=true) :- % level: 3
      person(_6106).
 
+collectGrounds([win_lottery(_5254), go_to(_5254,_5268), lose_wallet(_5254), rich_before_pub_before_home(_5254)=true],person(_5254)).
+
+dgrounded(rich(_5610)=true, person(_5610)).
+dgrounded(location(_5568)=_5564, person(_5568)).
+dgrounded(happy(_5536)=true, person(_5536)).
+dgrounded(rich_before_pub(_5504)=true, person(_5504)).
+dgrounded(rich_starts_happy(_5472)=true, person(_5472)).
+dgrounded(rich_finishes_happy(_5440)=true, person(_5440)).
+dgrounded(pub_during_happy(_5408)=true, person(_5408)).
+dgrounded(rich_overlaps_pub(_5376)=true, person(_5376)).
+dgrounded(rich_equal_happy(_5344)=true, person(_5344)).
