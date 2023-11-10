@@ -61,18 +61,18 @@ include_input = false
 [maritime]
 # RTEC execution parameters 
 event_description = '../examples/maritime/resources/patterns/rules.prolog'
-input_mode = "csv"
+input_mode = "fifo"
 input_providers = ['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']
 output_mode = "file"
 results_directory = "../examples/maritime/results"
-window_size = 3600 # 1 day = 86400 seconds
-step = 3600
+window_size = 36000 # 1 day = 86400 seconds
+step = 36000
 start_time = 1443650400 
 end_time = 1448834400
 clock_tick = 1
 goals = []
 background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
-stream_rate = 1000
+stream_rate = 10000
 # Compiler parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/maritime/resources/graphs'
@@ -101,7 +101,7 @@ include_input = false
 [netbill]
 # RTEC execution parameters 
 event_description = '../examples/netbill/resources/patterns/rules.prolog'
-input_mode = "csv"
+input_mode = "socket"
 input_providers = ['../examples/netbill/dataset/csv/netbill.csv']
 output_mode = "file"
 results_directory = "../examples/netbill/results"
@@ -121,18 +121,18 @@ include_input = false
 [caviar]
 # RTEC execution parameters 
 event_description = '../examples/caviar/resources/patterns/rules.prolog'
-input_mode = "socket"
+input_mode = "csv"
 input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
 output_mode = "file"
 results_directory = "../examples/caviar/results"
-window_size = 100000
-step = 100000
+window_size = 10000 #100000
+step = 10000 #100000
 start_time = 0
-end_time = 1007000
+end_time = 10000 #1007000
 clock_tick = 40
 goals = []
 background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.prolog'] #, '../examples/caviar/dataset/auxiliary/list-of-ids.prolog']
-stream_rate = 10000
+stream_rate = 1000 #10000
 # Compiler parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/caviar/resources/graphs'

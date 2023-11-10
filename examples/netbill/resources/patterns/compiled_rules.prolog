@@ -1,259 +1,259 @@
 :- dynamic person/1, person_pair/2.
 
-initiatedAt(quote(_1884,_1886,_1888)=true, _1910, _1854, _1916) :-
-     happensAtIE(present_quote(_1884,_1886,_1888,_1898),_1854),
-     _1910=<_1854,
-     _1854<_1916.
+initiatedAt(quote(_5044,_5046,_5048)=true, _5070, _5014, _5076) :-
+     happensAtIE(present_quote(_5044,_5046,_5048,_5058),_5014),
+     _5070=<_5014,
+     _5014<_5076.
 
-initiatedAt(contract(_1884,_1884,_1888)=true, _1996, _1854, _2002) :-
-     happensAtIE(accept_quote(_1884,_1884,_1888),_1854),_1996=<_1854,_1854<_2002,
-     holdsAtProcessedSimpleFluent(_1884,quote(_1884,_1884,_1888)=true,_1854),
-     \+holdsAtCyclic(_1884,suspended(_1884,merchant)=true,_1854),
-     \+holdsAtCyclic(_1884,suspended(_1884,consumer)=true,_1854).
+initiatedAt(contract(_5044,_5044,_5048)=true, _5156, _5014, _5162) :-
+     happensAtIE(accept_quote(_5044,_5044,_5048),_5014),_5156=<_5014,_5014<_5162,
+     holdsAtProcessedSimpleFluent(_5044,quote(_5044,_5044,_5048)=true,_5014),
+     \+holdsAtCyclic(_5044,suspended(_5044,merchant)=true,_5014),
+     \+holdsAtCyclic(_5044,suspended(_5044,consumer)=true,_5014).
 
-initiatedAt(per(present_quote(_1888,_1890))=false, _1912, _1854, _1918) :-
-     happensAtIE(present_quote(_1888,_1890,_1898,_1900),_1854),
-     _1912=<_1854,
-     _1854<_1918.
+initiatedAt(per(present_quote(_5048,_5050))=false, _5072, _5014, _5078) :-
+     happensAtIE(present_quote(_5048,_5050,_5058,_5060),_5014),
+     _5072=<_5014,
+     _5014<_5078.
 
-initiatedAt(per(present_quote(_1888,_1890))=true, _1910, _1854, _1916) :-
-     happensAtIE(request_quote(_1890,_1888,_1898),_1854),
-     _1910=<_1854,
-     _1854<_1916.
+initiatedAt(per(present_quote(_5048,_5050))=true, _5070, _5014, _5076) :-
+     happensAtIE(request_quote(_5050,_5048,_5058),_5014),
+     _5070=<_5014,
+     _5014<_5076.
 
-initiatedAt(obl(send_EPO(_1888,iServer,_1892))=false, _1926, _1854, _1932) :-
-     happensAtIE(send_EPO(_1888,iServer,_1892,_1902),_1854),_1926=<_1854,_1854<_1932,
-     price(_1892,_1902).
+initiatedAt(obl(send_EPO(_5048,iServer,_5052))=false, _5086, _5014, _5092) :-
+     happensAtIE(send_EPO(_5048,iServer,_5052,_5062),_5014),_5086=<_5014,_5014<_5092,
+     price(_5052,_5062).
 
-initiatedAt(obl(send_goods(_1888,iServer,_1892))=false, _1942, _1854, _1948) :-
-     happensAtIE(send_goods(_1888,iServer,_1892,_1902,_1904),_1854),_1942=<_1854,_1854<_1948,
-     decrypt(_1902,_1904,_1918),
-     meets(_1918,_1892).
+initiatedAt(obl(send_goods(_5048,iServer,_5052))=false, _5102, _5014, _5108) :-
+     happensAtIE(send_goods(_5048,iServer,_5052,_5062,_5064),_5014),_5102=<_5014,_5014<_5108,
+     decrypt(_5062,_5064,_5078),
+     meets(_5078,_5052).
 
-initiatedAt(suspended(_1884,merchant)=true, _1942, _1854, _1948) :-
-     happensAtIE(present_quote(_1884,_1892,_1894,_1896),_1854),_1942=<_1854,_1854<_1948,
-     holdsAtProcessedSimpleFluent(_1884,per(present_quote(_1884,_1892))=false,_1854).
+initiatedAt(suspended(_5044,merchant)=true, _5102, _5014, _5108) :-
+     happensAtIE(present_quote(_5044,_5052,_5054,_5056),_5014),_5102=<_5014,_5014<_5108,
+     holdsAtProcessedSimpleFluent(_5044,per(present_quote(_5044,_5052))=false,_5014).
 
-initiatedAt(obl(send_EPO(_1896,iServer,_1900))=true, _1854, _1856, _1858) :-
-     initiatedAt(contract(_1910,_1896,_1900)=true,_1854,_1856,_1858).
+initiatedAt(obl(send_EPO(_5056,iServer,_5060))=true, _5014, _5016, _5018) :-
+     initiatedAt(contract(_5070,_5056,_5060)=true,_5014,_5016,_5018).
 
-initiatedAt(obl(send_goods(_1896,iServer,_1900))=true, _1854, _1856, _1858) :-
-     initiatedAt(contract(_1896,_1912,_1900)=true,_1854,_1856,_1858).
+initiatedAt(obl(send_goods(_5056,iServer,_5060))=true, _5014, _5016, _5018) :-
+     initiatedAt(contract(_5056,_5072,_5060)=true,_5014,_5016,_5018).
 
-initiatedAt(obl(send_EPO(_1896,iServer,_1900))=false, _1854, _1856, _1858) :-
-     initiatedAt(contract(_1910,_1896,_1900)=false,_1854,_1856,_1858).
+initiatedAt(obl(send_EPO(_5056,iServer,_5060))=false, _5014, _5016, _5018) :-
+     initiatedAt(contract(_5070,_5056,_5060)=false,_5014,_5016,_5018).
 
-initiatedAt(obl(send_goods(_1896,iServer,_1900))=false, _1854, _1856, _1858) :-
-     initiatedAt(contract(_1896,_1912,_1900)=false,_1854,_1856,_1858).
+initiatedAt(obl(send_goods(_5056,iServer,_5060))=false, _5014, _5016, _5018) :-
+     initiatedAt(contract(_5056,_5072,_5060)=false,_5014,_5016,_5018).
 
-initiatedAt(suspended(_1892,merchant)=true, _1854, _1856, _1858) :-
-     initiatedAt(contract(_1892,_1906,_1908)=false,_1854,_1856,_1858),
-     holdsAtCyclic(_1892,obl(send_goods(_1892,iServer,_1908))=true,_1856).
+initiatedAt(suspended(_5052,merchant)=true, _5014, _5016, _5018) :-
+     initiatedAt(contract(_5052,_5066,_5068)=false,_5014,_5016,_5018),
+     holdsAtCyclic(_5052,obl(send_goods(_5052,iServer,_5068))=true,_5016).
 
-initiatedAt(suspended(_1892,consumer)=true, _1854, _1856, _1858) :-
-     initiatedAt(contract(_1904,_1892,_1908)=false,_1854,_1856,_1858),
-     holdsAtCyclic(_1892,obl(send_EPO(_1892,iServer,_1908))=true,_1856).
+initiatedAt(suspended(_5052,consumer)=true, _5014, _5016, _5018) :-
+     initiatedAt(contract(_5064,_5052,_5068)=false,_5014,_5016,_5018),
+     holdsAtCyclic(_5052,obl(send_EPO(_5052,iServer,_5068))=true,_5016).
 
-terminatedAt(quote(_1884,_1886,_1888)=true, _1908, _1854, _1914) :-
-     happensAtIE(accept_quote(_1886,_1884,_1888),_1854),
-     _1908=<_1854,
-     _1854<_1914.
+terminatedAt(quote(_5044,_5046,_5048)=true, _5068, _5014, _5074) :-
+     happensAtIE(accept_quote(_5046,_5044,_5048),_5014),
+     _5068=<_5014,
+     _5014<_5074.
 
-holdsForSDFluent(pow(accept_quote(_1888,_1890,_1892))=true,_1854) :-
-     holdsForProcessedSimpleFluent(_1890,quote(_1890,_1888,_1892)=true,_1912),
-     holdsForProcessedSimpleFluent(_1888,suspended(_1888,consumer)=true,_1930),
-     holdsForProcessedSimpleFluent(_1890,suspended(_1890,merchant)=true,_1948),
-     relative_complement_all(_1912,[_1930,_1948],_1854).
+holdsForSDFluent(pow(accept_quote(_5048,_5050,_5052))=true,_5014) :-
+     holdsForProcessedSimpleFluent(_5050,quote(_5050,_5048,_5052)=true,_5072),
+     holdsForProcessedSimpleFluent(_5048,suspended(_5048,consumer)=true,_5090),
+     holdsForProcessedSimpleFluent(_5050,suspended(_5050,merchant)=true,_5108),
+     relative_complement_all(_5072,[_5090,_5108],_5014).
 
-maxDuration(contract(_1888,_1890,_1892)=true,contract(_1888,_1890,_1892)=false,5):-
-     grounding(contract(_1888,_1890,_1892)=true),
-     grounding(contract(_1888,_1890,_1892)=false).
+maxDuration(contract(_5048,_5050,_5052)=true,contract(_5048,_5050,_5052)=false,5):-
+     grounding(contract(_5048,_5050,_5052)=true),
+     grounding(contract(_5048,_5050,_5052)=false).
 
-maxDurationUE(quote(_1888,_1890,_1892)=true,quote(_1888,_1890,_1892)=false,5):-
-     grounding(quote(_1888,_1890,_1892)=true),
-     grounding(quote(_1888,_1890,_1892)=false).
+maxDurationUE(quote(_5048,_5050,_5052)=true,quote(_5048,_5050,_5052)=false,5):-
+     grounding(quote(_5048,_5050,_5052)=true),
+     grounding(quote(_5048,_5050,_5052)=false).
 
-maxDurationUE(per(present_quote(_1892,_1894))=false,per(present_quote(_1892,_1894))=true,10):-
-     grounding(per(present_quote(_1892,_1894))=false),
-     grounding(per(present_quote(_1892,_1894))=true).
+maxDurationUE(per(present_quote(_5052,_5054))=false,per(present_quote(_5052,_5054))=true,10):-
+     grounding(per(present_quote(_5052,_5054))=false),
+     grounding(per(present_quote(_5052,_5054))=true).
 
-maxDurationUE(suspended(_1888,_1890)=true,suspended(_1888,_1890)=false,3):-
-     grounding(suspended(_1888,_1890)=true),
-     grounding(suspended(_1888,_1890)=false).
+maxDurationUE(suspended(_5048,_5050)=true,suspended(_5048,_5050)=false,3):-
+     grounding(suspended(_5048,_5050)=true),
+     grounding(suspended(_5048,_5050)=false).
 
-grounding(request_quote(_2200,_2202,_2204)) :- 
-     person_pair(_2202,_2200).
+grounding(request_quote(_5388,_5390,_5392)) :- 
+     person_pair(_5390,_5388).
 
-grounding(present_quote(_2200,_2202,_2204,_2206)) :- 
-     person_pair(_2200,_2202).
+grounding(present_quote(_5388,_5390,_5392,_5394)) :- 
+     person_pair(_5388,_5390).
 
-grounding(accept_quote(_2200,_2202,_2204)) :- 
-     person_pair(_2202,_2200).
+grounding(accept_quote(_5388,_5390,_5392)) :- 
+     person_pair(_5390,_5388).
 
-grounding(send_EPO(_2200,_2202,_2204,_2206)) :- 
-     person(_2200).
+grounding(send_EPO(_5388,_5390,_5392,_5394)) :- 
+     person(_5388).
 
-grounding(send_goods(_2200,_2202,_2204,_2206,_2208)) :- 
-     person(_2200).
+grounding(send_goods(_5388,_5390,_5392,_5394,_5396)) :- 
+     person(_5388).
 
-grounding(suspended(_2206,_2208)=true) :- 
-     person(_2206),role_of(_2206,_2208).
+grounding(suspended(_5394,_5396)=true) :- 
+     person(_5394),role_of(_5394,_5396).
 
-grounding(suspended(_2206,_2208)=false) :- 
-     person(_2206),role_of(_2206,_2208).
+grounding(suspended(_5394,_5396)=false) :- 
+     person(_5394),role_of(_5394,_5396).
 
-grounding(quote(_2206,_2208,_2210)=true) :- 
-     person_pair(_2206,_2208),role_of(_2208,consumer),role_of(_2206,merchant),\+_2206=_2208,queryGoodsDescription(_2210).
+grounding(quote(_5394,_5396,_5398)=true) :- 
+     person_pair(_5394,_5396),role_of(_5396,consumer),role_of(_5394,merchant),\+_5394=_5396,queryGoodsDescription(_5398).
 
-grounding(quote(_2206,_2208,_2210)=false) :- 
-     person_pair(_2206,_2208),role_of(_2208,consumer),role_of(_2206,merchant),\+_2206=_2208,queryGoodsDescription(_2210).
+grounding(quote(_5394,_5396,_5398)=false) :- 
+     person_pair(_5394,_5396),role_of(_5396,consumer),role_of(_5394,merchant),\+_5394=_5396,queryGoodsDescription(_5398).
 
-grounding(contract(_2206,_2208,_2210)=true) :- 
-     person_pair(_2206,_2208),role_of(_2206,merchant),role_of(_2208,consumer),\+_2206=_2208,queryGoodsDescription(_2210).
+grounding(contract(_5394,_5396,_5398)=true) :- 
+     person_pair(_5394,_5396),role_of(_5394,merchant),role_of(_5396,consumer),\+_5394=_5396,queryGoodsDescription(_5398).
 
-grounding(contract(_2206,_2208,_2210)=false) :- 
-     person_pair(_2206,_2208),role_of(_2206,merchant),role_of(_2208,consumer),\+_2206=_2208,queryGoodsDescription(_2210).
+grounding(contract(_5394,_5396,_5398)=false) :- 
+     person_pair(_5394,_5396),role_of(_5394,merchant),role_of(_5396,consumer),\+_5394=_5396,queryGoodsDescription(_5398).
 
-grounding(pow(accept_quote(_2210,_2212,_2214))=true) :- 
-     person_pair(_2212,_2210),role_of(_2212,merchant),role_of(_2210,consumer),\+_2210=_2212,queryGoodsDescription(_2214).
+grounding(pow(accept_quote(_5398,_5400,_5402))=true) :- 
+     person_pair(_5400,_5398),role_of(_5400,merchant),role_of(_5398,consumer),\+_5398=_5400,queryGoodsDescription(_5402).
 
-grounding(per(present_quote(_2210,_2212))=false) :- 
-     person_pair(_2210,_2212),role_of(_2210,merchant),role_of(_2212,consumer),\+_2212=_2210.
+grounding(per(present_quote(_5398,_5400))=false) :- 
+     person_pair(_5398,_5400),role_of(_5398,merchant),role_of(_5400,consumer),\+_5400=_5398.
 
-grounding(per(present_quote(_2210,_2212))=true) :- 
-     person_pair(_2210,_2212),role_of(_2210,merchant),role_of(_2212,consumer),\+_2212=_2210.
+grounding(per(present_quote(_5398,_5400))=true) :- 
+     person_pair(_5398,_5400),role_of(_5398,merchant),role_of(_5400,consumer),\+_5400=_5398.
 
-grounding(obl(send_EPO(_2210,iServer,_2214))=true) :- 
-     person(_2210),role_of(_2210,consumer),queryGoodsDescription(_2214).
+grounding(obl(send_EPO(_5398,iServer,_5402))=true) :- 
+     person(_5398),role_of(_5398,consumer),queryGoodsDescription(_5402).
 
-grounding(obl(send_goods(_2210,iServer,_2214))=true) :- 
-     person(_2210),role_of(_2210,merchant),queryGoodsDescription(_2214).
+grounding(obl(send_goods(_5398,iServer,_5402))=true) :- 
+     person(_5398),role_of(_5398,merchant),queryGoodsDescription(_5402).
 
-grounding(obl(send_EPO(_2210,iServer,_2214))=false) :- 
-     person(_2210),role_of(_2210,consumer),queryGoodsDescription(_2214).
+grounding(obl(send_EPO(_5398,iServer,_5402))=false) :- 
+     person(_5398),role_of(_5398,consumer),queryGoodsDescription(_5402).
 
-grounding(obl(send_goods(_2210,iServer,_2214))=false) :- 
-     person(_2210),role_of(_2210,merchant),queryGoodsDescription(_2214).
+grounding(obl(send_goods(_5398,iServer,_5402))=false) :- 
+     person(_5398),role_of(_5398,merchant),queryGoodsDescription(_5402).
 
-inputEntity(present_quote(_1914,_1916,_1918,_1920)).
-inputEntity(accept_quote(_1914,_1916,_1918)).
-inputEntity(request_quote(_1914,_1916,_1918)).
-inputEntity(send_EPO(_1914,_1916,_1918,_1920)).
-inputEntity(send_goods(_1914,_1916,_1918,_1920,_1922)).
+inputEntity(present_quote(_5068,_5070,_5072,_5074)).
+inputEntity(accept_quote(_5068,_5070,_5072)).
+inputEntity(request_quote(_5068,_5070,_5072)).
+inputEntity(send_EPO(_5068,_5070,_5072,_5074)).
+inputEntity(send_goods(_5068,_5070,_5072,_5074,_5076)).
 
-outputEntity(quote(_2012,_2014,_2016)=true).
-outputEntity(contract(_2012,_2014,_2016)=true).
-outputEntity(per(present_quote(_2016,_2018))=false).
-outputEntity(per(present_quote(_2016,_2018))=true).
-outputEntity(obl(send_EPO(_2016,_2018,_2020))=false).
-outputEntity(obl(send_goods(_2016,_2018,_2020))=false).
-outputEntity(suspended(_2012,_2014)=true).
-outputEntity(obl(send_EPO(_2016,_2018,_2020))=true).
-outputEntity(obl(send_goods(_2016,_2018,_2020))=true).
-outputEntity(contract(_2012,_2014,_2016)=false).
-outputEntity(quote(_2012,_2014,_2016)=false).
-outputEntity(suspended(_2012,_2014)=false).
-outputEntity(pow(accept_quote(_2016,_2018,_2020))=true).
+outputEntity(quote(_5160,_5162,_5164)=true).
+outputEntity(contract(_5160,_5162,_5164)=true).
+outputEntity(per(present_quote(_5164,_5166))=false).
+outputEntity(per(present_quote(_5164,_5166))=true).
+outputEntity(obl(send_EPO(_5164,_5166,_5168))=false).
+outputEntity(obl(send_goods(_5164,_5166,_5168))=false).
+outputEntity(suspended(_5160,_5162)=true).
+outputEntity(obl(send_EPO(_5164,_5166,_5168))=true).
+outputEntity(obl(send_goods(_5164,_5166,_5168))=true).
+outputEntity(contract(_5160,_5162,_5164)=false).
+outputEntity(quote(_5160,_5162,_5164)=false).
+outputEntity(suspended(_5160,_5162)=false).
+outputEntity(pow(accept_quote(_5164,_5166,_5168))=true).
 
-event(present_quote(_2146,_2148,_2150,_2152)).
-event(accept_quote(_2146,_2148,_2150)).
-event(request_quote(_2146,_2148,_2150)).
-event(send_EPO(_2146,_2148,_2150,_2152)).
-event(send_goods(_2146,_2148,_2150,_2152,_2154)).
+event(present_quote(_5288,_5290,_5292,_5294)).
+event(accept_quote(_5288,_5290,_5292)).
+event(request_quote(_5288,_5290,_5292)).
+event(send_EPO(_5288,_5290,_5292,_5294)).
+event(send_goods(_5288,_5290,_5292,_5294,_5296)).
 
-simpleFluent(quote(_2244,_2246,_2248)=true).
-simpleFluent(contract(_2244,_2246,_2248)=true).
-simpleFluent(per(present_quote(_2248,_2250))=false).
-simpleFluent(per(present_quote(_2248,_2250))=true).
-simpleFluent(obl(send_EPO(_2248,_2250,_2252))=false).
-simpleFluent(obl(send_goods(_2248,_2250,_2252))=false).
-simpleFluent(suspended(_2244,_2246)=true).
-simpleFluent(obl(send_EPO(_2248,_2250,_2252))=true).
-simpleFluent(obl(send_goods(_2248,_2250,_2252))=true).
-simpleFluent(contract(_2244,_2246,_2248)=false).
-simpleFluent(quote(_2244,_2246,_2248)=false).
-simpleFluent(suspended(_2244,_2246)=false).
+simpleFluent(quote(_5380,_5382,_5384)=true).
+simpleFluent(contract(_5380,_5382,_5384)=true).
+simpleFluent(per(present_quote(_5384,_5386))=false).
+simpleFluent(per(present_quote(_5384,_5386))=true).
+simpleFluent(obl(send_EPO(_5384,_5386,_5388))=false).
+simpleFluent(obl(send_goods(_5384,_5386,_5388))=false).
+simpleFluent(suspended(_5380,_5382)=true).
+simpleFluent(obl(send_EPO(_5384,_5386,_5388))=true).
+simpleFluent(obl(send_goods(_5384,_5386,_5388))=true).
+simpleFluent(contract(_5380,_5382,_5384)=false).
+simpleFluent(quote(_5380,_5382,_5384)=false).
+simpleFluent(suspended(_5380,_5382)=false).
 
-sDFluent(pow(accept_quote(_2382,_2384,_2386))=true).
+sDFluent(pow(accept_quote(_5512,_5514,_5516))=true).
 
-index(present_quote(_2386,_2446,_2448,_2450),_2386).
-index(accept_quote(_2386,_2446,_2448),_2386).
-index(request_quote(_2386,_2446,_2448),_2386).
-index(send_EPO(_2386,_2446,_2448,_2450),_2386).
-index(send_goods(_2386,_2446,_2448,_2450,_2452),_2386).
-index(quote(_2386,_2452,_2454)=true,_2386).
-index(contract(_2386,_2452,_2454)=true,_2386).
-index(per(present_quote(_2386,_2456))=false,_2386).
-index(per(present_quote(_2386,_2456))=true,_2386).
-index(obl(send_EPO(_2386,_2456,_2458))=false,_2386).
-index(obl(send_goods(_2386,_2456,_2458))=false,_2386).
-index(suspended(_2386,_2452)=true,_2386).
-index(obl(send_EPO(_2386,_2456,_2458))=true,_2386).
-index(obl(send_goods(_2386,_2456,_2458))=true,_2386).
-index(contract(_2386,_2452,_2454)=false,_2386).
-index(quote(_2386,_2452,_2454)=false,_2386).
-index(suspended(_2386,_2452)=false,_2386).
-index(pow(accept_quote(_2386,_2456,_2458))=true,_2386).
+index(present_quote(_5516,_5570,_5572,_5574),_5516).
+index(accept_quote(_5516,_5570,_5572),_5516).
+index(request_quote(_5516,_5570,_5572),_5516).
+index(send_EPO(_5516,_5570,_5572,_5574),_5516).
+index(send_goods(_5516,_5570,_5572,_5574,_5576),_5516).
+index(quote(_5516,_5576,_5578)=true,_5516).
+index(contract(_5516,_5576,_5578)=true,_5516).
+index(per(present_quote(_5516,_5580))=false,_5516).
+index(per(present_quote(_5516,_5580))=true,_5516).
+index(obl(send_EPO(_5516,_5580,_5582))=false,_5516).
+index(obl(send_goods(_5516,_5580,_5582))=false,_5516).
+index(suspended(_5516,_5576)=true,_5516).
+index(obl(send_EPO(_5516,_5580,_5582))=true,_5516).
+index(obl(send_goods(_5516,_5580,_5582))=true,_5516).
+index(contract(_5516,_5576,_5578)=false,_5516).
+index(quote(_5516,_5576,_5578)=false,_5516).
+index(suspended(_5516,_5576)=false,_5516).
+index(pow(accept_quote(_5516,_5580,_5582))=true,_5516).
 
-cyclic(contract(_2680,_2680,_2684)=true).
-cyclic(suspended(_2680,_2682)=true).
-cyclic(obl(send_EPO(_2684,_2686,_2688))=true).
-cyclic(obl(send_goods(_2684,_2686,_2688))=true).
-cyclic(contract(_2680,_2680,_2684)=false).
+cyclic(contract(_5798,_5798,_5802)=true).
+cyclic(suspended(_5798,_5800)=true).
+cyclic(obl(send_EPO(_5802,_5804,_5806))=true).
+cyclic(obl(send_goods(_5802,_5804,_5806))=true).
+cyclic(contract(_5798,_5798,_5802)=false).
 
-cachingOrder2(_2868, quote(_2868,_2870,_2872)=true) :- % level: 1
-     person_pair(_2868,_2870),role_of(_2870,consumer),role_of(_2868,merchant),\+_2868=_2870,queryGoodsDescription(_2872).
+cachingOrder2(_5980, quote(_5980,_5982,_5984)=true) :- % level: 1
+     person_pair(_5980,_5982),role_of(_5982,consumer),role_of(_5980,merchant),\+_5980=_5982,queryGoodsDescription(_5984).
 
-cachingOrder2(_2850, per(present_quote(_2850,_2852))=false) :- % level: 1
-     person_pair(_2850,_2852),role_of(_2850,merchant),role_of(_2852,consumer),\+_2852=_2850.
+cachingOrder2(_5962, per(present_quote(_5962,_5964))=false) :- % level: 1
+     person_pair(_5962,_5964),role_of(_5962,merchant),role_of(_5964,consumer),\+_5964=_5962.
 
-cachingOrder2(_3238, contract(_3238,_3238,_3242)=true) :- % level: 2
-     person_pair(_3238,_3238),role_of(_3238,merchant),role_of(_3238,consumer),\+_3238=_3238,queryGoodsDescription(_3242).
+cachingOrder2(_6344, contract(_6344,_6344,_6348)=true) :- % level: 2
+     person_pair(_6344,_6344),role_of(_6344,merchant),role_of(_6344,consumer),\+_6344=_6344,queryGoodsDescription(_6348).
 
-cachingOrder2(_3220, per(present_quote(_3220,_3222))=true) :- % level: 2
-     person_pair(_3220,_3222),role_of(_3220,merchant),role_of(_3222,consumer),\+_3222=_3220.
+cachingOrder2(_6326, per(present_quote(_6326,_6328))=true) :- % level: 2
+     person_pair(_6326,_6328),role_of(_6326,merchant),role_of(_6328,consumer),\+_6328=_6326.
 
-cachingOrder2(_3198, suspended(_3198,_3200)=true) :- % level: 2
-     person(_3198),role_of(_3198,_3200).
+cachingOrder2(_6304, suspended(_6304,_6306)=true) :- % level: 2
+     person(_6304),role_of(_6304,_6306).
 
-cachingOrder2(_3178, obl(send_EPO(_3178,iServer,_3182))=true) :- % level: 2
-     person(_3178),role_of(_3178,consumer),queryGoodsDescription(_3182).
+cachingOrder2(_6284, obl(send_EPO(_6284,iServer,_6288))=true) :- % level: 2
+     person(_6284),role_of(_6284,consumer),queryGoodsDescription(_6288).
 
-cachingOrder2(_3154, obl(send_goods(_3154,iServer,_3158))=true) :- % level: 2
-     person(_3154),role_of(_3154,merchant),queryGoodsDescription(_3158).
+cachingOrder2(_6260, obl(send_goods(_6260,iServer,_6264))=true) :- % level: 2
+     person(_6260),role_of(_6260,merchant),queryGoodsDescription(_6264).
 
-cachingOrder2(_3130, contract(_3130,_3130,_3134)=false) :- % level: 2
-     person_pair(_3130,_3130),role_of(_3130,merchant),role_of(_3130,consumer),\+_3130=_3130,queryGoodsDescription(_3134).
+cachingOrder2(_6236, contract(_6236,_6236,_6240)=false) :- % level: 2
+     person_pair(_6236,_6236),role_of(_6236,merchant),role_of(_6236,consumer),\+_6236=_6236,queryGoodsDescription(_6240).
 
-cachingOrder2(_3110, quote(_3110,_3112,_3114)=false) :- % level: 2
-     person_pair(_3110,_3112),role_of(_3112,consumer),role_of(_3110,merchant),\+_3110=_3112,queryGoodsDescription(_3114).
+cachingOrder2(_6216, quote(_6216,_6218,_6220)=false) :- % level: 2
+     person_pair(_6216,_6218),role_of(_6218,consumer),role_of(_6216,merchant),\+_6216=_6218,queryGoodsDescription(_6220).
 
-cachingOrder2(_3896, obl(send_EPO(_3896,iServer,_3900))=false) :- % level: 3
-     person(_3896),role_of(_3896,consumer),queryGoodsDescription(_3900).
+cachingOrder2(_6996, obl(send_EPO(_6996,iServer,_7000))=false) :- % level: 3
+     person(_6996),role_of(_6996,consumer),queryGoodsDescription(_7000).
 
-cachingOrder2(_3872, obl(send_goods(_3872,iServer,_3876))=false) :- % level: 3
-     person(_3872),role_of(_3872,merchant),queryGoodsDescription(_3876).
+cachingOrder2(_6972, obl(send_goods(_6972,iServer,_6976))=false) :- % level: 3
+     person(_6972),role_of(_6972,merchant),queryGoodsDescription(_6976).
 
-cachingOrder2(_3850, suspended(_3850,_3852)=false) :- % level: 3
-     person(_3850),role_of(_3850,_3852).
+cachingOrder2(_6950, suspended(_6950,_6952)=false) :- % level: 3
+     person(_6950),role_of(_6950,_6952).
 
-cachingOrder2(_3830, pow(accept_quote(_3830,_3832,_3834))=true) :- % level: 3
-     person_pair(_3832,_3830),role_of(_3832,merchant),role_of(_3830,consumer),\+_3830=_3832,queryGoodsDescription(_3834).
+cachingOrder2(_6930, pow(accept_quote(_6930,_6932,_6934))=true) :- % level: 3
+     person_pair(_6932,_6930),role_of(_6932,merchant),role_of(_6930,consumer),\+_6930=_6932,queryGoodsDescription(_6934).
 
-collectGrounds([send_EPO(_2168,_2182,_2184,_2186), send_goods(_2168,_2182,_2184,_2186,_2188)],person(_2168)).
+collectGrounds([send_EPO(_5316,_5330,_5332,_5334), send_goods(_5316,_5330,_5332,_5334,_5336)],person(_5316)).
 
-collectGrounds([present_quote(_2156,_2158,_2184,_2186), accept_quote(_2158,_2156,_2184), request_quote(_2158,_2156,_2184)],person_pair(_2156,_2158)).
+collectGrounds([present_quote(_5304,_5306,_5332,_5334), accept_quote(_5306,_5304,_5332), request_quote(_5306,_5304,_5332)],person_pair(_5304,_5306)).
 
-dgrounded(quote(_3120,_3122,_3124)=true, person_pair(_3120,_3122)).
-dgrounded(contract(_3032,_3034,_3036)=true, person_pair(_3032,_3034)).
-dgrounded(per(present_quote(_2956,_2958))=false, person_pair(_2956,_2958)).
-dgrounded(per(present_quote(_2876,_2878))=true, person_pair(_2876,_2878)).
-dgrounded(obl(send_EPO(_2814,iServer,_2818))=false, person(_2814)).
-dgrounded(obl(send_goods(_2752,iServer,_2756))=false, person(_2752)).
-dgrounded(suspended(_2702,_2704)=true, person(_2702)).
-dgrounded(obl(send_EPO(_2644,iServer,_2648))=true, person(_2644)).
-dgrounded(obl(send_goods(_2582,iServer,_2586))=true, person(_2582)).
-dgrounded(contract(_2490,_2492,_2494)=false, person_pair(_2490,_2492)).
-dgrounded(quote(_2402,_2404,_2406)=false, person_pair(_2402,_2404)).
-dgrounded(suspended(_2356,_2358)=false, person(_2356)).
-dgrounded(pow(accept_quote(_2268,_2270,_2272))=true, person_pair(_2270,_2268)).
+dgrounded(quote(_6262,_6264,_6266)=true, person_pair(_6262,_6264)).
+dgrounded(contract(_6174,_6176,_6178)=true, person_pair(_6174,_6176)).
+dgrounded(per(present_quote(_6098,_6100))=false, person_pair(_6098,_6100)).
+dgrounded(per(present_quote(_6018,_6020))=true, person_pair(_6018,_6020)).
+dgrounded(obl(send_EPO(_5956,iServer,_5960))=false, person(_5956)).
+dgrounded(obl(send_goods(_5894,iServer,_5898))=false, person(_5894)).
+dgrounded(suspended(_5844,_5846)=true, person(_5844)).
+dgrounded(obl(send_EPO(_5786,iServer,_5790))=true, person(_5786)).
+dgrounded(obl(send_goods(_5724,iServer,_5728))=true, person(_5724)).
+dgrounded(contract(_5632,_5634,_5636)=false, person_pair(_5632,_5634)).
+dgrounded(quote(_5544,_5546,_5548)=false, person_pair(_5544,_5546)).
+dgrounded(suspended(_5498,_5500)=false, person(_5498)).
+dgrounded(pow(accept_quote(_5410,_5412,_5414))=true, person_pair(_5412,_5410)).

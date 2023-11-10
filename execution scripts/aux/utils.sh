@@ -223,6 +223,8 @@ function socket_writer (){
     # For example, if stream_rate = 2, the input events are written into the pipe twice as fast.
     [ $# -ge 3 ] && stream_rate=$3 || stream_rate=1 # if not provided, stream_rate = 1, by default.
 
+    echo "Writing to socket $socket the contents of the csv file $input_csv"
+
     # First, fetch the first line of the input csv to get the time-point of the first event. 
     first_line=`head -1 $input_csv`
     arrLine=(${first_line//|/ })
@@ -242,7 +244,7 @@ function socket_writer (){
             BEGIN{FS = "|"} 
             {if ($2>prev_time) {sleep_time=($2 - prev_time)/stream_rate; gsub(",",".",sleep_time); system("sleep " sleep_time); print $0} else {print $0} }
             {prev_time=$2}
-            ' $input_csv | nc -U $socket
+            ' $input_csv | nc -U $socket | exit
 }
 
 function start_fifos() {

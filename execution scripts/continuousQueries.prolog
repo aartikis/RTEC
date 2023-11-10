@@ -231,9 +231,14 @@ initSocketLoaderThread(SocketName, ThreadID):-
 	% Open the socket from the server side and fetch its input stream with file descriptor: <AcceptFd>.
 	tcp_open_socket(Socket, StreamPair),
 	stream_pair(StreamPair, AcceptFd, _),
+        % create an execution thread that accepts connection requests to the socket.
+        thread_create(dispatch_socket(AcceptFd), ThreadID).
+        
+
+
 	% Create the thread that reads the input events that are being pushed by clients into the socket.
 	% The new thread runs in an infinite loop, which is defined in 'src/data loader/dataLoader.prolog'
-	thread_create(read_loop_on_socket_fd(AcceptFd), ThreadID).
+        %thread_create(read_loop_on_socket_fd(AcceptFd), ThreadID).
 
 % Create a new execution thread for writing the computed intervals into the output named pipe.
 % This thread executes the predicate: sleep_and_write(OutputPipe, WM, CurrentTime). 

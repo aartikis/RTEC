@@ -65,6 +65,22 @@ Notes:
 % when they are not defined. 
 :- dynamic needsGrounding/3, points/1.
 
+dispatch_socket(AcceptFd):-
+    % Block until a client connects to the socket.
+    tcp_accept(AcceptFd, Socket, _Peer),
+    % Create a new thread that reads continuously the events sent by the client.
+    thread_create(process_socket_client(Socket), _, [ detached(true) ]),
+    % The current thread loops forever on dispatch_socket.
+    % This is done because additional clients may attempt to connect to the socket.
+    dispatch_socket(AcceptFd).
+
+process_socket_client(Socket):-
+    setup_call_cleanup(
+        (tcp_open_socket(Socket, StreamPair), stream_pair(StreamPair, InStream, _OutStream), set_input(InStream)),
+        read_rows_until_empty(InStream),
+        close(StreamPair)
+    ).
+
 % Block on tcp_accept until a client connects to the socket. Then, open the socket to read the input stream that was written in the socket by the client. Read as many rows as you can, that is, until an empty row is discovered. Finally, close the stream and block again, until another client connects.
 %
 read_loop_on_socket_fd(AcceptFd):-
@@ -106,8 +122,8 @@ loadIERealTimeStreamLoop(Stream) :-
 	get_row_from_line(Stream, Row),
 	(Row=[] ->  true % If Row is empty, i.e., end_of_file, continue. 
 		;
-				%write(Row), nl,	   
-				getIEFromRowandAssertIt(Row)), % assert event in Row.
+        %write(Row), nl,	   
+        getIEFromRowandAssertIt(Row)), % assert event in Row.
 	loadIERealTimeStreamLoop(Stream). % continue reading from the pipe. This is an infinite loop.
 
 % loadIEStreams(+InputStreams, +StartPoint, +EndPoint, +InputStreamPositions, -NewInputStreamPositions)
@@ -188,6 +204,7 @@ processRow(Row, StartPoint, EndPoint, IEArrivalTime, Outcome) :-
 % distill the input entity from Row and assert in the RTEC format
 getIEFromRowandAssertIt(Row) :-
 	% IElabel becomes the first argument of Row
+        write(Row), nl,
 	getRowArgument(1, Row, IElabel),
 	(
 		% check whether the given input entity is an event
