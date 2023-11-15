@@ -35,10 +35,10 @@ initiatedAt(punctuality(Id, VehicleType)=punctual, T) :-
 initiatedAt(punctuality(Id, VehicleType)=punctual, T) :-
 	happensAt(stop_enter(Id, VehicleType, _StopCode, early), T).	
 
-initiatedAt(punctuality(Id, VehicleType)=non_punctual, T) :-
+terminatedAt(punctuality(Id, VehicleType)=punctual, T) :-
 	happensAt(stop_enter(Id, VehicleType, _StopCode, late), T).
 
-initiatedAt(punctuality(Id, VehicleType)=non_punctual, T) :-
+terminatedAt(punctuality(Id, VehicleType)=punctual, T) :-
 	happensAt(stop_leave(Id, VehicleType, _StopCode, early), T).
 
 /*

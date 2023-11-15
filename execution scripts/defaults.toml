@@ -1,134 +1,160 @@
-#Default values for the applications packed with RTEC.
+# The default parameter values for each applications packed with RTEC.
+# The user may change the values in this file manual or override any subset of the supported parameters by passing arguments to the run_rtec.sh script.
 
-[dgexamples]
-# RTEC execution parameters 
-event_description = '../examples/dgexamples/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/dgexamples/dataset/csv/dgexamples_data.csv']
-results_directory = "../examples/dgexamples/results"
-window_size = 10
-step = 10
-start_time = 0
-end_time = 10
-clock_tick = 1
-goals = []
-background_knowledge = []
-stream_rate = 1
-# Compiler parameters
-dependency_graph_flag = true
-dependency_graph_directory = '../examples/dgexamples/resources/graphs'
-include_input = false
+# The parameters supported by RTEC are:
+# Execution Parameters: 
+#       window_size: The temporal length of windows. The eventRecognition/2 process of 'src/RTEC.prolog' is executed for each temporal window.
+#       step: The temporal distance between two consecutive query times.
+#       start_time: The first time-point to be processed by RTEC.
+#       end_time: The last time-point to be processed by RTEC.
+#       clock_tick: the temporal distance between consecutive time-points (keep the default value for supported applications).
+# Input Specification Parameters:
+#       input_mode: Three possible values: 
+#               'csv': RTEC opens the input csv files and asserts the input events in the appropriate window.
+#               'fifo': Live stream reasoning. RTEC reads the input events from named pipes and asserts them as soon as they arrive.
+#               'socket': Live stream reasoning. RTEC reads the input events from a Unix domain socket and asserts them as soon as they arrive.
+#       input_providers: a list of paths from which the event streams will be read. WARNING: must agree with the provided input_mode.
+#	stream_rate: the expected rate at which the input streams have been sped up (only for 'fifo' and 'socket' input modes). 
+# Knowledge Base:
+#       event_description: A Prolog file containing the event description of the domain.
+#       background_knowledge: A list of Prolog files containing domain knowledge (e.g., the entities of the domain, threshold values used in patterns, etc).
+# Output Specification Parameters:
+#       output_mode: RTEC writes the intervals that it computed in a regaular file or into a named pipe.
+#               Possible values: "file" and "fifo".
+#       results_directory: We write the log and result files of RTEC in this directory.
+# Compiler Parameters:
+#       dependency_graph_flag: If true, the compiler of RTEC we produce the dependency graph of the event description as a png file.
+#       dependency_graph_directory: The directory in which RTEC will store the dependency graph of the event description.
+#       include_input: If true, the dependency graph will include both input and output entities. Otherwise, the graph only includes output entities.
 
 [toy]
-# RTEC execution parameters 
-event_description = '../examples/toy/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/toy/dataset/csv/toy_data.csv']
-results_directory = "../examples/toy/results"
-window_size = 10
-step = 10
+# Execution Parameters 
+window_size = 50
+step = 50
 start_time = 0
 end_time = 50
 clock_tick = 1
-goals = []
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/toy/dataset/csv/toy_data.csv']
+stream_rate = 5
+# Knowledge Base
+event_description = '../examples/toy/resources/patterns/rules.prolog'
 background_knowledge = ['../examples/toy/dataset/auxiliary/toy_var_domain.prolog']
-stream_rate = 1
-# Compiler parameters
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/toy/results"
+# Compiler Parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/toy/resources/graphs'
-include_input = true
+include_input = false
 
 [maritime]
-# RTEC execution parameters 
-event_description = '../examples/maritime/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']
-results_directory = "../examples/maritime/results"
-window_size = 3600 # 1 day = 86400 seconds
-step = 3600
+# Execution Parameters 
+window_size = 36000 # 1 day = 86400 seconds
+step = 36000
 start_time = 1443650400 
 end_time = 1448834400
 clock_tick = 1
-goals = []
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/preprocessed_dataset_RTEC_critical_nd.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
 background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
-stream_rate = 1000
-# Compiler parameters
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results"
+# Compiler Parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
 
 [voting]
-# RTEC execution parameters 
-event_description = '../examples/voting/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/voting/dataset/csv/voting.csv']
-results_directory = "../examples/voting/results"
+# Execution Parameters 
 window_size = 10
 step = 10
 start_time = 0
 end_time = 100
 clock_tick = 1
-goals = []
-background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Input Specification Parameters
+input_mode = "socket"
+input_providers = ['../examples/voting/dataset/csv/voting.csv']
 stream_rate = 1
+# Knowledge Base
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "fifo"
+results_directory = "../examples/voting/results"
 # Compiler parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/voting/resources/graphs'
 include_input = false
 
 [netbill]
-# RTEC execution parameters 
-event_description = '../examples/netbill/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/netbill/dataset/csv/netbill.csv']
-results_directory = "../examples/netbill/results"
+# Execution Parameters 
 window_size = 10
 step = 10
 start_time = 0
 end_time = 100
 clock_tick = 1
-goals = []
-background_knowledge = ['../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog']
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/netbill/dataset/csv/netbill.csv']
 stream_rate = 1
-# Compiler parameters
+# Knowledge Base
+event_description = '../examples/netbill/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/netbill/results"
+# Compiler Parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/netbill/resources/graphs'
 include_input = false
 
 [caviar]
-# RTEC execution parameters 
-event_description = '../examples/caviar/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
-results_directory = "../examples/caviar/results"
+# Execution Parameters 
 window_size = 100000
 step = 100000
 start_time = 0
 end_time = 1007000
 clock_tick = 40
-goals = []
-background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.prolog'] #, '../examples/caviar/dataset/auxiliary/list-of-ids.prolog']
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
 stream_rate = 10000
-# Compiler parameters
+# Knowledge Base
+event_description = '../examples/caviar/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.prolog'] #, '../examples/caviar/dataset/auxiliary/list-of-ids.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/caviar/results"
+# Compiler Parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/caviar/resources/graphs'
 include_input = false
 
 [ctm]
-# RTEC execution parameters 
-event_description = '../examples/ctm/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv'    , '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']
-results_directory = "../examples/ctm/results"
+# Execution Parameters 
 window_size = 10000
 step = 10000
 start_time = 0
 end_time = 50000
 clock_tick = 1
-goals = []
-background_knowledge = ['../examples/ctm/dataset/auxiliary/vehicles.prolog']
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv'    , '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']
 stream_rate = 5000
-# Compiler parameters
+# Knowledge Base
+event_description = '../examples/ctm/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/ctm/dataset/auxiliary/vehicles.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/ctm/results"
+# Compiler Parameters
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/ctm/resources/graphs'
 include_input = false

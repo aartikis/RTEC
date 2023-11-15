@@ -186,6 +186,11 @@ initiatedAt(meeting(_P1,P2)=false, T) :-
 initiatedAt(meeting(P1,P2)=false, T) :-
 	happensAt(start(close(P1,P2,34)=false), T).
 
+initiatedAt(meeting(P1,_P2)=false, T) :-
+        happensAt(disappear(P1),T).
+
+initiatedAt(meeting(_P1,P2)=false, T) :-
+        happensAt(disappear(P2),T).
 
 /****************************************************************
  *		     MOVING					*

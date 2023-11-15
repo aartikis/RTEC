@@ -11,7 +11,7 @@ initiatedAt(quote(Merch,Cons,GD)=false, T1, T, T2) :-
 	happensAtIE(accept_quote(Cons,Merch,GD), T),
 	T1 =<T, T<T2.
 % ----- a quote is terminated 5 time-points after initiated
-maxDuration(quote(Merch,Cons,GD)=true, quote(Merch,Cons,GD)=false, 5) :-
+fi(quote(Merch,Cons,GD)=true, quote(Merch,Cons,GD)=false, 5) :-
 	grounding(quote(Merch,Cons,GD)=true).	
 
 /*****************
@@ -27,7 +27,7 @@ initiatedAt(contract(Merch,Cons,GD)=true, T1, T, T2) :-
 	\+ holdsAtCyclic(Merch, suspended(Merch,merchant)=true, T),
 	\+ holdsAtCyclic(Cons, suspended(Cons,consumer)=true, T). 
 % ----- a contract is terminated 10 time-points after initiated 
-maxDuration(contract(Merch,Cons,GD)=true, contract(Merch,Cons,GD)=false, 5)  :-
+fi(contract(Merch,Cons,GD)=true, contract(Merch,Cons,GD)=false, 5)  :-
 	grounding(contract(Merch,Cons,GD)=true).
 
 /*********************
@@ -59,8 +59,9 @@ initiatedAt(per(present_quote(Merch,Cons))=false, T1, T, T2) :-
 initiatedAt(per(present_quote(Merch,Cons))=true, T1, T, T2) :-
 	happensAtIE(request_quote(Cons,Merch,_GD), T),
 	T1 =<T, T<T2.
-maxDurationUE(per(present_quote(Merch,Cons))=false, per(present_quote(Merch,Cons))=true, 10)  :-
+fi(per(present_quote(Merch,Cons))=false, per(present_quote(Merch,Cons))=true, 10)  :-
 	grounding(per(present_quote(Merch,Cons))=false).
+p(per(present_quote(_Merch,_Cons))=false).
 
 /***********************
  *     OBLIGATION      *
@@ -120,8 +121,9 @@ initiatedAt(suspended(Cons,consumer)=true, T1, T, T2) :-
 	holdsAtCyclic(Cons, obl(send_EPO(Cons,iServer,GD))=true, T).	
 % ----- a suspension is terminated 10 time-points after initiated, 
 % ----- unless re-initiated in the meantime
-maxDurationUE(suspended(Ag,Role)=true, suspended(Ag,Role)=false, 3) :- 
+fi(suspended(Ag,Role)=true, suspended(Ag,Role)=false, 3) :- 
 	grounding(suspended(Ag,Role)=true).
+p(suspended(_Ag,_Role)=true). 
 
 
 cachingOrder2(_131248, quote(_131248,_131249,_131250)=true) :-

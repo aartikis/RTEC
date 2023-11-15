@@ -25,89 +25,50 @@
 % The logger contains predicates for printing out logs and results.
 :- ['logger.prolog'].
 
-% continuousQueries(+App, +ParameterList) runs RTEC for the application App and the execution parameters provided in ParameterList
-% Supported parameters: 
-% 	window_size: The temporal length of windows. The eventRecognition/2 process of 'src/RTEC.prolog' is executed for each temporal window.
-% 	step: The temporal distance between two consecutive query times.
-% 	start_time: The first time-point to be processed by RTEC.
-% 	end_time: The last time-point to be processed by RTEC.
-%	clock_tick: the temporal distance between consecutive time-points (keep the default value for supported applications).
-% 	input_mode: Three possible values: 
-% 		'csv': RTEC opens the input csv files and asserts the input events in the appropriate window.
-% 		'fifo': Live stream reasoning. RTEC reads the input events from named pipes and asserts them as soon as they arrive.
-%   	'dynamic_predicates': RTEC consults directing the input prolog files containing the input events. Event assertions take place in the appropriate window. 
-%	input_providers: a list of paths from which the event streams will be read. WARNING: must agree with the provided input_mode.
-%	results_directory: the directory in which the log and result files of RTEC will be written.
-%	event_description_files: a list of Prolog files containing at least two files: the compiled rules and the declarations of the application.
-%	goals: a list of Prolog queries to execute before running RTEC. 
-%	stream_rate: the expected rate at which the input streams have been sped up (only for 'fifo' mode). 
-%	---> the value of stream_rate should agree with the speed rate of the input providers (named pipes).
-%	sde_batch: the default number of time-points each Prolog rule for asserting input events contains for supported applications.
-%	---> only for input_mode=dynamic_predicates 
-%	dynamic_grounding_flag
-%	stream_order_flag
-%	preprocessing_flag
-%	forget_threshold
-%	dynamic_grounding_threshold
-
-% Example executions (the values of unspecified parameters default to the values declared in 'handleApplication.prolog'): 
-% 	"toy" use case, window_size=20, step=20, end_time=40:
-% 		"continuousQueries(toy, [window_size=20, step=20, end_time=40])." 
-% 	"netbill" use case, input_mode=fifo, input_providers=['path/to/fifo'], stream_rate=2 
-% 		"continuousQueries(netbill, [input_mode=fifo,input_providers=['path/to/fifo'], stream_rate=2]). 
-% 	"caviar" use case, window_size=200, step=200, two input csv files:  
-% 		"continuousQueries(caviar, [window_size=200, step=200, input_mode=csv, input_providers=['../examples/caviar/dataset/csv/appearance.csv','../examples/caviar/dataset/csv/movementB.csv']])." 
-%	--> The "csv" input mode is the default in the current version of the code, but we provided it to the script in case that the default has changed.
-
-% There is also a 1-arity definition for continuousQueries for running an application with its default parameters specified in 'handleApplication.prolog'.
-% For example, "continuousQueries(toy)." runs the same query as "continuousQueries(toy,[]).".
-% continuousQueries(+ApplicationName)
-% 	Possible queries:
-%   	continuousQueries(toy).
-% 		continuousQueries(caviar).
-% 		continuousQueries(maritime).
-% 		continuousQueries(voting).
-% 		continuousQueries(netbill).
-% 		continuousQueries(ctm).
-
+% Continuous query processing with RTEC on application <App> with the execution parameters <ParamList>.
+% This predicate does not call the compiler, i.e., the given event description should be compiled.
+% continuousQueries(+App,+ParamList)
 continuousQueries(App, ParamList) :-
-	handleProlog(Prolog, StatisticsFlag), 
-	handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals),
-	% PrologFiles includes at least two files: the compiled rules and the declarations of the application. 
-	% All files included in PrologFiles are consulted through the following predicate.
-	%consultInputFiles(+PrologFiles)
-	consultInputFiles(PrologFiles),
-	% The user may provide as input a list named 'Goals', which contains queries to be ran by this script before executing RTEC.
-	%executeUserGoals(+Goals)
-	executeUserGoals(Goals), % run queries requested by the user.
-	printLogo,
-	%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream),
-	openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile),
-	% initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
-	% initialiseRecognition(+StreamOrderFlag, +DynamicGroundingFlag, +PreprocessingFlag, +ForgetThreshold, +DynamicGroundingThreshold, +ClockTick),	
-	initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
-	QueryTime is StartReasoningTime + Step,
-	% In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
-	sleep_if_fifo(InputMode, Step, StreamRate, 0),
-	% querying(+InputStreams, +PointerPositions, +StatisticsFlag, +LogFileStream, +WM, +Step, +QueryTime, +EndReasoningTime, +[], -RecTimes, +[], -InputList, +([],[],[]), (-OutputListOutFVpairs,-OutputListOutLI,-OutputListOutLD), +SDEBatch)
-	%querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFileStream, ResultsFileStream, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
-	querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, ResultsFile, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
-	% calculate and record the recognition time statistics
-	open(LogFile, append, LogFileStream),
-	logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
-	close(LogFileStream),
-	closeFiles(InputMode, InputStreams), !.
-	%closeFiles(InputMode, InputStreams, LogFileStream, ResultsFileStream), !.
+    % The flag we use to measure cpu time depends on the Prolog environment.
+    handleProlog(Prolog, StatisticsFlag), 
+    % Assign the value provided in <ParamList> to each parameter of RTEC. Assign the default value, if no value is provided in <ParamList>
+    handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, OutputMode, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate),
+    % <PrologFiles> includes, at the very least, the compiled rules of the event description.
+    % The remaining files in <PrologFiles> contain background knowledge.
+    consultInputFiles(PrologFiles),
+    % The user may provide as input a list named 'Goals', which contains queries to be ran by this script before executing RTEC.
+    %executeUserGoals(Goals), % run queries requested by the user.
+    printLogo,
+    % Depending on the <InputMode>, get the input streams or the ids of the threads that read from fifos/a socket.
+    init_input(InputMode, InputPaths, InputStreams, PointerPositions, InputThreadIDs),
+    % Create a log file for writing execution statistics.
+    init_log_file(LogFile),
+    QueryTime is StartReasoningTime + Step,
+    init_output(OutputMode, ResultsFile, WM, Step, QueryTime, OutputThreadID),
+    % initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
+    initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
+    % In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
+    sleep_if_live_stream(InputMode, Step, StreamRate, 0),
+    % This predicates runs RTEC for the next query time. Afterwards, it is being called recursively until we have passed the EndReasoningTime.
+    querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
+    % Calculate and record the recognition time statistics
+    closeInput(InputMode, InputPaths, InputStreams, InputThreadIDs),
+    open(LogFile, append, LogFileStream),
+    logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
+    close(LogFileStream),
+    closeOutput(OutputMode, OutputThreadID), !.
 
+% Invokes continuousQueries/2 with an empty list of parameter values. Therefore, we use the default value of each parameter.
+% continuousQueries(+App)
 continuousQueries(App) :- !,
 	continuousQueries(App, []).
 
 % execution stops when the previous query time is greater or equal to the designated last reasoning time 
-querying(_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFile, _ResultsFile, _WM, Step, QueryTime, _StartReasoningTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch) :-
-	PrevQueryTime is QueryTime-Step,
- 	PrevQueryTime >= EndReasoningTime, !.
+%querying(_InputMode,_InputStreams, _InputPointerPositions, _StatisticsFlag, _LogFile, _OutputMode, _ResultsFile, _WM, Step, QueryTime, _StartReasoningTime, EndReasoningTime, RecTimes, RecTimes, InputList, InputList, OutputList, OutputList, _SDEBatch, _StreamRate) :-
+%PrevQueryTime is QueryTime-Step,
+%PrevQueryTime >= EndReasoningTime, !.
 
-querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, ResultsFile, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
+querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
 	getWindowStartTime(QueryTime, WM, StartReasoningTime, WindowStartTime),
 	% VerifiedQueryTime=QueryTime when QueryTime =< EndReasoningTime
 	% otherwise: VerifiedQueryTime=EndReasoningTime 
@@ -128,7 +89,6 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Res
 	findall((EE,TT), (outputEntity(EE),happensAt(EE,TT)), OELT),
 	statistics(StatisticsFlag,[S2,_T2]),
 	% log the computed intervals of output entities
-	printRecognitions(ResultsFile, QueryTime, WM),
 	% log window execution time
  	S is S2-S1, %S=T2,
 	open(LogFile, append, LogFileStream),
@@ -141,11 +101,19 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Res
 		QueryTime < EndReasoningTime,
 		% (i) compute the next query-time
 		NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
+                % If the <OutputMode> is fifo, send a "ready" message to the thread writing the computed intervals into a named pipe.
+        	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions) ;
+                % If the <OutputMode> is file, this thread writes the computed intervals into a regular file.
+         	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 		% (ii) sleep until the next query time 
 		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
-		sleep_if_fifo(InputMode, Step, StreamRate, S),
-		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFile, ResultsFile, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
+		sleep_if_live_stream(InputMode, Step, StreamRate, S),
+		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
 	;
+                % Since this is the final window, this thread has to wait for the thread executing printRecognitions to terminate before exiting.
+                % This is why we have to wait for a "printRecognitionsOK" message in this case.
+        	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions), thread_get_message(printRecognitionsOK(QueryTime)) ;
+         	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
 		QueryTime >= EndReasoningTime,
 		RecTimes = [S|InitRecTime],
@@ -163,36 +131,51 @@ handleProlog(yap, cputime) :-
 handleProlog(swi, runtime) :-
 	current_prolog_flag(dialect, swi).
 
-% openFilesOrPipes(+InputMode, +InputPaths, -InputStreams, -PointerPositions, +LogFile, -LogFileStream, +ResultsFile, -ResultFileStream)
-openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, ResultsFile):-
-%openFilesOrPipes(InputMode, InputPaths, InputStreams, PointerPositions, LogFile, LogFileStream, ResultsFile, ResultsFileStream):-
-	%open(LogFile, write, LogFileStream),
-	%open(ResultsFile, write, ResultsFileStream),
-	create_file(LogFile),
-	create_file(ResultsFile),
-	(	
-		% the dataset arrives in live stream(s)
-		InputMode = fifo,
-		%InputStreams = [],
-		initLoaderThreads(InputPaths, InputStreams) % InputStreams contains thread ids in this case.
-		;
-		% the dataset is in csv file(s)
-		InputMode = csv,
-		openInputCSVFiles(InputPaths, InputStreams, PointerPositions)
-		;
-		% the dataset is in the form of Prolog assertions
-		InputMode = dynamic_predicates,
-		InputStreams = [], 		
-		consultInputFiles(InputPaths)
-	).
+% init_input(+InputMode, +InputPaths, -InputStreams, -PointerPositions, -InputThreadIDs)
+init_input(csv, InputPaths, InputStreams, PointerPositions, []):-
+    openInputCSVFiles(InputPaths, InputStreams, PointerPositions).
+
+% For <inputMode> "fifo", we one named pipe for each input provider.
+% RTEC creates a new execution thread that continuously reads input events from each provider.
+init_input(fifo, InputPaths, [], [], InputThreadIDs):-
+    initLoaderThreads(InputPaths, InputThreadIDs).
+
+% For the <InputMode> "socket", we use a server-client architecture.
+% The <InputPaths> list contains one <SocketName>, which is initialised as a server socket from the side of RTEC.
+% Multiple processes (that possibly live outside of Prolog) can connect as clients to the socket and push input events. 
+% RTEC creates a new execution thread that listens for clients that attempt to connect to the socket.
+% For each such client, we create a new thread that reads continuously the input events sent by the client.
+init_input(socket, [SocketName], [], [], [ThreadID]):-
+    initSocketLoaderThread(SocketName, ThreadID).
+
+init_input(dynamic_predicates, InputPaths, [], [], []):-
+    consultInputFiles(InputPaths).
+
+% init_log_file(+LogFile)
+init_log_file(LogFile):-
+    create_file(LogFile).
+
+% init_output(+OutputMode, +ResultsFile, +WM, +Step, +CurrentTime, -OutputThreadID),
+init_output(file, ResultsFile, _, _, _, -1):-
+    create_file(ResultsFile).
+init_output(fifo, ResultsPipe, WM, Step, CurrentTime, OutputThreadID):-
+    create_pipe(ResultsPipe),
+    thread_self(ERThreadID),
+    initWriterThread(ResultsPipe, WM, Step, CurrentTime, ERThreadID, OutputThreadID).
+
 
 % touch <File>, so that it exists as an empty file before the execution of the first window.
 %create_file(+File)
 create_file(File):-
 	open(File, write, FileStream),
-	close(FileStream).	
+	close(FileStream).
 
-% Create a new execution thread for each named pipe in InputPipes.
+% touch <Pipe>, so that it exists as an empty file before the execution of the first window.
+%create_pipe(+PipeName)
+create_pipe(PipeName):-
+    process_create(path(rm), ['-f', PipeName], []),
+    process_create(path(mkfifo), [PipeName], []).
+
 % Each thread executes the goal: loadIELiveStream(InputPipe), which is specified in 'src/data loader/dataLoader.prolog' 
 % Its function is to assert the events written in the pipe as soon as they arrive.
 % initLoaderThreads(+InputPipes) 
@@ -200,6 +183,43 @@ initLoaderThreads([], []).
 initLoaderThreads([InputPipe|RestPipes], [ThreadID|RestIDs]):-
 	thread_create(loadIELiveStream(InputPipe), ThreadID),
 	initLoaderThreads(RestPipes, RestIDs).
+
+% initSocketLoaderThread(+SocketName,-ThreadID)
+initSocketLoaderThread(SocketName, ThreadID):-
+	% Create a unix, i.e., local, socket.
+        unix_domain_socket(Socket),
+	% Create a socket in the current directory with name <SocketName>. 
+	tcp_bind(Socket, SocketName),
+	% The socket may have at most N clients. 
+	tcp_listen(Socket, 1000), % N = 1000
+	% Open the socket from the server side and fetch its input stream with file descriptor: <AcceptFd>.
+	tcp_open_socket(Socket, StreamPair),
+	stream_pair(StreamPair, AcceptFd, _),
+        % create an execution thread that accepts connection requests to the socket.
+        thread_create(dispatch_socket(AcceptFd), ThreadID).
+
+% Create a new execution thread for writing the computed intervals into the output named pipe.
+% This thread executes the predicate: sleep_and_write(OutputPipe, WM, CurrentTime). 
+% The thread blocks the event recognition thread of RTEC sends it a "printRecognitions" message.
+% Next, it writes the computed intervals into the output pipe.
+% This process is repeated until the thread receives a kill signal from the thread performing event recognition.
+%
+% initWriterThread(+OutputPipe, +WM, +Step, +CurrentTime, +ERThreadID, -OutputThreadID):-
+initWriterThread(OutputPipe, WM, Step, CurrentTime, ERThreadID, OutputThreadID):-
+	thread_create(print_results_on_message(OutputPipe, WM, Step, CurrentTime, ERThreadID), OutputThreadID).
+
+% print_results_on_message(+OutputPipe, +WM, +Step, +CurrentTime, +ERThreadID)
+print_results_on_message(OutputPipe, WM, Step, CurrentTime, ERThreadID):-
+    open(OutputPipe, append, OutputStream),
+    print_results_on_message_loop(OutputStream, WM, Step, CurrentTime, ERThreadID).
+
+% print_results_on_message_loop(+OutputStream, +WM, +Step, +CurrentTime, +ERThreadID)
+print_results_on_message_loop(OutputStream, WM, Step, CurrentTime, ERThreadID):-
+    thread_get_message(printRecognitions),
+    printRecognitionsThread(OutputStream, CurrentTime, WM),
+    thread_send_message(ERThreadID, printRecognitionsOK(CurrentTime)),
+    NextTime is CurrentTime + Step,
+    print_results_on_message_loop(OutputStream, WM, Step, NextTime, ERThreadID).
 
 % Open one input stream for each input file, while maintaining the reading position in the stream.
 % openInputCSVFiles(+InputFiles, -InputStreams, -PointerPositions)
@@ -209,47 +229,54 @@ openInputCSVFiles([File|MoreFiles], [Stream|MoreStreams], [Position|MorePosition
 	stream_property(Stream, position(Position)),
 	openInputCSVFiles(MoreFiles, MoreStreams, MorePositions).
 
-% the InputFiles are Prolog assertions expressing an input narrative
+% Consult each file in <InputFiles>.
 % consultInputFiles(+InputFiles)
 consultInputFiles([]).
 consultInputFiles([File|MoreFiles]) :-
 	consult(File),
 	consultInputFiles(MoreFiles).
 
+% Not used.
 % run selected goals before execution.
 % this is used, e.g., for asserting the agents in the MAS use cases.
-executeUserGoals([]).
-executeUserGoals([Goal|RestGoals]) :-
-	Goal,
-	executeUserGoals(RestGoals).
+%executeUserGoals([]).
+%executeUserGoals([Goal|RestGoals]) :-
+    %Goal,
+    %executeUserGoals(RestGoals).
 
 % closeFiles(+datasetfilesstreams, +logfilestream, +resultsfilestream)
 % first case: there are no input streams, 
 % ie the dataset is in the form of Prolog assertions
-closeFiles(dynamic_predicates, []).
-	%close(LogFileStream),
-	%close(ResultsFileStream).	
+closeInput(dynamic_predicates, _, _, _).
 
 % second case: the dataset is in csv files;
 % in this case close each input stream;
-closeFiles(csv, InputStreams) :-
-	%close(LogFileStream),
-	%close(ResultsFileStream),	
-	closeInputFiles(InputStreams).
+closeInput(csv, _, InputStreams, _) :-
+	closeStreamsList(InputStreams).
 
 % third case: fifo mode;
-% the InputStreams variable contains thread IDs;
-% destroy all threads
-closeFiles(fifo, ThreadIDs) :-
-	%close(LogFileStream),
-	%close(ResultsFileStream),
+% Destroy all threads in list ThreadIDs.
+closeInput(fifo, _, _, ThreadIDs) :-
 	killThreads(ThreadIDs).
 
+% fourth case: socket mode;
+% Destroy all threads in ThreadIDs (we have one thread in this case).
+closeInput(socket, [SocketName], _, ThreadIDs) :-
+    killThreads(ThreadIDs),
+    process_create(path(rm), ['-f', SocketName], []).
+
+% The output stream was closed by printRecognitions.
+closeOutput(file, _).
+
+% Kill the thread writing into the output pipe.
+closeOutput(fifo, ThreadID) :-
+	thread_signal(ThreadID, abort).
+
 % closeInputFiles(+InputStreams)	
-closeInputFiles([]). 
-closeInputFiles([InputStream|MoreInputStreams]) :-
+closeStreamsList([]). 
+closeStreamsList([InputStream|MoreInputStreams]) :-
 	close(InputStream),
-	closeInputFiles(MoreInputStreams).
+	closeStreamsList(MoreInputStreams).
 
 % killThreads(+InputStreams)	
 killThreads([]).
@@ -277,22 +304,22 @@ verifyQueryTime(QueryTime, EndReasoningTime, EndReasoningTime) :-
 	writeln(' but QueryTime-WM remains the same.').
 
 % if fifo, sleep until the next query time 
-% sleep_if_fifo_between_windows(+InputMode, +Step, +StreamRate, +S)	
-sleep_if_fifo(InputMode, Step, StreamRate, S):-
+% sleep_if_live_stream_between_windows(+InputMode, +Step, +StreamRate, +S)	
+sleep_if_live_stream(InputMode, Step, StreamRate, S):-
 	(
-		InputMode = fifo, 
+		(InputMode = fifo ; InputMode = socket),
 		SleepTime is Step/StreamRate - S/1000,
 		sleep_until_query_time(SleepTime)
-	; 	\+ InputMode = fifo
+	; 	\+ InputMode = fifo, \+ InputMode = socket
 	).
 	
 sleep_until_query_time(SleepTimeSec):-
 	statistics(walltime,[TBeforeSleep,_T1]),	
-	write('About to sleep for '), write(SleepTimeSec), write(' seconds.'), nl,
+	write('Output entity processing thread is about to sleep for '), write(SleepTimeSec), write(' seconds.'), nl,
 	sleep(SleepTimeSec),
 	statistics(walltime,[TAfterSleep,_T2]),
 	TSleep is (TAfterSleep - TBeforeSleep)/1000,
-	write('I slept for '), write(TSleep), write(' seconds.'), nl.
+	write('Output entity processing thread slept for '), write(TSleep), write(' seconds.'), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Assert narrative (SDEs)
@@ -312,6 +339,9 @@ loadNarrative(InputMode, InputStreams, Start, End, PointerPositions, NewPointerP
 		;
 		% when using named pipes, the input is being read by another Prolog thread 
 		InputMode = fifo
+		;
+		% when using named pipes, the input is being read by another Prolog thread 
+		InputMode = socket
 	).
 
 

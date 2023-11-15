@@ -3,16 +3,41 @@
 
 
 compare_clauses:-
+    % Rules Comparison
     compare(initiatedAt(_,_,_,_),InitStatus),
     compare(terminatedAt(_,_,_,_),TermStatus),
     compare(holdsForSDFluent(_,_),HoldsStatus),
-    compare(maxDuration(_,_,_),MaxDurStatus),
-    compare(maxDurationUE(_,_,_),MaxDurUEStatus),
+    compare(fi(_,_,_),FIStatus),
+    compare(p(_),PStatus),
+    % Declarations Comparison
+    compare(grounding(_),GroundingStatus),
+    compare(inputEntity(_),InputEntityStatus),
+    compare(outputEntity(_),OutputEntityStatus),
+    compare(event(_),EventStatus),
+    compare(simpleFluent(_),SimpleFluentStatus),
+    compare(sDFluent(_),SDFluentStatus),
+    compare(index(_,_),IndexStatus),
+    compare(cyclic(_),CyclicStatus),
+    compare(cachingOrder2(_,_),CachingOrderStatus),
+    % TODO: We should also the order of cachingOrder rules wrt: 1. the level, and 2. the processing order in the CDC.
+    compare(collectGrounds(_,_),CollectGroundsStatus),
+    compare(dgrounded(_,_),DGroundedStatus),
     printDifferences(InitStatus,'initiatedAt/4'),
     printDifferences(TermStatus,'terminatedAt/4'),
     printDifferences(HoldsStatus,'holdsForSDFluent/2'),
-    printDifferences(MaxDurStatus,'maxDuration/3'),
-    printDifferences(MaxDurUEStatus,'maxDurationUE/3').
+    printDifferences(FIStatus,'fi/3'),
+    printDifferences(PStatus,'p/1'),
+    printDifferences(GroundingStatus,'grounding/1'),
+    printDifferences(InputEntityStatus,'inputEntity/1'),
+    printDifferences(OutputEntityStatus,'outputEntity/1'),
+    printDifferences(EventStatus,'event/1'),
+    printDifferences(SimpleFluentStatus,'simpleFluent/1'),
+    printDifferences(SDFluentStatus,'sDFluent/1'),
+    printDifferences(IndexStatus,'index/2'),
+    printDifferences(CyclicStatus,'cyclic/1'),
+    printDifferences(CachingOrderStatus,'cachingOrder2/2'),
+    printDifferences(CollectGroundsStatus,'collectGrounds/2'),
+    printDifferences(DGroundedStatus,'dgrounded/2').
 
 compare(Rule,Status):-
     findall((Head:-BodyNoMod),(clause(manual:Rule,_,Ref),clause(Mod:Head,Body,Ref),remove_mod(Body,BodyNoMod)),Manual),

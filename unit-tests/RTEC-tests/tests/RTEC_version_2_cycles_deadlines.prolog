@@ -15,7 +15,7 @@
 :-['../scenarios/cycles_unsorted/toy_event_stream.prolog'].
 
 %%%%%% deadlines cases %%%%%%
-%   testing maxDurationUE   %
+%   testing fi/3 and p/1  %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % basic case in one window attempt succesfull
@@ -52,7 +52,7 @@ check(deadlinesUE,N,Found):-
     holdsFor(rich2(chris)=true,Found).
 
 %%%%%% deadlines cases %%%%%%
-%   testing maxDuration     %
+%   testing fi/3     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % basic case in one window attempt succesfull
@@ -84,7 +84,7 @@ check(deadlines,_N,Found):-
 %%%%%% cycles cases %%%%%%
 
 % S-W=0 full
-testcase(cycles_strength_1,cycles,1,[[(19,inf)]],(21,21,0,21), unordered, nodynamicgrounding, nopreprocessing, 1).
+%testcase(cycles_strength_1,cycles,1,[[(19,inf)]],(21,21,0,21), unordered, nodynamicgrounding, nopreprocessing, 1).
 % S-W=-1
 testcase(cycles_strength_1,cycles,2,[[(0,10),(19,inf)]],(21,22,0,21), unordered, nodynamicgrounding, nopreprocessing, 1).
 

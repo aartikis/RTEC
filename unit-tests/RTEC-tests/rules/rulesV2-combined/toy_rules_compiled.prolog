@@ -96,15 +96,17 @@ cachingOrder2(_131123, strength(_131123)=tired) :-
 cachingOrder2(_131123, strength(_131123)=lowering) :-
      person(_131123).
 
-maxDuration(working(_131166)=true,working(_131166)=false,8) :- 
+fi(working(_131166)=true,working(_131166)=false,8) :- 
      grounding(working(_131166)=true).
 
-maxDuration(hungry(_131166)=true,hungry(_131166)=false,5) :- 
+fi(hungry(_131166)=true,hungry(_131166)=false,5) :- 
      grounding(hungry(_131166)=true).
 
-maxDurationUE(rich(_131166)=true,rich(_131166)=false,4) :- 
+fi(rich(_131166)=true,rich(_131166)=false,4) :- 
      grounding(rich(_131166)=true).
+p(rich(_131166)=true).
 
-maxDurationUE(noFoodNeeds(_131166)=true,noFoodNeeds(_131166)=false,5) :- 
+fi(noFoodNeeds(_131166)=true,noFoodNeeds(_131166)=false,5) :- 
      grounding(noFoodNeeds(_131166)=true).
+p(noFoodNeeds(_131166)=true).
 

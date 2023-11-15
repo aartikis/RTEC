@@ -65,6 +65,38 @@ Notes:
 % when they are not defined. 
 :- dynamic needsGrounding/3, points/1.
 
+% dispatch_socket(+AcceptFd)
+dispatch_socket(AcceptFd):-
+    % Block until a client connects to the socket.
+    tcp_accept(AcceptFd, Socket, _Peer),
+    % Create a new thread that reads continuously the events sent by the client.
+    thread_create(process_socket_client(Socket), _, [ detached(true) ]),
+    % The current thread loops forever on dispatch_socket.
+    % This is done because additional clients may attempt to connect to the socket.
+    dispatch_socket(AcceptFd).
+
+% process_socket_client(+Socket)
+process_socket_client(Socket):-
+    %setup_call_cleanup(:Setup,:Goal,:Cleanup)
+    % Setup->Open socket and get the event stream coming from the client.
+    % Goal->Read continuously the incoming rows of InStream until there is an end_of_file.
+    % Cleanup->Close stream.
+    setup_call_cleanup(
+        (tcp_open_socket(Socket, StreamPair), stream_pair(StreamPair, InStream, _OutStream), set_input(InStream)),
+        read_rows_until_empty(InStream),
+        close(StreamPair)
+    ).
+
+% read_rows_until_empty(+InStream)
+read_rows_until_empty(InStream):-
+	% Read the first line of the stream,
+	get_row_from_line(InStream, Row),
+	(Row=[] ->  true % If Row is empty, i.e., end_of_file, return. 
+	;
+        getIEFromRowandAssertIt(Row), % assert event in Row.
+        read_rows_until_empty(InStream) % end_of_file has not been found, so continue reading from InStream, i.e., loop back.
+	).
+
 % Opens a named pipe, and then reads continuously from the pipe and asserts all input events
 % at the time that they are read, regardless of time-stamp 
 % loadIELiveStream(+PipeName)
@@ -81,8 +113,8 @@ loadIERealTimeStreamLoop(Stream) :-
 	get_row_from_line(Stream, Row),
 	(Row=[] ->  true % If Row is empty, i.e., end_of_file, continue. 
 		;
-				%write(Row), nl,	   
-				getIEFromRowandAssertIt(Row)), % assert event in Row.
+        %write(Row), nl,	   
+        getIEFromRowandAssertIt(Row)), % assert event in Row.
 	loadIERealTimeStreamLoop(Stream). % continue reading from the pipe. This is an infinite loop.
 
 % loadIEStreams(+InputStreams, +StartPoint, +EndPoint, +InputStreamPositions, -NewInputStreamPositions)
@@ -217,7 +249,7 @@ assertFluent(Row) :-
 	% check that the fluent should be represented by means of holdsAtIE
 	% points/1 is defined in the declarations of an event description
 	% points(Fluent=Value), !,
-	points(Fluent=Value), !, 
+	points(Fluent=Value), !,
 	assertz( holdsAtIE(Fluent=Value, OccurenceTime) ).
 	
 % distill from Row the durative instance of Fluent=Value and assert it in the RTEC format 

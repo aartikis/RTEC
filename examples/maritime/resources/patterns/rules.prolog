@@ -242,8 +242,9 @@ initiatedAt(trawlingMovement(Vessel)=true , T):-
 terminatedAt(trawlingMovement(Vessel)=true, T):-
     happensAt(end(withinArea(Vessel, fishing)=true), T).
 
-maxDurationUE(trawlingMovement(Vessel)=true, trawlingMovement(Vessel)=false, TrawlingCrs):-
+fi(trawlingMovement(Vessel)=true, trawlingMovement(Vessel)=false, TrawlingCrs):-
 	thresholds(trawlingCrs, TrawlingCrs).
+p(trawlingMovement(_Vessel)=true).
 
 holdsFor(trawling(Vessel)=true, I):-
     holdsFor(trawlSpeed(Vessel)=true, It),
@@ -281,7 +282,8 @@ terminatedAt(sarMovement(Vessel)=true, T):-
     %vesselType(Vessel, sar),
     happensAt(start(gap(Vessel)=_Status), T).
 
-maxDurationUE(sarMovement(Vessel)=true, sarMovement(Vessel)=false, 1800).
+fi(sarMovement(Vessel)=true, sarMovement(Vessel)=false, 1800).
+p(sarMovement(_Vessel)=true).
 
 holdsFor(inSAR(Vessel)=true, I):-
     holdsFor(sarSpeed(Vessel)=true, Iss),
