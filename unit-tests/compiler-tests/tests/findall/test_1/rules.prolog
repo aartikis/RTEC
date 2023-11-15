@@ -1,5 +1,4 @@
 
-%%%%% workingEfficiently
 holdsFor(workingEfficiently(X)=true,I):-
     holdsFor(working(X)=true,I1),
     holdsFor(sleeping_at_work(X)=true,I2),
@@ -11,11 +10,12 @@ holdsFor(workingEfficiently(X)=true,I):-
 		    compare(>,Diff,2)
                    ),I).
 
+grounding(working(Person)=true):-
+    person(Person).
 
+grounding(sleeping_at_work(Person)=true):-
+    person(Person).
 
-
-
-
-
-
+grounding(workingEfficiently(Person)=true):-
+    person(Person).
 

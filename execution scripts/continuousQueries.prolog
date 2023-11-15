@@ -47,7 +47,6 @@ continuousQueries(App, ParamList) :-
     init_output(OutputMode, ResultsFile, WM, Step, QueryTime, OutputThreadID),
     % initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
     initialiseRecognition(Step, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
-    QueryTime is StartReasoningTime + Step,
     % In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
     sleep_if_live_stream(InputMode, Step, StreamRate, 0),
     % This predicates runs RTEC for the next query time. Afterwards, it is being called recursively until we have passed the EndReasoningTime.

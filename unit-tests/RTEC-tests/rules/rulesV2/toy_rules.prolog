@@ -1,19 +1,21 @@
-:- dynamic maxDuration/3, maxDurationUE/3.
+:- dynamic fi/3, p/1.
 
 %%%%%% rich
 initiatedAt(rich(X)=true, T) :-
     happensAt(win_lottery(X), T).
 terminatedAt(rich(X)=true, T) :-
     happensAt(lose_wallet(X), T).
-maxDurationUE(rich(X)=true,rich(X)=false,4):-
+fi(rich(X)=true,rich(X)=false,4):-
     grounding(rich(X)=true).
+p(rich(_X)=true).
 
 initiatedAt(rich2(X)=true, T) :-
     happensAt(win_lottery(X), T).
 terminatedAt(rich2(X)=true, T) :-
     happensAt(lose_wallet(X), T).
-maxDurationUE(rich2(X)=true,rich2(X)=false,8):-
+fi(rich2(X)=true,rich2(X)=false,8):-
     grounding(rich2(X)=true).
+p(rich2(_X)=true).
 
 %%%%% working
 initiatedAt(working(X)=true, T):-
@@ -22,7 +24,7 @@ initiatedAt(working(X)=true, T):-
 terminatedAt(working(X)=true, T) :-
     happensAt(ends_working(X), T).
 
-maxDuration(working(X)=true,working(X)=false,8):-
+fi(working(X)=true,working(X)=false,8):-
     grounding(working(X)=true).
 
 %%%%%%%%%%%%%%% cycle A %%%%%%%%%%%%%%%%%
@@ -63,7 +65,4 @@ initiatedAt(noFoodNeeds(X)=true,T):-
 
 terminatedAt(noFoodNeeds(X)=true,T):-
    happensAt(needsFood(X),T).
-
-
-
 

@@ -102,7 +102,7 @@ DECLARATIONS:
 
 % The predicates below may or may not appear in the event description of an application;
 % thus they must be declared dynamic
-:- dynamic collectIntervals2/2, buildFromPoints2/2, cyclic/1, maxDuration/3, maxDurationUE/3, internalEntity/1, sDFluent/1, simpleFluent/1, inputEntity/1, collectGrounds/2, dgrounded/2.
+:- dynamic collectIntervals2/2, buildFromPoints2/2, cyclic/1, fi/3, p/1, internalEntity/1, sDFluent/1,	simpleFluent/1, inputEntity/1, collectGrounds/2, dgrounded/2.
 
 /***** multifile predicates *****/
 
@@ -122,7 +122,7 @@ happensAtProcessedIE/3, happensAtProcessedSDFluent/3, happensAtProcessedSimpleFl
 % these predicates may be part of the declarations of an event description 
 inputEntity/1, internalEntity/1, outputEntity/1, index/2, event/1, simpleFluent/1, sDFluent/1, grounding/1, dgrounded/2,
 % these predicates may be part of an event description 
-holdsFor/2, holdsForSDFluent/2, initially/1, initiatedAt/2, terminatedAt/2, initiates/3, terminates/3, initiatedAt/4, terminatedAt/4, happensAt/2, maxDuration/3, maxDurationUE/3,
+holdsFor/2, holdsForSDFluent/2, initially/1, initiatedAt/2, terminatedAt/2, initiates/3, terminates/3, initiatedAt/4, terminatedAt/4, happensAt/2, fi/3, p/1,
 % this predicate may appear in the data files of an application
 updateSDE/4. 
 
@@ -180,7 +180,7 @@ eventRecognition(QueryTime, WM) :-
 	% CYCLES & DEADLINES CHANGE
 	findall((Index,F=V,SPoints), (startingPoints(Index,F=V,SPoints),retract(startingPoints(Index,F=V,SPoints))), _),
 	% DEADLINES #1 CHANGE
-	findall((F=V,Duration), (maxDuration(F=V,_,Duration), deadlines1(F=V,Duration,InitTime)), _),
+	findall((F=V,Duration), (fi(F=V,_,Duration), deadlines1(F=V,Duration,InitTime)), _),
 	% the order in which entities are processed makes a difference
 	% start from lower-level entities and then move to higher-level entities
 	% in this way the higher-level entities will use the CACHED lower-level entities
@@ -190,7 +190,7 @@ eventRecognition(QueryTime, WM) :-
 	% by combining cachingOrder/1, indexOf/2 and grounding/1
 	findall(OE, (cachingOrder2(Index,OE), processEntity(Index,OE,InitTime,QueryTime)), _),
 	% DEADLINES #2 CHANGE
-	findall((F=V,Duration), (maxDuration(F=V,_,Duration), deadlines2(F=V,Duration,InitTime)), _),
+	findall((F=V,Duration), (fi(F=V,_,Duration), deadlines2(F=V,Duration,InitTime)), _),
 	retract(queryTime(QueryTime)),
 	retract(initTime(InitTime)).
 
@@ -218,11 +218,11 @@ processEntity(Index, OE, InitTime, QueryTime) :-
 % Process deadline attempts computed at the previous query time
 
 % the rule below deals with fluents whose expiration may be extended
-% ie maxDurationUE
+% ie fi and p
 % keep the happensAt(attempt(F=V),T) computed at the previous query time
 % iff (a) holdsAt(F=V,nextTimePoint(Qi-WM)), (b) T>Qi-WM, and (c) T-Duration=<Qi-WM
 deadlines1(F=V, Duration, InitTime) :-
-	maxDurationUE(F=V, _, Duration), !,
+	p(F=V), !,
 	indexOf(Index, F=V), 
 	retract( evTList(Index, attempt(F=V), ListofDeadlineAttempts) ),
 	% (a) holdsAt(F=V,nextTimePoint(Qi-WM))
@@ -295,7 +295,7 @@ deadlines1(F=V, Duration, InitTime) :-
 % the rule below deals with the case where there are
 % dealine attempts from the previous query time
 deadlines2(F=V, Duration, InitTime) :-
-	maxDurationUE(F=V, _, Duration),
+	p(F=V),
 	indexOf(Index, F=V),
 	retract( evTList(Index, attempt(F=V), List) ), !,
 	startingPoints(Index, F=V, SPoints),
@@ -308,7 +308,7 @@ deadlines2(F=V, Duration, InitTime) :-
 % the rule below deals with the case where there are NO
 % dealine attempts from the previous query time
 deadlines2(F=V, Duration, InitTime) :-
-	maxDurationUE(F=V, _, Duration), !,
+	p(F=V), !,
 	indexOf(Index, F=V),
 	startingPoints(Index, F=V, SPoints),
 	findall(T, 

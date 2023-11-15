@@ -43,7 +43,7 @@ terminatedAt(stopped(Vessel)=_Status, T) :-
     happensAt(stop_end(Vessel), T).
 
 terminatedAt(stopped(Vessel)=_Status, T) :-
-    happensAt(start(gap(Vessel)=_gStatus), T).
+    happensAt(start(gap(Vessel)=_GStatus), T).
 
 
 %-------------- lowspeed----------------------%
@@ -114,7 +114,7 @@ terminatedAt(movingSpeed(Vessel)=_Status, T) :-
     \+inRange(Speed, MovingMin, inf).
 
 terminatedAt(movingSpeed(Vessel)=_Status, T) :-
-    happensAt(start(gap(Vessel)=_gStatus), T).
+    happensAt(start(gap(Vessel)=_GStatus), T).
 
 
 %----------------- underWay ------------------% 
@@ -244,8 +244,9 @@ initiatedAt(trawlingMovement(Vessel)=true , T):-
 terminatedAt(trawlingMovement(Vessel)=true, T):-
     happensAt(end(withinArea(Vessel, fishing)=true), T).
 
-maxDurationUE(trawlingMovement(Vessel)=true, trawlingMovement(Vessel)=false, TrawlingCrs):-
-	thresholds(trawlingCrs, TrawlingCrs), grounding(trawlingMovement(Vessel)=true).
+fi(trawlingMovement(Vessel)=true, trawlingMovement(Vessel)=false, TrawlingCrs):-
+	thresholds(trawlingCrs, TrawlingCrs).
+p(trawlingMovement(_Vessel)=true).
 
 holdsFor(trawling(Vessel)=true, I):-
     holdsFor(trawlSpeed(Vessel)=true, It),
@@ -283,8 +284,8 @@ terminatedAt(sarMovement(Vessel)=true, T):-
     %vesselType(Vessel, sar),
     happensAt(start(gap(Vessel)=_Status), T).
 
-maxDurationUE(sarMovement(Vessel)=true, sarMovement(Vessel)=false, 1800):-
-    grounding(sarMovement(Vessel)=true).
+fi(sarMovement(Vessel)=true, sarMovement(Vessel)=false, 1800).
+p(sarMovement(_Vessel)=true).
 
 holdsFor(inSAR(Vessel)=true, I):-
     holdsFor(sarSpeed(Vessel)=true, Iss),
@@ -321,4 +322,79 @@ holdsFor(pilotOps(Vessel1, Vessel2)=true, I) :-
     holdsFor(withinArea(Vessel2, nearCoast)=true, Iw2),
     relative_complement_all(Ii,[Iw1, Iw2], I).
 
+% proximity is an input statically determined fluent.
+% its instances arrive in the form of intervals.
+collectIntervals(proximity(_,_)=true).
 
+% The elements of these domains are derived from the ground arguments of input entitites
+dynamicDomain(vessel(_Vessel)).
+dynamicDomain(vpair(_Vessel1,_Vessel2)).
+
+% Groundings of input entities
+grounding(change_in_speed_start(V)):- vessel(V).
+grounding(change_in_speed_end(V)):- vessel(V).
+grounding(change_in_heading(V)):- vessel(V).
+grounding(stop_start(V)):- vessel(V).
+grounding(stop_end(V)):- vessel(V).
+grounding(slow_motion_start(V)):- vessel(V).
+grounding(slow_motion_end(V)):- vessel(V).
+grounding(gap_start(V)):- vessel(V).
+grounding(gap_end(V)):- vessel(V).
+grounding(entersArea(V,Area)):- vessel(V), areaType(Area).
+grounding(leavesArea(V,Area)):- vessel(V), areaType(Area).
+grounding(coord(V,_,_)):- vessel(V).
+grounding(velocity(V,_,_,_)):- vessel(V).
+grounding(proximity(Vessel1, Vessel2)=true):- vpair(Vessel1, Vessel2).
+
+% Groundings of output entities
+grounding(gap(Vessel)=PortStatus):-
+	vessel(Vessel), portStatus(PortStatus).
+grounding(stopped(Vessel)=PortStatus):-
+	vessel(Vessel), portStatus(PortStatus).
+grounding(lowSpeed(Vessel)=true):-
+	vessel(Vessel).
+grounding(changingSpeed(Vessel)=true):-
+	vessel(Vessel).
+grounding(withinArea(Vessel, AreaType)=true):-
+	vessel(Vessel), areaType(AreaType).
+grounding(underWay(Vessel)=true):-
+	vessel(Vessel).
+grounding(sarSpeed(Vessel)=true):-
+	vessel(Vessel), vesselType(Vessel,sar).
+grounding(sarMovement(Vessel)=true):-
+	vessel(Vessel), vesselType(Vessel,sar).
+grounding(sarMovement(Vessel)=false):-
+	vessel(Vessel), vesselType(Vessel,sar).
+grounding(inSAR(Vessel)=true):-
+	vessel(Vessel).
+grounding(highSpeedNearCoast(Vessel)=true):-
+	vessel(Vessel).
+grounding(drifting(Vessel)=true):-
+	vessel(Vessel).
+grounding(anchoredOrMoored(Vessel)=true):-
+	vessel(Vessel).
+grounding(trawlSpeed(Vessel)=true):-
+	vessel(Vessel), vesselType(Vessel,fishing).
+grounding(movingSpeed(Vessel)=Status):-
+	vessel(Vessel), movingStatus(Status).
+grounding(pilotOps(Vessel1, Vessel2)=true):-
+	vpair(Vessel1, Vessel2).
+grounding(tuggingSpeed(Vessel)=true):-
+	vessel(Vessel).
+grounding(tugging(Vessel1, Vessel2)=true):-
+	vpair(Vessel1, Vessel2).
+grounding(rendezVous(Vessel1, Vessel2)=true):-
+	vpair(Vessel1, Vessel2).
+grounding(trawlingMovement(Vessel)=true):-
+	vessel(Vessel), vesselType(Vessel,fishing).
+grounding(trawlingMovement(Vessel)=false):-
+	vessel(Vessel), vesselType(Vessel,fishing).
+grounding(trawling(Vessel)=true):-
+	vessel(Vessel).
+grounding(loitering(Vessel)=true):-
+	vessel(Vessel).
+
+needsGrounding(_, _, _) :-
+	fail.
+buildFromPoints(_) :-
+	fail.
