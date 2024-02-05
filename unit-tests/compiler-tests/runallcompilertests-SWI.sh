@@ -1,6 +1,6 @@
 #!/bin/bash
 LOAD="./src/compare.prolog"
-RTECPATH="../../src/RTEC.prolog"
+COMPILERPATH="../../src/compiler.prolog"
 
 for testi in $(ls tests); do
     for testii in $(ls ./tests/$testi); do
@@ -8,18 +8,12 @@ for testi in $(ls tests); do
         echo "--------------------------------------------------------------------"
         echo "Checking folder : $testi/$testii"
         PREFIX="./tests/$testi/$testii"
-        DECL="$PREFIX/declarations.prolog"
-        RULESC="$PREFIX/rules_compiled_c.prolog"
-        RULEST="$PREFIX/rules_compiled_t.prolog"
-        EVENTDESCR="$PREFIX/rules.prolog"
-        DECLARATIONS="$PREFIX/declarations.prolog"
-        EVENT="$PREFIX/event_description.prolog"
-        RESNORMPATH="$PREFIX/$RESNORMAL"
-        RESMANUPATH="$PREFIX/$RESMANUAL"
-        RESCOMPPATH="$PREFIX/$COMPRESFILE"
+        EVENTDESCR="$PREFIX/rules.prolog" # pre-compiled event description
+        RULESC="$PREFIX/compiled_rules.prolog" # derived compiled event description
+        RULEST="$PREFIX/compiled_rules_ground.prolog" # ground compiled event description
         echo "----Compiling rules..."
-        swipl -q -l $RTECPATH -g "compileEventDescription('$DECLARATIONS','$EVENTDESCR','$RULESC'),halt"
-        echo -e ":-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, maxDuration/3, maxDurationUE/3.\n$(cat $RULESC)" > $RULESC
+        swipl -q -l $COMPILERPATH -g "compileED('$EVENTDESCR'),halt"
+        #echo -e ":-dynamic initiatedAt/4, holdsForSDFluent/2, initiatedAt/2, terminatedAt/2, terminatedAt/4, fi/3, p/1.\n$(cat $RULESC)" > $RULESC
         echo "----Comparing rules..."
         swipl -q -l $LOAD -g "compiler:consult('$RULESC'),manual:consult('$RULEST'),compare_clauses,halt"
         echo "----Finished."

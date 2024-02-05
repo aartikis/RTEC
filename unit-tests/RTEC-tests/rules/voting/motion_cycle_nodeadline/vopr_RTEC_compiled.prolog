@@ -4,9 +4,9 @@
  *********************/
 
 % deadlines on status:
-%maxDuration(status(M)=proposed, status(M)=null, 10) :- motion(M).
-%maxDuration(status(M)=voting, status(M)=voted, 10) :- motion(M).
-%maxDuration(status(M)=voted, status(M)=null, 10) :- motion(M).
+%fi(status(M)=proposed, status(M)=null, 10) :- motion(M).
+%fi(status(M)=voting, status(M)=voted, 10) :- motion(M).
+%fi(status(M)=voted, status(M)=null, 10) :- motion(M).
 
 
 initiatedAt(status(_M)=null, T1, -1, T2) :- T1=<(-1), -1<T2.
@@ -93,7 +93,7 @@ holdsForSDFluent(pow(declare(_C,M))=true, I) :-
 % the permission to close the ballot
 
 % deadline of auxPerCloseBallot 
-maxDuration(auxPerCloseBallot(M)=true, auxPerCloseBallot(M)=false, 8) :- motion(M).
+fi(auxPerCloseBallot(M)=true, auxPerCloseBallot(M)=false, 8) :- motion(M).
 
 initiatedAt(auxPerCloseBallot(M)=true, T1, T, T2) :-
 	happensAtProcessedSimpleFluent(M, start(status(M)=voting), T),
@@ -138,7 +138,7 @@ initiatedAt(obl(declare(_C,M,carried))=false, T1, T, T2) :-
  **********/
 
 % in this example, we are only interested in sanctioned chairs
-maxDuration(sanctioned(C)=true, sanctioned(C)=false, 4) :- role_of(C, chair).
+fi(sanctioned(C)=true, sanctioned(C)=false, 4) :- role_of(C, chair).
 
 % the sanction could be financial penalty, for example
 
