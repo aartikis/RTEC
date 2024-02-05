@@ -6,15 +6,19 @@ holdsFor(workingEfficiently(X)=true,I):-
     relative_complement_all(I1,[I2],Ii),
     findall((S,E),(
 		    member(Ii,(S,E)),
-		    holdsAtProcessedSimpleFluent(X,location(X)=work,S)
+		    holdsAt(location(X)=work,S)
 		   )
 	     ,I).
 
+grounding(working(Person)=true):-
+    person(Person).
 
+grounding(sleeping_at_work(Person)=true):-
+    person(Person).
 
+grounding(location(Person)=work):-
+    person(Person).
 
-
-
-
-
+grounding(workingEfficiently(Person)=true):-
+    person(Person).
 

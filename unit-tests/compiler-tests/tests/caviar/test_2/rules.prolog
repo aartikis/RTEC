@@ -218,6 +218,81 @@ holdsFor(fighting(P1,P2)=true, FightingI) :-
 % the rule below is the result of the above optimisation checks
 holdsFor(fighting(_P1,_P2)=true, []).
 
+% The elements of these domains are derived from the ground arguments of input entitites
+dynamicDomain(id(_P)).
 
+% Grounding of input entities:
+grounding(appear(P)):-
+	id(P).
+grounding(disappear(P)):-
+	id(P).
+grounding(orientation(P)=_):-
+	id(P).
+grounding(appearance(P)=_):-
+	id(P).
+grounding(coord(P,_,_)=_):-
+	id(P).
+grounding(walking(P)=_):-
+	id(P).
+grounding(active(P)=_):-
+	id(P).
+grounding(inactive(P)=_):-
+	id(P).
+grounding(running(P)=_):-
+	id(P).
+grounding(abrupt(P)=_):-
+	id(P).
+
+grounding(close(P1,P2,24)=true) :- id(P1), id(P2), P1@<P2.
+grounding(close(P1,P2,25)=true) :- id(P1), id(P2), P1@<P2.	
+grounding(close(P1,P2,30)=true) :- id(P1), id(P2), P1@<P2.	
+grounding(close(P1,P2,34)=true) :- id(P1), id(P2), P1@<P2.
+% we are only interesting in caching close=false with respect to the 34 threshold
+% we don't need any other thresholds for this fluent in the CAVIAR event description
+grounding(close(P1,P2,34)=false) :-	id(P1), id(P2), P1@<P2.
+% similarly we are only interesting in caching closeSymmetric=true with respect to the 30 threshold
+grounding(closeSymmetric(P1,P2,30)=true) :- id(P1), id(P2), P1@<P2.
+grounding(walking(P)=true) :- id(P). 
+grounding(active(P)=true) :- id(P). 
+grounding(inactive(P)=true) :- id(P).
+grounding(abrupt(P)=true) :- id(P).
+grounding(running(P)=true) :- id(P).
+grounding(person(P)=true) :- id(P).
+grounding(activeOrInactivePerson(P)=true) :- id(P).	
+grounding(greeting1(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
+grounding(greeting2(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
+grounding(leaving_object(P,O)=true) :- id(P), id(O), P@<O.
+grounding(meeting(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
+grounding(moving(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
+grounding(fighting(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
+
+% For input entities expressed as statically determined fluents, state whether 
+% the fluent instances will be reported as time-points (points/1) or intervals.
+% By default, RTEC assumes that fluent instances are reported as intervals
+% (in this case no declarations are necessary).
+% This part of the declarations is used by the data loader.
+
+points(orientation(_)=_).
+points(appearance(_)=_).
+points(coord(_,_,_)=true).
+points(walking(_)=true).
+points(active(_)=true).
+points(inactive(_)=true).
+points(running(_)=true).
+points(abrupt(_)=true).
+
+
+% For input entities expressed as statically determined fluents, state whether 
+% the list of intervals of the input entity will be constructed by 
+% collecting individual intervals (collectIntervals/1), or built from 
+% time-points (buildFromPoints/1). If no declarations are provided for some,
+% input entity, then the input entity may not participate in the specification of 
+% output entities. 	 
+
+buildFromPoints(walking(_)=true).
+buildFromPoints(active(_)=true).
+buildFromPoints(inactive(_)=true).
+buildFromPoints(running(_)=true).
+buildFromPoints(abrupt(_)=true).
 
 

@@ -14,16 +14,16 @@
 :- discontiguous compileHoldsAtTree/3, findChildren/3. 
 
 % these predicates may appear discontiguously in the input rules and declarations files.
-:- discontiguous event/1, inputEntity/1, index/2, simpleFluent/1, outputEntity/1, sDFluent/1, initiatedAt/2, terminatedAt/2, holdsFor/3, happensAt/2, grounding/1, dgrounded/2, initiatedAt/4, terminatedAt/4, maxDurationUE/3, maxDuration/3, holdsFor/2, initially/1, initiates/3, terminates/3.
+:- discontiguous event/1, inputEntity/1, index/2, simpleFluent/1, outputEntity/1, sDFluent/1, initiatedAt/2, terminatedAt/2, holdsFor/3, happensAt/2, grounding/1, dgrounded/2, initiatedAt/4, terminatedAt/4, fi/3, p/1, holdsFor/2, initially/1, initiates/3, terminates/3.
 
 % these predicates may or may not appear in the input rules and declarations files.
-:- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1, internalEntity/1, simpleFluent/1, sDFluent/1, event/1, outputEntity/1, inputEntity/1, index/2, dynamicDomain/1.
+:- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1, internalEntity/1, simpleFluent/1, sDFluent/1, event/1, outputEntity/1, inputEntity/1, index/2, dynamicDomain/1, allen_count/1.
 
 :- multifile indexOf/2.
 
 % these predicates are asserted dynamically by the compiler.
 % they should be retracted before terminating.
-:- dynamic scc/1, dependency/2, dynamicAndGrounder/2.
+:- dynamic scc/1, fdependency/2, idependency/2, dynamicAndGrounder/2, fcdedge/2, frdwcc/1, fcdscc/1, cdc/1, cyclicPathInFCD/1, cdedge/2, cdcLevel/2.
 
 % Compile the rules of <ApplicationName> found in '../examples/<ApplicationName>/resources/patterns/rules.prolog'. 
 % This incarnation of compileED does not construct a dependency graph.
@@ -52,9 +52,16 @@ cleanCache:-
 	retractall(event(_)), retractall(simpleFluent(_)), retractall(sDFluent(_)),
 	retractall(index(_,_)),
 	retractall(scc(_)),
-	retractall(dependency(_,_)).
-
-
+	retractall(dependency(_,_)),
+	retractall(fdependency(_,_)),
+	retractall(idependency(_,_)),
+        retractall(cyclicPathInFCD(_)),
+        retractall(frdwcc(_)),
+        retractall(fcdedge(_,_)),
+        retractall(fcdscc(_)),
+        retractall(cdc(_)),
+        retractall(cdedge(_,_)),
+        retractall(cdcLevel(_,_)).
 
 %compileApplication(+ApplicationName)
 % Compile the event description of the selected application.
@@ -120,10 +127,10 @@ compileEventDescription(InputDescription, OutputDescription):-
 compileEventDescription(_, _) :- compileInitially.
 % compile initiatedAt/2 rules
 compileEventDescription(_, _) :- compileInitiatedAt.
-% compile terminatedAt/2 rules
-compileEventDescription(_, _) :- compileTerminatedAt.
 % compile initiates/3 rules
 compileEventDescription(_, _) :- compileInitiates.
+% compile terminatedAt/2 rules
+compileEventDescription(_, _) :- compileTerminatedAt.
 % compile terminates/3 rules
 compileEventDescription(_, _) :- compileTerminates.
 % compile holdsFor/2 rules
@@ -132,8 +139,8 @@ compileEventDescription(_, _) :- compileHoldsFor.
 compileEventDescription(_, _) :- compileHoldsAt.
 % compile happensAt/2 rules
 compileEventDescription(_, _) :- compileHappensAt.
-% compile maxDuration/3 facts
-compileEventDescription(_,_) :- compileMaxDuration.
+% compile fi/3 and p/1 facts
+compileEventDescription(_,_) :- compileFI.
 % compile collectIntervals/1 declarations: 
 % combine collectIntervals/1, grounding/1 and indexOf/2 to produce collectIntervals2/2
 compileEventDescription(_, _) :- compileCollectIntervals.
@@ -313,21 +320,15 @@ compileHappensAt :-
 	compileConditions(Body, NewBody, [], false, _),	
 	writeCompiledRule('happensAt', [E,T], NewBody), fail.
 
-compileMaxDuration :-
-	clause(maxDuration(F1=V1, F2=V2, R), Body),
-	write(maxDuration(F1=V1, F2=V2, R)),
+% compile fi/3 facts.
+% p/1 facts do not need any modifications (the arguments of the fluent are always when invoking p/1, because it is always preceeded by fi/3).
+% So, we compile p/1 using the compileAnythingElse clause.
+compileFI :-
+	clause(fi(F1=V1, F2=V2, R), Body),
+	write(fi(F1=V1, F2=V2, R)),
         ((Body=true, \+ clause(grounding(F1=V1), _), \+ clause(grounding(F2=V2), _)) -> write('.\n\n') ; write(':-\n')),
 	(Body\=true -> (tab(5), write(Body), write(','), nl); true),
         (clause(grounding(F1=V1), _) -> (tab(5), write('grounding('), write(F1=V1), write('),\n')); true),
-        (clause(grounding(F2=V2), _) -> (tab(5), write('grounding('), write(F2=V2), write(').\n\n')); true),
-        fail.
-
-compileMaxDuration :-
-	clause(maxDurationUE(F1=V1, F2=V2, R), Body),
-	write(maxDurationUE(F1=V1, F2=V2, R)),
-        ((Body=true, \+ clause(grounding(F1=V1), _), \+ clause(grounding(F2=V2), _)) -> write('.\n\n') ; write(':-\n')),
-	(Body\=true -> (tab(5), write(Body), write(','), nl); true),
-	(clause(grounding(F1=V1), _) -> (tab(5), write('grounding('), write(F1=V1), write('),\n')); true),
         (clause(grounding(F2=V2), _) -> (tab(5), write('grounding('), write(F2=V2), write(').\n\n')); true),
         fail.
 
@@ -378,7 +379,7 @@ compileAnythingElse(InputDescription) :-
 	Head =.. [HeadPredicate|_],
 	% The following predicates have either already been compiled or are not required by RTEC.
 	\+ member(HeadPredicate,[initially, initiatedAt, terminatedAt, initiates,
-				terminates, holdsFor, holdsAt, happensAt, maxDuration, maxDurationUE,
+				terminates, holdsFor, holdsAt, happensAt, fi,
 			    buildFromPoints, collectIntervals, index, dynamicDomain]),
 	clause(Head,Body),
 	write(Head),		
@@ -864,30 +865,46 @@ compileConditions1(holdsFor(F=V,I), holdsForSDFluent(F=V,I), _Timespan, _Cyclic,
         copy_term(F=V, U1), sDFluent(U1), !.
 
 % allen predicates
+compileConditions1(allen(before, I1, I2, Outmode ,I), before(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount),
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(meets, I1, I2, Outmode ,I), meets(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(starts, I1, I2, Outmode ,I), starts(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(finishes, I1, I2, Outmode ,I), finishes(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(during, I1, I2, Outmode ,I), during(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(overlaps, I1, I2, Outmode ,I), overlaps(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+compileConditions1(allen(equal, I1, I2, Outmode ,I), equal(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
+	allen_count(AllenCount), 
+	incr_allen_count(AllenCount), !.
+
 compileConditions1(before(I1, I2, Outmode ,I), before(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount),
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(meets(I1, I2, Outmode ,I), meets(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(starts(I1, I2, Outmode ,I), starts(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(finishes(I1, I2, Outmode ,I), finishes(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(during(I1, I2, Outmode ,I), during(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(overlaps(I1, I2, Outmode ,I), overlaps(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
-
 compileConditions1(equal(I1, I2, Outmode ,I), equal(F=V, AllenCount, I1, I2, Outmode, true, I), _Timespan, _Cyclic, F=V) :-
 	allen_count(AllenCount), 
 	incr_allen_count(AllenCount), !.
@@ -1001,8 +1018,7 @@ unwrapSimpleFluent(initiatedAt(U, _, _, _), U).
 unwrapSimpleFluent(terminatedAt(U, _, _, _), U).
 unwrapSimpleFluent(initiates(_, U, _), U).
 unwrapSimpleFluent(terminates(_, U, _), U).
-unwrapSimpleFluent(maxDuration(_, U, _), U).
-unwrapSimpleFluent(maxDurationUE(_, U, _), U).
+unwrapSimpleFluent(fi(_, U, _), U).
 unwrapSimpleFluent(initially(U), U).
 
 % unwrapOutputSDFluent(?EntityPredicate, ?SDFluent)
@@ -1030,8 +1046,7 @@ entityPredicate(P):-
 	unwrapSimpleFluent(P, _) ; unwrapOutputSDFluent(P, _) ; unwrapOutputEvent(P, _).
 initiatesOrTerminates(initiates(_,_,_)).
 initiatesOrTerminates(terminates(_,_,_)).
-deadlinesPredicate(maxDuration(_,_,_)).
-deadlinesPredicate(maxDurationUE(_,_,_)).
+deadlinesPredicate(fi(_,_,_)).
 
 %  This is the first step of the compilation. 
 %  We derive and assert all possible entity declarations based on the input file. 
@@ -1045,7 +1060,7 @@ processRules:-
 	fail.
 
 % assumption: input and output entities are mutually exclusive.
-% (i) find all entities appearing in the head of at least one rule or as the second argument of a maxDuration(UE) rule. These are the output entities.
+% (i) find all entities appearing in the head of at least one rule or as the second argument of an fi rule. These are the output entities.
 % (ii) find all entities in the body of at least one rule or in the head of a grounding rule that are not output entities. These are the input entities.
 deriveEntitySorts:-
 	deriveOutputEntities,
@@ -1079,10 +1094,18 @@ deriveBodyInputs(\+Literal):-
 deriveBodyInputs(Literal):-
 	assertInput(Literal).
 
+% through recursive calls, the input may be a variable.
+% we do not assert anything in this case. 
+assertInput(V):-
+	var(V), !.
 % assert the statically determined fluent wrapped in a start/end event.
 assertInput(happensAt(start(U), _)):-
 	!, assertSDF(U).
 assertInput(happensAt(end(U), _)):-
+	!, assertSDF(U).
+assertInput(happensAt(startI(U), _)):-
+	!, assertSDF(U).
+assertInput(happensAt(endI(U), _)):-
 	!, assertSDF(U).
 % assert normal events. 
 assertInput(happensAt(E, _)):-
@@ -1100,7 +1123,7 @@ assertInput(holdsFor(U, _)):-
 assertInput(F):-
 	F =.. [H1,H2|T], !,
 	assertInputAll([H1,H2|T]).
-% match anything
+% match anything (constant)
 assertInput(_).
 % assertInputEntity(+U)
 assertInputEntity(F=V):-
@@ -1156,6 +1179,8 @@ freeConstantsRec(V, V):-
 	var(V), !.
 freeConstantsRec(C, V):-
 	atom(C), !, var(V).
+freeConstantsRec(C, V):-
+	number(C), !, var(V).
 freeConstantsRec(F=V, F2=V):-
 	!, F=..[FName|Args],
 	% if an argument is a compound term, ground recursively.
@@ -1214,24 +1239,57 @@ firstArgRec(U, FirstArg):-
 deriveCachingOrder :-
 	% <Entities> contains all outputEntities (F=V, where F contains no constants)
 	findall(Entity, outputEntity(Entity), Entities),
-	% Assert dependency/2 facts. dependency(U1, U2) holds iff there is a rule stating that U2 depends on U1.
+	% Assert fdependency/2 and idependency facts. dependency(U1, U2) holds iff there is a rule stating that U2 depends on U1.
 	assertDependenciesOfEntities(Entities),
-	%findall(_, (dependency(X, Y), write(dependency(X, Y)), nl), _),
+        %write('Printing i-dependencies...'), nl,
+        %findall((U1, U2), (idependency(U1,U2), write(idependency(U1,U2)), nl), _),
+        %write('Printing f-dependencies...'), nl,
+        %findall((U1, U2), (fdependency(U1,U2), write(fdependency(U1,U2)), nl), _),
 	% dependency/2 facts induce a 'dependency graph', where entities correspond to nodes and dependency/2 facts form edges among entities.
-	% find the strongly connected components (SCCs) of the dependency graph.
-	findSCCs,
-	% All entities in a SCC containing more than 1 entity are part of at least one cycle.
+        findWCCsOfFReducedGraph,
+        %write('Printing WCCs of f-reduced dependency graph...'), nl,
+        %findall(FRDWCC, (frdwcc(FRDWCC), write(FRDWCC), nl), _),
+        findEdgesOfFContractedGraph,
+        %write('Printing edges of f-contracted dependency graph...'), nl,
+        %findall((FRDWCC1,FRDWCC2), (fcdedge(FRDWCC1,FRDWCC2), write(fcdedge(FRDWCC1,FRDWCC2)), nl), _),
+        % Assert all cyclic paths that do not contain repeated nodes.
+        assertCyclicPathsInFCD,
+        %write('Printing cyclic paths in the f-contracted graph...'), nl,
+        %findall(CyclicPath, (cyclicPathInFCD(CyclicPath), write(cyclicPathInFCD(CyclicPath)), nl), _),
+        % find the strongly connected components (SCCs) of the contracted dependency graph.
+        findSCCsInFCD,
+        %write('Printing SCCs in the f-contracted graph...'), nl,
+        %findall(SCC, (fcdscc(SCC), write(fcdscc(SCC)), nl), _),
+        % find the contracted components (CDCs) of the dependency graph.
+        findCDCs,
+        %write('Printing the CDCs of the dependency graph...'), nl,
+        %findall(CDC, (cdc(CDC), write(cdc(CDC)), nl), _),
+        % All entities in a CDC containing an i-edge have to be in a cycle.
 	% So, we assert cyclic facts for these entities.
-	assertCyclic.
+	assertCyclic,
+        %write('Printing cyclic FVPs...'), nl,
+        %findall(U, (cyclic(U), write(cyclic(U)), nl), _),
+        % For each CDC that does not contain cycles, sort its FVPs based on a processing order induced by f-edges.
+        sortCDCsbyProcessingOrder,
+        %write('Sorted CDCs based on processing order...'), nl,
+        %findall(CDC, (cdc(CDC), write(cdc(CDC)), nl), _),
+        % find the edges of the contracted graph.
+        findEdgesInContractedGraph,
+        %write('Printing the edges of the contracted graph...'), nl,
+        %findall((U1,U2), (cdedge(U1,U2), write(cdedge(U1,U2)), nl), _),
+        findCDCLevels.
+        %write('Printing the levels of (the FVPs in) a CDC...'), nl,
+        %findall(CDC, (cdc(CDC), cdcLevel(CDC, Level), write(cdcLevel(CDC, Level)), nl), _).
 
 % assertDependenciesOfEntities(+EntitiesList)
 assertDependenciesOfEntities([]).
 assertDependenciesOfEntities([Entity|Rest]):-
 	assertDependencies(Entity),
 	assertDependenciesOfEntities(Rest).	
-% assertDependencies(+Entity)
 % Find all rules in the input file whose head include <Entity>.
 % Fetch the body of each such rule and assert one dependency/2 facts for each body literal including some entity.
+% Assert idependency/2 if we have a dependency due to an initiatedAt/terminatedAt rule, and fdependency/2 if we have a dependency because of an fi fact.
+% assertDependencies(+Entity)
 assertDependencies(Entity):-
 	% for rules.
 	findall(Body, 
@@ -1243,53 +1301,17 @@ assertDependencies(Entity):-
 	% for initiates/terminates/3 facts.
 	findall(SourceEntity, 
 		(initiatesOrTerminates(Head),
-		 clause(Head, true),
+		 clause(Head, _Body), % Body is in most cases empty, but not always.
 		 Head =.. [_PredicateName, SourceEntity, Entity, _T],
-		assertDependency(SourceEntity, Entity)), _),
-	% for maxDuration and maxDurationUE facts.
+		assertIDependency(SourceEntity, Entity)), _),
+	% for fi facts.
 	findall(_, 
 	     (deadlinesPredicate(Head),
-		  clause(Head, true),
+		  clause(Head, _FIBody), % Body is in most cases empty, but not always.
 		  Head=..[_PredName, SourceEntity, TargetEntity, _DeadlineLength],
-		  assertDependency(SourceEntity, TargetEntity)), _).
+                  % Change to the commented line if you want to assert that all FVPs with the same fluent as the <SourceEntity> depend on <SourceEntity>.
+                  assertFDependency(SourceEntity, TargetEntity)), _).
 		  
-
-% assertBodyDependencies(+Body,+HeadEntity)
-% case: not last body literal && literal contains an entity.
-assertBodyDependencies((Literal, RestLiterals), HeadEntity):-
-	% freeConstants turns constants in entity arguments to variables.
-	getEntity(Literal, EntityGnd), !, freeConstants(EntityGnd, Entity), 
-	assertDependency(Entity, HeadEntity),
-	assertBodyDependencies(RestLiterals, HeadEntity).
-% case: not last body literal && literal does not contain an entity.
-assertBodyDependencies((_Literal, RestLiterals), HeadEntity):-
-	assertBodyDependencies(RestLiterals, HeadEntity).
-% case: last body literal && literal contains an entity.
-assertBodyDependencies(Literal, HeadEntity):- 	
-	getEntity(Literal, EntityGnd), !, freeConstants(EntityGnd, Entity),
-	assertDependency(Entity, HeadEntity).
-% case: last body literal && literal does not contain an entity.
-assertBodyDependencies(_Literal, _HeadEntity).
-
-% assertDependency(+BodyEntity, +HeadEntity)
-% This predicate asserts dependency(BodyEntity, HeadEntity).
-% In all cases, we first check whether this dependency fact is already in the knowledge base to avoid duplicates.
-%case: the body entity is a fluent-value pair whose value is a free variable.
-% 	   Assert one dependency fact for each possible value of the body fluent.
-assertDependency(F=V, HeadEntity):-
-	var(V), !,
-	findall(V1, 
-			((simpleFluent(F=V1) ; sDFluent(F=V1)),
-			 \+dependency(F=V1, HeadEntity), 
-			assertz(dependency(F=V1, HeadEntity))), _). %, write(dependency(F=V1, HeadEntity)), nl), _).
-
-% case: <BodyEntity> is an event or a FVP with a ground value.
-assertDependency(BodyEntity, HeadEntity):-
-	\+dependency(BodyEntity, HeadEntity), !, 
-	assertz(dependency(BodyEntity, HeadEntity)). %, write(dependency(BodyEntity, HeadEntity)), nl.
-
-% case: dependency fact already present. So, do nothing.
-assertDependency(_, _).
 
 % extractEntity(?FullEntity, ?EntityNoValue)
 % extract F=V from start/end wrappers
@@ -1317,100 +1339,263 @@ getEntity(\+Predicate, Entity):-
 	Predicate =.. [_PredicateName, Entity0|_TimeVars],
 	extractEntity(Entity0, Entity).
 
+% assertBodyDependencies(+Body,+HeadEntity)
+% case: not last body literal && literal contains an entity.
+%assertBodyDependencies((Literal, RestLiterals), HeadEntity):-
+    %getEntity(Literal, EntityGnd), !, 
+    %assertIDependencyFromEntity(EntityGnd, HeadEntity),     
+    %assertBodyDependencies(RestLiterals, HeadEntity).
+% case: an entity can be found recursively
+assertBodyDependencies((Literal, RestLiterals), HeadEntity):-
+        % \+ getEntity(Literal, EntityGnd), 
+        assertIDependencies(Literal, HeadEntity), 
+	assertBodyDependencies(RestLiterals, HeadEntity).
+% case: not last body literal && literal does not contain an entity.
+%assertBodyDependencies((_Literal, RestLiterals), HeadEntity):-
+    %assertBodyDependencies(RestLiterals, HeadEntity).
+% case: last body literal && literal contains an entity.
+assertBodyDependencies(Literal, HeadEntity):- 	
+        assertIDependencies(Literal, HeadEntity).
+        %getEntity(Literal, EntityGnd), !, 
+        %assertIDependencyFromEntity(EntityGnd, HeadEntity).
+% case: last body literal && literal does not contain an entity.
+%assertBodyDependencies(_Literal, _HeadEntity).
+
+assertIDependencyFromEntity(EntityGnd, HeadEntity):-
+	% freeConstants turns constants in entity arguments to variables.
+        freeConstants(EntityGnd, Entity),
+	assertIDependency(Entity, HeadEntity).
+
+assertIDependenciesFromList([], _HeadEntity).
+assertIDependenciesFromList([Term|Rest], HeadEntity):-
+    assertIDependencies(Term, HeadEntity),
+    assertIDependenciesFromList(Rest, HeadEntity).
+
+assertIDependencies(Literal, _HeadEntity):-
+    var(Literal), !.
+
+assertIDependencies(Literal, _HeadEntity):-
+    atomic(Literal), !.
+
+assertIDependencies(Literal, HeadEntity):-
+    getEntity(Literal, EntityGnd), !, 
+    assertIDependencyFromEntity(EntityGnd, HeadEntity).
+
+assertIDependencies(Literal, HeadEntity):-
+    Literal =.. [_LName | Args], !,
+    assertIDependenciesFromList(Args, HeadEntity).
+
+assertIDependencies(_, _).
+
+% assertIDependency(+BodyEntity, +HeadEntity)
+% This predicate asserts idependency(BodyEntity, HeadEntity).
+% In all cases, we first check whether this dependency fact is already in the knowledge base to avoid duplicates.
+%case: the body entity is a fluent-value pair whose value is a free variable.
+% 	   Assert one dependency fact for each possible value of the body fluent.
+assertIDependency(F=V, HeadEntity):-
+	var(V), !,
+	findall(V1, 
+                ((simpleFluent(F=V1) ; sDFluent(F=V1)),
+                 \+idependency(F=V1, HeadEntity), 
+                assertz(idependency(F=V1, HeadEntity))), _). %, write(dependency(F=V1, HeadEntity)), nl), _).
+% case: <BodyEntity> is an event or a FVP with a ground value.
+assertIDependency(BodyEntity, HeadEntity):-
+	\+idependency(BodyEntity, HeadEntity), !, 
+	assertz(idependency(BodyEntity, HeadEntity)). %, write(dependency(BodyEntity, HeadEntity)), nl.
+% case: dependency fact already present. So, do nothing.
+assertIDependency(_, _).
+
+% assertFDependency(+BodyEntity, +HeadEntity)
+% This predicate asserts fdependency(BodyEntity, HeadEntity).
+% We first check whether this dependency fact is already in the knowledge base to avoid duplicates.
+assertFDependency(BodyEntity, HeadEntity):-
+	\+fdependency(BodyEntity, HeadEntity), !, 
+	assertz(fdependency(BodyEntity, HeadEntity)). %, write(dependency(BodyEntity, HeadEntity)), nl.
+% The dependency fact already present. So, do nothing.
+assertFDependency(_, _).
+
+inFRDWCC(F=V, FRDWCC):-
+    frdwcc(FRDWCC),
+    member(F=V, FRDWCC), !.
+
+fdependencyUndirected(U1, U2):-
+    fdependency(U1, U2), !.
+
+fdependencyUndirected(U1, U2):-
+    fdependency(U2, U1).
+
+fpath(U1, U2):-
+    fdependencyUndirected(U1, U2), !.
+
+fpath(U1, U2):-
+    fdependencyUndirected(U1, Z),
+    fpath(Z, U2), !.
+
+deriveFRDWCC(F=V, [F=V]):-
+    \+ fdependencyUndirected(F=V,_), !.
+
+deriveFRDWCC(F=V, [F=V|FRDWCC]):-
+    findall(U, fpath(U, F=V), FRDWCC).
+    
+findWCCsOfFReducedGraph:-
+    % The f-contracted graph contains one vertex for each WCC of the f-reduced graph. These WCCs are stored in frdwcc/1 facts.
+    % For each simple fluent, assert the WCC of the f-reduced graph that contains its vertex, provided that this WCC has not been asserted already.
+    findall(F=V, (simpleFluent(F=V), \+inFRDWCC(F=V, _), deriveFRDWCC(F=V, FRDWCC), assertz(frdwcc(FRDWCC))), _),
+    % Events and statically-determined fluents do not appear in fi facts, and thus they are not connected with f-edges.
+    % The vertex of an event or statically-determined fluent forms a WCC in the f-reduced graph, i.e., the vertex is disconnected from all other edges.
+    findall(F=V, (event(E), assertz(frdwcc([E]))), _),
+    findall(F=V, (sDFluent(F=V), assertz(frdwcc([F=V]))), _).
+
+findEdgesOfFContractedGraph:-
+    % Each i-edge in the dependency graph is transformed into an edge of the f-contracted graph, which connected the corresponding WCC-vertices.
+    % The edges in the f-contracted graph are unique.
+    % The vertices of these new edges are marked with WCCs of the f-reduced graph.
+    findall((U1,U2), (idependency(U1,U2), inFRDWCC(U1,FRDWCC1), inFRDWCC(U2,FRDWCC2), \+ FRDWCC1=FRDWCC2, \+fcdedge(FRDWCC1, FRDWCC2), assertz(fcdedge(FRDWCC1, FRDWCC2))), _).
+
+% assert fact cyclicPathInFCD(CyclicPath) if CyclicPath is cycle of the f-contracted dependency graph that does not contain vertex repetitions.
+assertCyclicPathsInFCD:-
+    % For each simple fluent F=V, assert all cyclic paths that start and end at F=V.
+    findall(FRDWCC, (frdwcc(FRDWCC), deriveCyclicPathInFCD(FRDWCC,CyclicPathStartingFromFRDWCC), assertz(cyclicPathInFCD(CyclicPathStartingFromFRDWCC))), _).
+
+deriveCyclicPathInFCD(FRDWCC1, CyclicPathStartingFromFRDWCC):-
+    deriveCyclicPathInFCD0(FRDWCC1, FRDWCC2, [], CyclicPathStartingFromFRDWCC),
+    % The arguments of the first and the last FVP in the path do not need to unify. It suffices that the fluent type and the value are the same.
+    checkSameFRDWCCs(FRDWCC1,FRDWCC2).
+
+deriveCyclicPathInFCD0(StartNode, CurrentNode, PathSoFar, [StartNode,CurrentNode|PathSoFar]):-
+    % If there is an edge pointing to the first node of the path, close the cycle.
+    fcdedge(CurrentNode, StartNode).
+
+deriveCyclicPathInFCD0(StartNode,CurrentNode, PathSoFar, FinalPath):-
+    % Move to NextNode, if it is not part of the path so far.
+    fcdedge(CurrentNode,NextNode), \+ member(NextNode,PathSoFar),
+    deriveCyclicPathInFCD0(StartNode,NextNode,[CurrentNode|PathSoFar], FinalPath).
+
+checkSameFRDWCCs([], []).
+checkSameFRDWCCs([F1=V|RestUs1], [F2=V|RestUs2]):-
+    F1=..[FType|_],
+    F2=..[FType|_],
+    checkSameFRDWCCs(RestUs1, RestUs2).
+
 %% isCyclic(+F=+V)
 % check if F=V is part of a cycle created by dependency/2 facts.
-% unification with V1, V2 is used to include cases where V is a free variable in dependency/2.
-isCyclic(F=V):-
-	path(F=V1, F=V2, [], _), V1=V, V2=V.
-
-%path(+X,+Z,+Visited,-Path)
-% check if there is a dependency path from X to Z.
-% <Visited> stores visited nodes/entities to avoid infinite loops.
-path(X, Z, _, []):-
-	dependency(X, Z).
-path(X, Z, Visited, [Y|T]):-
-	dependency(X, Y),
-	\+member(Y, Visited),
-	path(Y, Z, [Y|Visited], T).
-
-% cycle(+X,-C)
-% Finds a cycle of entities <C> starting from entity <X> and containing <X>
-cycle(X, C) :-
-  cycle(X, X, [], C).
-% cycle(+CurrentNode, +StartNode, +VisitedNodes, -Cycle)
-%case: Curr -> Next, Next has been visited, and we can go back from Next to Start, i.e., Start is part of the cycle.
-cycle(Curr, Start, Visited, [Curr|Visited]) :-
-  dependency(Curr, Next), 
-  member(Next, Visited), 
-  path(Next, Start, [], _). 
-%case: Curr -> Next, Next has been visited, but Start is not reachable from Next. 
-cycle(Curr, Start, Visited, []) :-
-  dependency(Curr, Next), 
-  member(Next, Visited), 
-  \+path(Next, Start, [], _).
-cycle(Curr, Start, Visited, C) :-
-  dependency(Curr, Next), \+ member(Next, Visited),
-  cycle(Next, Start, [Curr|Visited], C).
-
-inAnyCyclicPathOf(F, FinalEntities):-
-	findall(Entity, inCyclicPath(Entity, F), Entities),
-	removeDuplicates(Entities, [], FinalEntities).
+isCyclic(FRDWCC):-
+   cyclicPathInFCD([FRDWCC|_]), !.
 
 removeDuplicates([], Final, Final).
-
 removeDuplicates([Entity0|Rest], Curr, Final):-
 	freeConstants(Entity0, Entity), 
 	member(Entity, Curr), !, 
 	removeDuplicates(Rest, Curr, Final).
-
 removeDuplicates([Entity0|Rest], Curr, Final):-
 	freeConstants(Entity0, Entity), 
 	removeDuplicates(Rest, [Entity|Curr], Final).
 
-inCyclicPath(Entity, F):-
-	cycle(F, CyclicEntities), 
-	member(F, CyclicEntities),
-	member(Entity, CyclicEntities).
+% return a list of FVPs that appear in a cycle including F=V. These FVPs comprise a strongly-connected component (SCC) of the graph.
+inAnyCyclicPathOf(FRDWCC, FinalEntities):-
+        findall(Entity, (cyclicPathInFCD([FRDWCC|T]), member(Entity, [FRDWCC|T])), Entities), 
+        removeDuplicates(Entities, [], FinalEntities).
 
-findSCCs:-
-	findall(F=V, 
-		(simpleFluent(F=V), isCyclic(F=V),
-		\+ inSCC(F=V),
-		inAnyCyclicPathOf(F=V, SCC), assertz(scc(SCC))),
+% check if the SCC of F=V has been derived at a previous step.
+inSCC(FRDWCC):-
+	fcdscc(SCC), member(FRDWCC, SCC).
+
+% For each cyclic simple fluent whose SCCs have not been derived at a previous step, compute and assert its SCC.
+findSCCsInFCD:-
+	findall(FRDWCC, 
+		(frdwcc(FRDWCC), isCyclic(FRDWCC), 
+		\+ inSCC(FRDWCC),
+		inAnyCyclicPathOf(FRDWCC, SCC), assertz(fcdscc(SCC))),
 		_EntitiesInCycle), fail.
 
-findSCCs:-
-	findall(F=V, (simpleFluent(F=V), \+isCyclic(F=V), \+inSCC(F=V), assertz(scc([F=V]))), _), fail.
+% For the entities U that are not cyclic, assert scc([U]).
+findSCCsInFCD:-
+	findall(FRDWCC, (frdwcc(FRDWCC), \+isCyclic(FRDWCC), \+inSCC(FRDWCC), assertz(fcdscc([FRDWCC]))), _).
 
-findSCCs:-
-	findall(E, (event(E), assertz(scc([E]))), _), fail.
 
-findSCCs:-
-	findall(F=V, (sDFluent(F=V), assertz(scc([F=V]))), _).
+flattenFCDSCC([], CDC, CDC).
 
-inSCC(F=V):-
-	scc(SCC), member(F=V, SCC).
+flattenFCDSCC([FRDWCC|RestFRDWCC], CurrentCDC, FinalCDC):-
+    append(FRDWCC, CurrentCDC, NewCDC),
+    flattenFCDSCC(RestFRDWCC, NewCDC, FinalCDC).
 
-% all entities in SCC depend on Entity, i.e., there is at least one Ent in SCC such that dependency(Entity,Ent).
-sccLevel(SCC, Level):-
-	findall(DependsOn, (member(Entity, SCC), dependency(DependsOn, Entity), \+member(DependsOn, SCC)), DirectDependencies),
-	maxCachingLevel(DirectDependencies, -1, LevelDep),
-	Level is LevelDep + 1.
+findCDCs:-
+    findall(FCDSCC, (fcdscc(FCDSCC), flatten(FCDSCC,CDC), assertz(cdc(CDC))), _).
 
-maxCachingLevel([], Level, Level).
-maxCachingLevel([Entity|Rest], CurrLevel, Level):-
-	entityCachingLevel(Entity, EntityLevel),
-	EntityLevel>CurrLevel, !,
-	maxCachingLevel(Rest, EntityLevel, Level).
-maxCachingLevel([_Entity|Rest], CurrLevel, Level):-
-	maxCachingLevel(Rest, CurrLevel, Level).
+% check if the SCC of F=V has been derived at a previous step.
+inCDC(U, CDC):-
+    cdc(CDC), member(U, CDC).
+
+findEdgesInContractedGraph:-
+    % Each edge in the f-contracted graph is transformed into an edge of the contracted graph, which connects the corresponding CDC-vertices.
+    % The edges in the contracted graph are unique.
+    % The vertices of these new edges are marked with the CDCs of the dependency graph.
+    findall((U1,U2), (idependency(U1,U2), inCDC(U1,CDC1), inCDC(U2,CDC2), \+ CDC1=CDC2, \+cdedge(CDC1, CDC2), assertz(cdedge(CDC1, CDC2))), _).
+
+
+iEdgeInCDC(CDC):-
+    member(U1, CDC), 
+    member(U2, CDC),        
+    idependency(U1,U2), !.
+
+assertCyclic:-
+	findall(CDC,
+		(cdc(CDC),
+                iEdgeInCDC(CDC),
+		assertCyclic(CDC)),
+		_).
+
+assertCyclic([]).
+assertCyclic([F=V|Rest]):-
+	findall(F=V, (simpleFluent(F=V), assertz(cyclic(F=V))), _), 
+	assertCyclic(Rest).
+
+getProcessingOrder([], _Visited, []).
+getProcessingOrder([U|RestU], Visited, CDCSorted):-
+    member(U, Visited), !,
+    getProcessingOrder(RestU, Visited, CDCSorted).
+getProcessingOrder([U|RestU], Visited, CDCSorted):-
+    % \+ member(U, Visited),
+    fdependency(U,V),
+    member(V, Visited), !,
+    getProcessingOrder(RestU, [U|Visited], CDCSortedPrefix),
+    append(CDCSortedPrefix, [U], CDCSorted).
+getProcessingOrder([U|RestU], Visited, CDCSorted):-
+    % \+ member(U, Visited),
+    fdependency(U,V), !,
+    % \+ member(V, Visited), !,
+    getProcessingOrder([V,U|RestU], Visited, CDCSorted).
+getProcessingOrder([U|RestU], Visited, CDCSorted):-
+    \+ fdependency(U, _), !,
+    getProcessingOrder(RestU, [U|Visited], CDCSortedPrefix),
+    append(CDCSortedPrefix, [U], CDCSorted).
+
+assertCDCsInList([]).
+assertCDCsInList([CDC|RestCDCs]):-
+    assertz(cdc(CDC)),
+    assertCDCsInList(RestCDCs).
+
+sortCDCsbyProcessingOrder:-
+    findall(CDCSorted, (cdc(CDC), \+iEdgeInCDC(CDC), getProcessingOrder(CDC, [], CDCSorted), retract(cdc(CDC))), ListOfSortedCDCs),
+    assertCDCsInList(ListOfSortedCDCs).
+
+getCDCLevel(CDC, 0):-
+    \+ cdedge(_, CDC), !.
+
+getCDCLevel(CDC, Level):-
+    findall(LevelPrev, (cdedge(CDCPrev, CDC), getCDCLevel(CDCPrev, LevelPrev)), PrevLevels),
+    max_list(PrevLevels, MaxPrevLevel),
+    Level is MaxPrevLevel + 1.
+
+findCDCLevels:-
+    findall(CDC, (cdc(CDC), getCDCLevel(CDC, Level), assertz(cdcLevel(CDC, Level))), _).
 
 entityCachingLevel(Entity, Level):-
-	sccOfEntity(Entity, SCC), 
-	sccLevel(SCC, Level).
+    cdcOfEntity(Entity, CDC),
+    cdcLevel(CDC, Level).
 
-sccOfEntity(Entity, SCC):-
-	scc(SCC), member(Entity, SCC).
+cdcOfEntity(Entity, CDC):-
+	cdc(CDC), member(Entity, CDC).
 
 % State that the predicated declared with the dynamicDomain/1 are dynamic predicates at the top of the compiled file.
 deriveDynamicEntities:-
@@ -1527,16 +1712,16 @@ writeCachingOrder :-
 	% derive hierachical levels of SCCs and write cachingOrder2 rules in the correct order.
 	writeCachingOrder(1).
 
+writeAndRetractCyclic:-
+	findall(F=V, (simpleFluent(F=V), cyclic(F=V), write('cyclic('), write(F=V), write(').'), nl, retract(cyclic(F=V))), _), nl.
 
 % writeCachingOrder(+Level)
 % if there are entity with hierarchical level = <Level>,
 % then write the corresponding rules and move to the next level.
 writeCachingOrder(Level):-
-	findall(Entity, (outputEntity(Entity), entityCachingLevel(Entity, Level)), Entities),
-        %write('Level: '), write(Level), nl,
-        %write('Entities: '), write(Entities), nl,
-	\+ Entities= [], !,
-	writeCachingOrderRulesOf(Entities, Level),
+	findall(CDC, (cdc(CDC), cdcLevel(CDC, Level)), CDCsInLevel),
+	\+ CDCsInLevel = [], !,
+	writeCachingOrderRulesOfCDCs(CDCsInLevel, Level),
 	NextLevel is Level + 1,
 	writeCachingOrder(NextLevel).
 	
@@ -1544,42 +1729,48 @@ writeCachingOrder(Level):-
 % So, retract all cachingLevels and exit.
 writeCachingOrder(_).
 
+writeCachingOrderRulesOfCDCs([], _Level).
+writeCachingOrderRulesOfCDCs([CDC|RestCDCs], Level):-
+    writeCachingOrderRulesOf(CDC, 1, Level),
+    writeCachingOrderRulesOfCDCs(RestCDCs, Level).
+
 % writeCachingOrderRulesOf(+Entities)
 % write the cachingOrder2 rules of all given entities.
-writeCachingOrderRulesOf([], _Level).
-writeCachingOrderRulesOf([Entity|Rest], Level):-
+writeCachingOrderRulesOf([], _ProcOrd, _Level).
+writeCachingOrderRulesOf([Entity|Rest],  ProcOrd, Level):-
         %findall(Entity, (extractEntity(Entity, Entity0), 
 	indexOf(Index, Entity),
         % If there is a grounding declaration for <Entity>:
 	clause(grounding(Entity), Body), !,
+        freeConstants(Entity, EntityNoConst), 
         % Write cachingOrder2 rule with body "grounding" facts.
-	write('cachingOrder2('), write(Index), write(', '), write(Entity), write(') :-'), write(' % level: '), write(Level), nl, 
-	tab(5), write(Body), write('.'), nl, nl, 
-	writeCachingOrderRulesOf(Rest, Level).
-writeCachingOrderRulesOf([Entity|Rest], Level):-
+	write('cachingOrder2('), write(Index), write(', '), write(EntityNoConst), write(') :-'), write(' % level in dependency graph: '), write(Level), write(', processing order in component: '), write(ProcOrd), nl, 
+	tab(5), write(Body), write('.'), nl, nl,
+        NextProcOrd is ProcOrd + 1,
+	writeCachingOrderRulesOf(Rest, NextProcOrd, Level).
+
+% If there is no grounding rule for an entity, then RTEC should process that entity?
+% If the answer is no, use the following rule:
+writeCachingOrderRulesOf([_|Rest], ProcOrd, Level):-
+    writeCachingOrderRulesOf(Rest, ProcOrd, Level).
+% If the answer is yes, use the following rule:
+%writeCachingOrderRulesOf([Entity|Rest], ProcOrd, Level):-
         %findall(Entity, (extractEntity(Entity, Entity0), write('Entity: '), write(Entity), nl,
-	indexOf(Index, Entity),
+        %indexOf(Index, Entity),
         % There is no grounding declaration for <Entity>:
         %\+ clause(grounding(Entity), Body),
         % So, write a cachingOrder2 fact:
-	write('cachingOrder2('), write(Index), write(', '), write(Entity), write(').'), write(' % level: '), write(Level), nl,
+        %write('cachingOrder2('), write(Index), write(', '), write(Entity), write(').'), write(' % level in dependency graph: '), write(Level), write(', processing order in component: '), write(ProcOrd), nl,
+        %NextProcOrd is ProcOrd + 1,
         %tab(5), write(Body), write('.'), nl, nl), _), 
-	writeCachingOrderRulesOf(Rest, Level).
+        %writeCachingOrderRulesOf(Rest, NextProcOrd, Level).
 
-assertCyclic:-
-	findall(SCC,
-		(scc(SCC), 
-		SCC=[_,_|_],
-		assertCyclic(SCC)),
-		_).
 
-assertCyclic([]).
-assertCyclic([F=V|Rest]):-
-	findall(F=V, (simpleFluent(F=V), assertz(cyclic(F=V))), _), 
-	assertCyclic(Rest).
 
-writeAndRetractCyclic:-
-	findall(F=V, (simpleFluent(F=V), cyclic(F=V), write('cyclic('), write(F=V), write(').'), nl, retract(cyclic(F=V))), _), nl.
+
+
+
+
 
 %%%%%%% DEPENDENCY GRAPH GENERATION %%%%%%%%%
 % The following code creates a specification of the dependency graph in the DOT language.
@@ -1595,7 +1786,7 @@ createDependencyGraphTxt(DGFile, EventsFlag):-
 	tell(DGFile),
 	write("digraph\n{\n\tnode [shape=record, style=filled, fillcolor=white, fontsize=16.0];\n\trankdir=LR;\n\tranksep=\"1.2 equally\"\n\n"),
 	% first, we specify the entities that are in each level of the graph.
-	writeSCCLevelByLevel(EventsFlag),
+	writeCDCLevelByLevel(EventsFlag),
 	write("\n"),
 	% next, we specify the edges, i.e, all dependencies among entities.
 	writeAllDependencies(EventsFlag),
@@ -1603,17 +1794,18 @@ createDependencyGraphTxt(DGFile, EventsFlag):-
 	told.
 
 
-isOutputEntity(U):-
-	% we need to prove that U is in at least one dependency(_,U) fact, so matching once is sufficient.
-	% make sure we do not backtrack with a cut. 
-	dependency(_, U), !. 
+anyDependency(U1,U2):-
+    idependency(U1,U2).
+
+anyDependency(U1,U2):-
+    fdependency(U1,U2).
 
 
 writeAllDependencies(EventsFlag):-
-		findall(dependency(DependsOn, Entity),
-	   		(dependency(DependsOn, Entity),
+		findall((DependsOn, Entity),
+	   		(anyDependency(DependsOn, Entity),
 			 % if <EventsFlag> is withoutEvents, then do not write edges stemming from the first level of the hierarchy.
-			 (EventsFlag=withoutEvents -> isOutputEntity(DependsOn) ; EventsFlag=withEvents), 
+			 (EventsFlag=withoutEvents -> outputEntity(DependsOn) ; EventsFlag=withEvents), 
 			 % Fetch the hierarchy level of each entity and make sure they are different, i.e., the entities are not in a cycle.
 			 entityCachingLevel(DependsOn, LevelSource),
 			 entityCachingLevel(Entity, LevelTarget),
@@ -1624,44 +1816,41 @@ writeAllDependencies(EventsFlag):-
 			 writeEntityUnderscores(Entity), write("\"\n"))
 			 , _).
 
-%writeAllDependencies(withoutEvents):-	
-%	findall(dependency(DependsOn, Entity), (dependency(DependsOn, Entity), isOutputEntity(DependsOn), entityCachingLevel(DependsOn, LevelSource), entityCachingLevel(Entity, LevelTarget), \+LevelSource=LevelTarget, write("\t"), write(LevelSource), write(":\""), writeEntityUnderscores(DependsOn), write("\" -> "), write(LevelTarget), write(":\""), writeEntityUnderscores(Entity), write("\"\n")), _).
+writeCDCLevelByLevel(withEvents):-
+	!, writeCDCLevelByLevel(0).
 
-writeSCCLevelByLevel(withEvents):-
-	!, writeSCCLevelByLevel(0).
+writeCDCLevelByLevel(withoutEvents):-
+	!, writeCDCLevelByLevel(1).
 
-writeSCCLevelByLevel(withoutEvents):-
-	!, writeSCCLevelByLevel(1).
+writeCDCLevelByLevel(Level):-
+	findall(CDC, (cdc(CDC), cdcLevel(CDC,Level)), CDCs),
+	CDCs=[], !.
 
-writeSCCLevelByLevel(Level):-
-	findall(SCC, (scc(SCC), sccLevel(SCC,Level)), SCCs),
-	SCCs=[], !.
-
-writeSCCLevelByLevel(Level):-
-	findall([SCC, Color], (scc(SCC), 
-						(length(SCC, 1), Color=black ; length(SCC, Len), Len>1, getNextColor(Color)),
-					 		sccLevel(SCC,Level)), SCCAndColors),
+writeCDCLevelByLevel(Level):-
+	findall([CDC, Color], (cdc(CDC), cdcLevel(CDC,Level),
+			       (length(CDC, 1), Color=black ; length(CDC, Len), Len>1, getNextColor(Color))),
+				CDCAndColors),
 	write("\t"), write(Level), write(" [shape=none label=<<table border=\"0\" cellspacing=\"0\">\n"),
-	writeAllEntitiesInSCCsAndColors(SCCAndColors),
+	writeAllEntitiesInCDCsAndColors(CDCAndColors),
 	write("\t</table>>\n\t]\n\n"),
 	NextLevel is Level + 1,
-	writeSCCLevelByLevel(NextLevel).
+	writeCDCLevelByLevel(NextLevel).
 
-writeAllEntitiesInSCCsAndColors([]).
-writeAllEntitiesInSCCsAndColors([[SCC, Color]|Rest]):-
-	writeEntitiesWithColor(SCC, Color),
-	writeAllEntitiesInSCCsAndColors(Rest).
+writeAllEntitiesInCDCsAndColors([]).
+writeAllEntitiesInCDCsAndColors([[CDC, Color]|Rest]):-
+	writeEntitiesWithColor(CDC, Color),
+	writeAllEntitiesInCDCsAndColors(Rest).
 	
 writeEntitiesWithColor([], _Color).
 writeEntitiesWithColor([U|Rest], Color):-
-	(dependency(U,_) ; dependency(_,U)), !, % write entities having at least one incoming or outgoing edge.
+	(anyDependency(U,_) ; anyDependency(_,U)), !, % write entities having at least one incoming or outgoing edge.
 	write("\t\t<tr><td port=\""), writeEntityUnderscores(U), write("\" border=\"1\" color=\""), write(Color), write("\">"), writeEntityUnderscores(U), write("</td></tr>\n"),
 	writeEntitiesWithColor(Rest, Color).
 writeEntitiesWithColor([_U|Rest], Color):-
 	writeEntitiesWithColor(Rest, Color).
 
 :- dynamic nextColor/1.
-% color each cycle (SCC with more that one entity) with a different color, if possible.
+% color each cycle (CDC with more that one entity) with a different color, if possible.
 % reuse cyclicly the colors in the following list.
 nextColor(0).
 graphVizColors([red, blue, green4, orangered1, steelblue3, yellow3, violetred1, thistle2]).
@@ -1673,11 +1862,11 @@ getNextColor(Color):-
 	ColorIDNext is (ColorID +1) mod ColorsNo,
 	assertz(nextColor(ColorIDNext)).
 
-writeAllEntitiesInSCC([U]):- !,
+writeAllEntitiesInCDC([U]):- !,
 	write("<"), writeEntityUnderscores(U), write("> "), writeEntityUnderscores(U), write("\"];\n").
-writeAllEntitiesInSCC([U|Rest]):-
+writeAllEntitiesInCDC([U|Rest]):-
 	write("<"), writeEntityUnderscores(U), write("> "), writeEntityUnderscores(U), write("|"),
-	writeAllEntitiesInSCC(Rest).
+	writeAllEntitiesInCDC(Rest).
 
 writeEntityUnderscores(F=V):-
 	var(V), !, writeEntityUnderscores(F), write("="), write("_").
@@ -1721,14 +1910,16 @@ writeArgsUnderscores([_Arg|RestArgs]):-
 	write("_, "),
 	writeArgsUnderscores(RestArgs).
 
+/*
 createDependenciesFile(File):-
 	tell(File),
-	findall(dependency(DependsOn, Entity), (dependency(DependsOn, Entity), writeDependency(DependsOn, Entity)), _),
+	findall((DependsOn, Entity), (anyDependency(DependsOn, Entity), writeDependency(DependsOn, Entity)), _),
 	told.
 
 writeDependency(DependsOn, Entity):-
-	scc(SCC), member(DependsOn, SCC), member(Entity, SCC), !,
+	cdc(CDC), member(DependsOn, CDC), member(Entity, CDC), !,
 	write("cyclic_dependency("), writeEntityUnderscores(DependsOn), write(","), writeEntityUnderscores(Entity), write(").\n").
 
 writeDependency(DependsOn, Entity):-
 	write("dependency("), writeEntityUnderscores(DependsOn), write(","), writeEntityUnderscores(Entity), write(").\n").
+*/

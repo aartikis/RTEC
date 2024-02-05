@@ -39,7 +39,8 @@ isThereASimpleFPList(_Index, _U, []).
 setTheSceneSimpleFluent(_EPList, F=V, InitTime, StPoint) :-
 	InitTime=<0,
 	( 
-		initially(F=V), StPoint=[0] 
+                %initially(F=V), StPoint=[0] 
+                initiatedAt(F=V, -1, -1, 0), StPoint=[0]
 		;
 		StPoint=[] 
 	), !.
@@ -74,8 +75,7 @@ computeStartingPoints(F=V, InitTime, QueryTime, InitList) :-
 
 initList(F=V, InitTime, QueryTime, InitList) :-
 	EndTime is QueryTime+1,
-	setof(T,(initPoint(F=V, InitTime, EndTime, T)), InitList), 
-        !.
+	setof(T, (initPoint(F=V, InitTime, EndTime, T)), InitList), !.
 
 % if there is no initiating point
 
@@ -97,7 +97,12 @@ computeEndingPoints(F=V, InitTime, QueryTime, TerminList) :-
 
 terminList(F=V, InitTime, QueryTime, TerminList) :-
 	EndTime is QueryTime+1,
+<<<<<<< HEAD
 	setof(T,(termPoint(F=V, InitTime, EndTime, T)), TerminList), !.
+=======
+        %setof(T, termPoint(F=V, InitTime, EndTime, T), TerminList), !.
+        setof(T, (termPoint(F=V, InitTime, EndTime, T)), TerminList), !.
+>>>>>>> 502b8e22dcb2ce5e3f4ff6fe99a2dd2c387e0cf2
 
 % if there is no terminating point
 
@@ -115,8 +120,8 @@ broken(U, Ts, Tf, T) :-
 	terminatedAt(U, Ts, Tf, T).
 
 broken(F=V1, Ts, Tstar, T) :-
-	simpleFluent(F=V2), \+V2=V1,
-	initiatedAt(F=V2, Ts, Tstar, T). 
+       simpleFluent(F=V2), \+V2=V1,
+       initiatedAt(F=V2, Ts, Tstar, T). 
 	%(strong_initiates ; V1 \= V2).   
   
 % strong_initiates.
@@ -128,15 +133,15 @@ strong_initiates :- fail.    %% weak initiates
 addPoint([], L, L) :- !.
 addPoint([P], L, [P|L]).
 
-/****** store the starting points of maxDuration fluents ******/
+/****** store the starting points of fi fluents ******/
 
 storeStartingPoints(_, _, []) :- !.
 storeStartingPoints(Index, F=V, SPoints) :-
-	maxDuration(F=V, _, _),
+	fi(F=V, _, _),
 	retract(startingPoints(Index, F=V, _)), !,
 	assertz(startingPoints(Index, F=V, SPoints)).
 storeStartingPoints(Index, F=V, SPoints) :-
-	maxDuration(F=V, _, _), !,
+	fi(F=V, _, _), !,
 	assertz(startingPoints(Index, F=V, SPoints)).
 storeStartingPoints(Index, F=V, SPoints) :-
 	cyclic(F=V),
@@ -223,9 +228,4 @@ updatesimpleFPList(_Index, _U, [], []) :- !.
 
 updatesimpleFPList(Index, F=V, NewPeriods, BrokenPeriod) :- 
 	assertz(simpleFPList(Index, F=V, NewPeriods, BrokenPeriod)).
-
-
-
-
-
 

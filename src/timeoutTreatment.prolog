@@ -1,7 +1,7 @@
 /*
 -Distinguished between deadline fluents that are cyclic and deadline fluents that are not cyclic. In the latter case, checking already computed starting points is sufficient, and we do not re-evaluate initiatedAt rules. Eg, (a) the body initiatedAt condition in the first initiatedAt rule above is replaced by checking starting points; (b) the third clause of brokenOrReInitiated is not evaluated. 
--brokenOrReInitiated above should NOT call the initiatedAt clauses of timeoutTreatment.prolog in the case of maxDurationUE. I resolved with the use of a dynamic global variable, inertiaCheck, which is asserted/retracted at the appropriate places. 
--in maxDurationUE, the fluent is now extended when the re-initiation takes place at the same time as the deadline.
+-brokenOrReInitiated above should NOT call the initiatedAt clauses of timeoutTreatment.prolog in the case of fi/3 and p/1. I resolved with the use of a dynamic global variable, inertiaCheck, which is asserted/retracted at the appropriate places. 
+-in the case of fi/3 and p/1, the fluent is now extended when the re-initiation takes place at the same time as the deadline.
 
 
 After reconsidering cycles treatment:
@@ -21,17 +21,14 @@ brokenOnce: shall we enforce early that T2>T1?
 
 % these predicates are defined in this file
 % and may also be defined in an event description
-:- multifile initiatedAt/4, maxDuration/3.
+:- multifile initiatedAt/4, fi/3, p/1.
 
 :- dynamic inertiaCheck/1.
-
-maxDuration(F=V, NewF=NewV, Duration) :-
-	maxDurationUE(F=V, NewF=NewV, Duration).	
 
 %%% initiatedAt(+U, +T1, -T, +T2) %%%	
 % initiatedAt/4 for deadline fluents	
 initiatedAt(F=NewV, T1, T, T2) :-
-        maxDuration(F=V, F=NewV, Duration),
+        fi(F=V, F=NewV, Duration),
         % do not evaluate dInitiatedAt/5 clauses to look for breaking points 
         % of F=V between an initiation of F=V and its deadline 
         % when the duration of F=V may be extended
@@ -90,7 +87,7 @@ dInitiatedAt(F=V, Duration, T1, T, T2) :-
 % fluent duration MAY be extended
 % ie F=V must not be re-initiated and must not be broken in [T1,T2) 
 deadlineConditions(Index, F=V, T1, T2) :-
-	maxDurationUE(F=V, _, _), 
+	p(F=V),
 	% extend the period in which we look for re-initiations
 	% so that a re-initiation takes precedence over the deadline  
 	% (the deadline will not take place)
@@ -107,7 +104,7 @@ deadlineConditions(Index, F=V, T1, T2) :-
 % in this case we need to retract the inertiaCheck flag 
 % and indicate failure of deadlineConditions
 deadlineConditions(_Index, F=V, _T1, _T2) :-
-    maxDurationUE(F=V, _, _), !,
+	p(F=V), !,
 	retract(inertiaCheck(F=V)),
 	fail.
 % fluent duration MAY NOT be extended	

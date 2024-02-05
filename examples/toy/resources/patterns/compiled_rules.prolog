@@ -67,6 +67,6 @@ cachingOrder2(_2538, rich(_2538)=true) :- % level: 1
 cachingOrder2(_2522, location(_2522)=_2518) :- % level: 1
      person(_2522),place(_2518).
 
-cachingOrder2(_3028, happy(_3028)=true) :- % level: 2
-     person(_3028).
+cachingOrder2(_2682, happy(_2682)=true) :- % level: 2
+     person(_2682).
 

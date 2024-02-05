@@ -76,13 +76,13 @@ default(end_time, feedback_loops, 100).
 % 	continuousQueries(ApplicationName, [clock_tick=ClockTick]).
 % WARNING: Changing the value of clock_tick in existing applications may affect the 
 % 		   correctness of the results.
-default(clock_tick, toy, 1).
-default(clock_tick, maritime, 1).
-default(clock_tick, caviar, 40).
-default(clock_tick, voting, 1).
-default(clock_tick, netbill, 1).
-default(clock_tick, ctm, 1).
-default(clock_tick, feedback_loops, 1).
+default(clock_tick, toy, 1):- !.
+default(clock_tick, maritime, 1):- !.
+default(clock_tick, caviar, 40):- !.
+default(clock_tick, voting, 1):- !.
+default(clock_tick, netbill, 1):- !.
+default(clock_tick, ctm, 1):- !.
+default(clock_tick, feedback_loops, 1):- !.
 default(clock_tick, _, 1).
 
 
@@ -96,54 +96,50 @@ default(results_directory, Application, Directory):-
 	atom_concat('../examples/', Application, Dir0),
 	atom_concat(Dir0, '/results/', Directory).
 
-default(goals, toy, []):- !.
-default(goals, maritime, []):- !.
-default(goals, caviar, []):- !.
-default(goals, voting, []):- !.
-default(goals, netbill, []):- !.
-default(goals, ctm, []):- !.
-default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]):- !.
-default(goals, _Application, []).
+default(output_mode, toy, file):- !.
+default(output_mode, maritime, file):- !.
+default(output_mode, caviar, file):- !.
+default(output_mode, voting, file):- !.
+default(output_mode, netbill, file):- !.
+default(output_mode, ctm, file):- !.
+default(output_mode, feedback_loops, file):- !.
+default(output_mode, _, file).
+
+%default(goals, toy, []):- !.
+%default(goals, maritime, []):- !.
+%default(goals, caviar, []):- !.
+%default(goals, voting, []):- !.
+%default(goals, netbill, []):- !.
+%default(goals, ctm, []):- !.
+%default(goals, feedback_loops, [initialiseLoop(simple_neg, [0, 0])]):- !.
+%default(goals, _Application, []).
 
 % The default event description files for each application. 
 % In order to run an application for a different value of this parameter, run:
 %   continuousQueries(ApplicationName, [event_description_files=EventDescriptionFiles]).
 default(event_description_files, toy, Files):-
-	Files=['../examples/toy/resources/patterns/compiled_rules.prolog'].
-	%'../examples/toy/resources/patterns/toy_declarations.prolog'].
-			%'../examples/toy/dataset/auxiliary/toy_var_domain.prolog'].
+	Files=['../examples/toy/resources/patterns/compiled_rules.prolog', 
+		'../examples/toy/dataset/auxiliary/toy_var_domain.prolog'].
 
 default(event_description_files, maritime, Files):-
 	Files=['../examples/maritime/resources/patterns/compiled_rules.prolog', 
-	%'../examples/maritime/resources/patterns/maritime_rules_compiled.prolog',
-	%	'../examples/maritime/resources/patterns/maritime_declarations.prolog',
 			'../examples/maritime/resources/auxiliary/compare.prolog',
 			'../examples/maritime/resources/auxiliary/loadStaticData.prolog'].
 
 default(event_description_files, caviar, Files):-
 	Files=['../examples/caviar/resources/patterns/compiled_rules.prolog', 
-			%'../examples/caviar/resources/patterns/caviar_declarations.prolog',
-			%'../examples/caviar/resources/patterns/caviar_rules_compiled.prolog',
 			'../examples/caviar/resources/auxiliary/pre-processing.prolog'].
-			%'../examples/caviar/dataset/auxiliary/list-of-ids.prolog'].
 
 default(event_description_files, voting, Files):-
 	Files=[ '../examples/voting/resources/patterns/compiled_rules.prolog', 
-			%'../examples/voting/resources/patterns/voting_rules_compiled.prolog', 
-			%'../examples/voting/resources/patterns/precompiled_rules.prolog', 
-			%'../examples/voting/resources/patterns/voting_declarations.prolog',
 			'../examples/voting/dataset/auxiliary/voting_static_generator.prolog'].
 
 default(event_description_files, netbill, Files):-
 	Files=['../examples/netbill/resources/patterns/compiled_rules.prolog', 
-	%'../examples/netbill/resources/patterns/netbill_declarations.prolog',
-	%	'../examples/netbill/resources/patterns/netbill_rules_compiled.prolog',
 			'../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog'].
 
 default(event_description_files, ctm, Files):-
 	Files=['../examples/ctm/resources/patterns/compiled_rules.prolog'].
-			%'../examples/ctm/resources/patterns/ctm_rules_compiled.prolog',
-			%'../examples/ctm/resources/patterns/ctm_declarations.prolog'].
 			%'../examples/ctm/dataset/auxiliary/vehicles.prolog'].
 
 default(event_description_files, feedback_loops, Files):-
@@ -188,26 +184,22 @@ default(sde_batch, ctm, 1000):- !.
 default(sde_batch, feedback_loops, 10):- !.
 default(sde_batch, _Application, 10).
 
-% todo: dynamic grounding should be on by default.
-% The default execution flags for each application. 
-% The meaning of these flags is described below:
-% 	dynamic_grounding_flag: 
-%	stream_order_flag:
-%	preprocessing_flag:
-%default(dynamic_grounding_flag, toy, dynamicgrounding). 
-%default(dynamic_grounding_flag, maritime, dynamicgrounding). 
-%default(dynamic_grounding_flag, caviar, dynamicgrounding). 
-%default(dynamic_grounding_flag, voting, dynamicgrounding). 
-%default(dynamic_grounding_flag, netbill, dynamicgrounding). 
-%default(dynamic_grounding_flag, ctm, dynamicgrounding). 
-%default(dynamic_grounding_flag, feedback_loops, nodynamicgrounding). 
+% Default memory size for allen relations.
+default(allen_memory, toy, 10):- !.
+default(allen_memory, maritime, 86400):- !.
+default(allen_memory, caviar, 100000):- !.
+default(allen_memory, voting, 10):- !.
+default(allen_memory, netbill, 10):- !.
+default(allen_memory, ctm, 10000):- !.
+default(allen_memory, feedback_loops, 10):- !.
+default(allen_memory, _Application, 10).
+
+% Default values for flag about dynamic grounding, stream ordering and stream preprocessing.
 default(dynamic_grounding_flag, _Application, dynamicgrounding). 
 default(stream_order_flag, _Application, unordered). 
 default(preprocessing_flag, _Application, nopreprocessing). 
 
-% The default values of the memory management thresholds used by RTEC.
-% 	forget_threshold:
-%	dynamic_grounding_threshold:
+% Default values for the memory management thresholds used by RTEC.
 default(forget_threshold, _Application, -1).
 default(dynamic_grounding_threshold, _Application, -1).
 
@@ -268,9 +260,8 @@ set_parameter([ParameterName=Value|_T], ParameterName, _Application, _InputMode,
 set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 	set_parameter(T, ParameterName, Application, InputMode, Value).	
 
-handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, Goals) :-
+handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, OutputMode, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate) :-
 	% Set window and step size
-	write(ParameterList), nl,
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
 	% Start and end times of reasoning
@@ -280,6 +271,8 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	set_parameter(ParameterList, clock_tick, App, ClockTick),
 	% The rate at which the input stream have been sped up (in 'fifo' mode)
 	set_parameter(ParameterList, stream_rate, App, StreamRate),
+        % Set output mode: regular file or named pipe.
+	set_parameter(ParameterList, output_mode, App, OutputMode),
 	% Set directory for writing logs and the recognised intervals
 	set_parameter(ParameterList, results_directory, App, ResultsDir),
 	% Set prolog files to be consulted
@@ -287,17 +280,17 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	% Set mode of receiving streams of input events
 	set_parameter(ParameterList, input_mode, App, InputMode),
 	set_parameter(ParameterList, input_providers, App, InputMode, InputProviders),
-
 	set_parameter(ParameterList, dynamic_grounding_flag, App, DynamicGroundingFlag),
 	set_parameter(ParameterList, stream_order_flag, App, StreamOrderFlag),
 	set_parameter(ParameterList, preprocessing_flag, App, PreprocessingFlag),
 	set_parameter(ParameterList, forget_threshold, App, ForgetThreshold),
 	set_parameter(ParameterList, dynamic_grounding_threshold, App, DynamicGroundingThreshold),
 	set_parameter(ParameterList, sde_batch, App, SDEBatch),
-	set_parameter(ParameterList, goals, App, Goals),
+        %set_parameter(ParameterList, goals, App, Goals),
+	%set_parameter(ParameterList, allen_memory, App, AllenMem),
 	atom_concat(ResultsDir, '/log', ResultsDirLog),
-	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode], LogFile), % execution logs file
-	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode], ResultsFile). % recognised intervals file
+	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], LogFile), % execution logs file
+	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], ResultsFile). % recognised intervals file
 
 %% Auxiliary predicates to differentiate input/result files based on the parameter of the experiment. %%
 %% Usage:   add_info(+PrefixStr, +SuffixStr, +ParametersList, -FinalStr)							  %%
