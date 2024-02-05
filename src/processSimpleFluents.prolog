@@ -74,7 +74,8 @@ computeStartingPoints(F=V, InitTime, QueryTime, InitList) :-
 
 initList(F=V, InitTime, QueryTime, InitList) :-
 	EndTime is QueryTime+1,
-	setof(T, initPoint(F=V, InitTime, EndTime, T), InitList), !.
+	setof(T,(initPoint(F=V, InitTime, EndTime, T)), InitList), 
+        !.
 
 % if there is no initiating point
 
@@ -96,7 +97,7 @@ computeEndingPoints(F=V, InitTime, QueryTime, TerminList) :-
 
 terminList(F=V, InitTime, QueryTime, TerminList) :-
 	EndTime is QueryTime+1,
-	setof(T, termPoint(F=V, InitTime, EndTime, T), TerminList), !.
+	setof(T,(termPoint(F=V, InitTime, EndTime, T)), TerminList), !.
 
 % if there is no terminating point
 
@@ -155,8 +156,6 @@ holdsForSimpleFluent(_U, [], _InitTime, _QueryTime, []) :- !.
 holdsForSimpleFluent(U, PeriodList, InitTime, QueryTime, InitList) :-
 	% compute the ending points within (Qi-WM,Qi]
 	computeEndingPoints(U, InitTime, QueryTime, TerminList),
-        %write('Initiation Points for '), write(U), write(': '), write(InitList), nl,
-        %write('Termination Points for '), write(U), write(': '), write(TerminList), nl,
 	makeIntervalsFromSEPoints(InitList, TerminList, PeriodList).
       
 

@@ -1,5 +1,24 @@
 # Default values for the applications packed with RTEC.
 
+[quote]
+# RTEC execution parameters 
+event_description = '../examples/quote/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/quote/dataset/csv/netbill.csv']
+results_directory = "../examples/quote/results"
+window_size = 10
+step = 10
+start_time = 0
+end_time = 10
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/quote/dataset/auxiliary/netbill_static_generator.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/quote/resources/graphs'
+include_input = false
+
 [toy]
 # RTEC execution parameters 
 event_description = '../examples/toy/resources/patterns/rules.prolog'
@@ -82,8 +101,8 @@ event_description = '../examples/caviar/resources/patterns/rules.prolog'
 input_mode = "csv"
 input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
 results_directory = "../examples/caviar/results"
-window_size = 100000
-step = 100000
+window_size = 1007000
+step = 1007000
 start_time = 0
 end_time = 1007000
 clock_tick = 40

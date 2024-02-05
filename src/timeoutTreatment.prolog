@@ -30,8 +30,8 @@ maxDuration(F=V, NewF=NewV, Duration) :-
 
 %%% initiatedAt(+U, +T1, -T, +T2) %%%	
 % initiatedAt/4 for deadline fluents	
-initiatedAt(NewF=NewV, T1, T, T2) :-
-        maxDuration(F=V, NewF=NewV, Duration),
+initiatedAt(F=NewV, T1, T, T2) :-
+        maxDuration(F=V, F=NewV, Duration),
         % do not evaluate dInitiatedAt/5 clauses to look for breaking points 
         % of F=V between an initiation of F=V and its deadline 
         % when the duration of F=V may be extended
