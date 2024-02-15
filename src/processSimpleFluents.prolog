@@ -97,12 +97,7 @@ computeEndingPoints(F=V, InitTime, QueryTime, TerminList) :-
 
 terminList(F=V, InitTime, QueryTime, TerminList) :-
 	EndTime is QueryTime+1,
-<<<<<<< HEAD
 	setof(T,(termPoint(F=V, InitTime, EndTime, T)), TerminList), !.
-=======
-        %setof(T, termPoint(F=V, InitTime, EndTime, T), TerminList), !.
-        setof(T, (termPoint(F=V, InitTime, EndTime, T)), TerminList), !.
->>>>>>> 502b8e22dcb2ce5e3f4ff6fe99a2dd2c387e0cf2
 
 % if there is no terminating point
 

@@ -61,12 +61,12 @@ index(location(_2240)=_2300,_2240).
 index(happy(_2240)=true,_2240).
 
 
-cachingOrder2(_2538, rich(_2538)=true) :- % level: 1
-     person(_2538).
+cachingOrder2(_2550, rich(_2550)=true) :- % level in dependency graph: 1, processing order in component: 1
+     person(_2550).
 
-cachingOrder2(_2522, location(_2522)=_2518) :- % level: 1
-     person(_2522),place(_2518).
+cachingOrder2(_2528, location(_2528)=_2524) :- % level in dependency graph: 1, processing order in component: 1
+     person(_2528),place(_2524).
 
-cachingOrder2(_2682, happy(_2682)=true) :- % level: 2
-     person(_2682).
+cachingOrder2(_2776, happy(_2776)=true) :- % level in dependency graph: 2, processing order in component: 1
+     person(_2776).
 
