@@ -79,7 +79,11 @@ DECLARATIONS:
 
 :- set_prolog_flag(toplevel_print_options, [max_depth(400)]).
 :- use_module(library(lists)).
-:- use_module(library(socket)).
+
+loadSocketLibrary(socket):-
+    use_module(library(socket)), !.
+
+loadSocketLibrary(_).
 
 %:- ['compiler.prolog']. %% After adding indexOf in compiler, some unit tests fail... so comment it for now...
 :- ['inputModule.prolog'].
