@@ -1,5 +1,5 @@
-Critical and enriched point streams:
+Critical point streams:
 
-https://owncloud.skel.iit.demokritos.gr/index.php/s/v4UwB5ZqtfJbQFH
+https://owncloud.skel.iit.demokritos.gr/index.php/s/67dJSuymyIw1Mng
 
-After downloading these datasets, move *one* of them to the /csv folder.   
+After downloading the dataset, move it to the /csv folder.   
