@@ -1,4 +1,0 @@
-recognitions(predictions,y_aux,[[],true],[(1725197041,1726665841),(1727270641,1727778544)]).
-recognitions(predictions,y_aux,[[],false],[(1726665841,1727270641)]).
-recognitions(predictions,y,[[],true],[(1725197041,1726061041)]).
-
