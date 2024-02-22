@@ -1,0 +1,15 @@
++1+0+0+0+0+0+0+1+0+0+0+0+0+0+0+1+0+0+0+0+0+0+0+0+0+0+0+0+0+0
+
+Recognition Time average (ms)		: 0.1
+Recognition Time standard deviation (ms): 0.2999999999999999
+Recognition Time worst (ms)		: 1
+
+Input Entities average			: 0.1
+Input Entities standard deviation	: 0.3
+
+Output Entities (average number of fluent-value pairs)	: 1.1333333333333333
+Output Entities (standard deviation)	  		: 0.6182412330330468
+Output Entities (average number of intervals)	: 1.1333333333333333
+Output Entities (standard deviation)	  	: 0.6182412330330468
+Output Entities (average number of timepoints)	: 79031.96666666666
+Output Entities (standard deviation)	 	: 22824.31205605597
