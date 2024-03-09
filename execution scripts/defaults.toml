@@ -27,6 +27,25 @@
 #       dependency_graph_directory: The directory in which RTEC will store the dependency graph of the event description.
 #       include_input: If true, the dependency graph will include both input and output entities. Otherwise, the graph only includes output entities.
 
+[disease]
+# RTEC execution parameters 
+event_description = '../examples/disease/resources/patterns/rules.prolog'
+input_mode = "csv"
+input_providers = ['../examples/disease/dataset/csv/disease_data.csv']
+results_directory = "../examples/disease/results"
+window_size = 3110400
+step = 3110400
+start_time = 1725197000
+end_time = 1727270650
+clock_tick = 1
+goals = []
+background_knowledge = ['../examples/disease/dataset/auxiliary/domain_info.prolog']
+stream_rate = 1
+# Compiler parameters
+dependency_graph_flag = true
+dependency_graph_directory = '../examples/disease/resources/graphs'
+include_input = false
+
 [medical]
 # RTEC execution parameters 
 event_description = '../examples/medical/resources/patterns/rules.prolog'

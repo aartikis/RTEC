@@ -1,0 +1,9 @@
+recognitions(predictions,disease,[[mary,c34],true],[(1725369841,1728307401)]).
+recognitions(predictions,disease,[[thomas,i30],true],[(1725542641,1728307401)]).
+recognitions(predictions,disease,[[thomas,c34],true],[(1727270641,1728307401)]).
+recognitions(predictions,disease,[[gerald,j48],true],[(1726061041,1728307401)]).
+recognitions(predictions,disease,[[gerald,c34],true],[(1727270641,1728307401)]).
+recognitions(predictions,lungC_disease,[[mary],true],[(1725369841,1728307401)]).
+recognitions(predictions,lungC_disease,[[thomas],true],[(1727270641,1728307401)]).
+recognitions(predictions,lungC_disease,[[gerald],true],[(1727270641,1728307401)]).
+
