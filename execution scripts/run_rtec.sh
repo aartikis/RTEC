@@ -3,12 +3,12 @@
 # Author: Periklis Mantenoglou
 # Run rtec on an event description.
 
-# Load the functions in 'aux/utils.sh'
-. $(dirname "$0")/aux/utils.sh
+# Load the functions in 'auxiliary/utils.sh'
+. $(dirname "$0")/auxiliary/utils.sh
 
 # Parse parameters provided by the user
 input_parser $@
-# The parameters provided by the user are now stored in the variables with the corresponding names (see aux/utils.sh).
+# The parameters provided by the user are now stored in the variables with the corresponding names (see auxiliary/utils.sh).
 # The variables of the parameters that were not provided by the user do not have a value yet.
 
 # validate input here.
@@ -41,7 +41,7 @@ echo "Input stream providers: $input_providers"
 #echo "Dependency graph directory: $dependency_graph_directory"
 #printf "Will the dependency graph include input entities?: " && [ ! -z $include_input ] && echo "yes" || echo "no"
 
-compile_command="./aux/compile.sh --event-description=${event_description} "
+compile_command="./auxiliary/compile.sh --event-description=${event_description} "
 [ ! -z $dependency_graph ] && compile_command+="--dependency-graph "
 [ ! -z $dependency_graph_directory ] && compile_command+="--dependency-graph-directory=${dependency_graph_directory} "
 [ -z $include_input ] && compile_command+="--no-events"
