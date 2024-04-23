@@ -39,6 +39,8 @@ continuousQueries(App, ParamList) :-
     % The user may provide as input a list named 'Goals', which contains queries to be ran by this script before executing RTEC.
     %executeUserGoals(Goals), % run queries requested by the user.
     printLogo,
+    % load socket library if input mode is socket
+    loadSocketLibrary(InputMode),
     % Depending on the <InputMode>, get the input streams or the ids of the threads that read from fifos/a socket.
     init_input(InputMode, InputPaths, InputStreams, PointerPositions, InputThreadIDs),
     % Create a log file for writing execution statistics.

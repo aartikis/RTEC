@@ -22,7 +22,9 @@ grounding(lose_wallet(Person)) :- person(Person).
 grounding(win_lottery(Person)) :- person(Person).
 
 % Grounding of output entities
-grounding(location(Person)=Place) :- person(Person), place(Place).
+grounding(location(Person)=pub) :- person(Person).
+grounding(location(Person)=home) :- person(Person).
+grounding(location(Person)=work) :- person(Person).
 grounding(rich(Person)=true)      :- person(Person).
 grounding(happy(Person)=true)     :- person(Person).
 
