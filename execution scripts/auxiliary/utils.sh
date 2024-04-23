@@ -6,22 +6,16 @@ function get_all_defaults (){
 	application=$1
         # Execution Parameters
 	[ -z $window_size ] && window_size=`get_default_param $application window_size`
-        echo "Window size: $window_size"
 	[ -z $step ] && step=`get_default_param $application step`
-        echo "Step: $step"
 	[ -z $start_time ] && start_time=`get_default_param $application start_time`
-        echo "Start time: $start_time"
 	[ -z $end_time ] && end_time=`get_default_param $application end_time`
-        echo "End time: $end_time"
 	[ -z $clock_tick ] && clock_tick=`get_default_param $application clock_tick`
         # Input Specification Parameters
 	[ -z $input_mode ] && input_mode=`get_default_param $application input_mode`
 	[ -z $input_providers ] && input_providers=(`get_default_param $application input_providers`)
-        echo "Input Providers: $input_providers"
 	[ -z $stream_rate ] && stream_rate=`get_default_param $application stream_rate`
         # Knowledge Base
 	[ -z $event_description ] && event_description=`get_default_param $application event_description`
-        echo "Event Description: $event_description"
 	[ -z $background_knowledge ] && background_knowledge=(`get_default_param $application background_knowledge`)
         # Output Specification Parameters
 	[ -z $output_mode ] && output_mode=`get_default_param $application output_mode`

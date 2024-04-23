@@ -11,10 +11,12 @@ else
 fi
 
 # Load the functions in 'auxiliary/utils.sh'
-. $(dirname "$0")${sep}auxiliary${sep}utils.sh
+. "$(dirname "$0")"${sep}auxiliary${sep}utils.sh
 
 # Parse parameters provided by the user
 input_parser $@
+echo $application
+
 # The parameters provided by the user are now stored in the variables with the corresponding names (see auxiliary/utils.sh).
 # The variables of the parameters that were not provided by the user do not have a value yet.
 
@@ -59,6 +61,8 @@ case $? in
 	echo "Successful compilation! Compiled event description in: ${event_description%/*}${sep}compiled_rules.prolog"
 	;;
 	*)
+	echo "Compilation Failed..."
+	sleep 10
 	exit_func $?
 	;;
 esac
@@ -73,3 +77,5 @@ echo "Executing: $prolog_command"
 $prolog_command 
 
 [ $input_mode == "fifo" ] && delete_fifos
+
+sleep 5000

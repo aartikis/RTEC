@@ -1,90 +1,90 @@
-initiatedAt(rich(_5042)=true, _5058, _5012, _5064) :-
-     happensAtIE(win_lottery(_5042),_5012),
-     _5058=<_5012,
-     _5012<_5064.
+initiatedAt(rich(_8744)=true, _8760, _8714, _8766) :-
+     happensAtIE(win_lottery(_8744),_8714),
+     _8760=<_8714,
+     _8714<_8766.
 
-initiatedAt(location(_5042)=_5018, _5060, _5012, _5066) :-
-     happensAtIE(go_to(_5042,_5018),_5012),
-     _5060=<_5012,
-     _5012<_5066.
+initiatedAt(location(_8744)=_8720, _8762, _8714, _8768) :-
+     happensAtIE(go_to(_8744,_8720),_8714),
+     _8762=<_8714,
+     _8714<_8768.
 
-terminatedAt(rich(_5042)=true, _5058, _5012, _5064) :-
-     happensAtIE(lose_wallet(_5042),_5012),
-     _5058=<_5012,
-     _5012<_5064.
+terminatedAt(rich(_8744)=true, _8760, _8714, _8766) :-
+     happensAtIE(lose_wallet(_8744),_8714),
+     _8760=<_8714,
+     _8714<_8766.
 
-holdsForSDFluent(happy(_5042)=true,_5012) :-
-     holdsForProcessedSimpleFluent(_5042,rich(_5042)=true,_5058),
-     holdsForProcessedSimpleFluent(_5042,location(_5042)=pub,_5074),
-     union_all([_5058,_5074],_5012).
+holdsForSDFluent(happy(_8744)=true,_8714) :-
+     holdsForProcessedSimpleFluent(_8744,rich(_8744)=true,_8760),
+     holdsForProcessedSimpleFluent(_8744,location(_8744)=pub,_8776),
+     union_all([_8760,_8776],_8714).
 
-grounding(go_to(_5326,_5328)) :- 
-     person(_5326),place(_5328).
+grounding(go_to(_9028,_9030)) :- 
+     person(_9028),place(_9030).
 
-grounding(lose_wallet(_5326)) :- 
-     person(_5326).
+grounding(lose_wallet(_9028)) :- 
+     person(_9028).
 
-grounding(win_lottery(_5326)) :- 
-     person(_5326).
+grounding(win_lottery(_9028)) :- 
+     person(_9028).
 
-grounding(location(_5332)=pub) :- 
-     person(_5332).
+grounding(location(_9034)=pub) :- 
+     person(_9034).
 
-grounding(location(_5332)=home) :- 
-     person(_5332).
+grounding(location(_9034)=home) :- 
+     person(_9034).
 
-grounding(location(_5332)=work) :- 
-     person(_5332).
+grounding(location(_9034)=work) :- 
+     person(_9034).
 
-grounding(rich(_5332)=true) :- 
-     person(_5332).
+grounding(rich(_9034)=true) :- 
+     person(_9034).
 
-grounding(happy(_5332)=true) :- 
-     person(_5332).
+grounding(happy(_9034)=true) :- 
+     person(_9034).
 
-inputEntity(win_lottery(_5066)).
-inputEntity(go_to(_5066,_5068)).
-inputEntity(lose_wallet(_5066)).
+inputEntity(win_lottery(_8768)).
+inputEntity(go_to(_8768,_8770)).
+inputEntity(lose_wallet(_8768)).
 
-outputEntity(rich(_5146)=true).
-outputEntity(location(_5146)=pub).
-outputEntity(location(_5146)=home).
-outputEntity(location(_5146)=work).
-outputEntity(happy(_5146)=true).
+outputEntity(rich(_8848)=true).
+outputEntity(location(_8848)=pub).
+outputEntity(location(_8848)=home).
+outputEntity(location(_8848)=work).
+outputEntity(happy(_8848)=true).
 
-event(win_lottery(_5226)).
-event(go_to(_5226,_5228)).
-event(lose_wallet(_5226)).
+event(win_lottery(_8928)).
+event(go_to(_8928,_8930)).
+event(lose_wallet(_8928)).
 
-simpleFluent(rich(_5306)=true).
-simpleFluent(location(_5306)=pub).
-simpleFluent(location(_5306)=home).
-simpleFluent(location(_5306)=work).
+simpleFluent(rich(_9008)=true).
+simpleFluent(location(_9008)=pub).
+simpleFluent(location(_9008)=home).
+simpleFluent(location(_9008)=work).
 
-sDFluent(happy(_5386)=true).
+sDFluent(happy(_9088)=true).
 
-index(go_to(_5446,_5394),_5394).
-index(win_lottery(_5394),_5394).
-index(lose_wallet(_5394),_5394).
-index(rich(_5394)=true,_5394).
-index(location(_5394)=pub,_5394).
-index(location(_5394)=home,_5394).
-index(location(_5394)=work,_5394).
-index(happy(_5394)=true,_5394).
+index(go_to(_9148,_9096),_9096).
+index(win_lottery(_9096),_9096).
+index(lose_wallet(_9096),_9096).
+index(rich(_9096)=true,_9096).
+index(location(_9096)=pub,_9096).
+index(location(_9096)=home,_9096).
+index(location(_9096)=work,_9096).
+index(happy(_9096)=true,_9096).
 
 
-cachingOrder2(_5742, rich(_5742)=true) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5742).
+cachingOrder2(_9444, rich(_9444)=true) :- % level in dependency graph: 1, processing order in component: 1
+     person(_9444).
 
-cachingOrder2(_5720, location(_5720)=pub) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5720).
+cachingOrder2(_9422, location(_9422)=pub) :- % level in dependency graph: 1, processing order in component: 1
+     person(_9422).
 
-cachingOrder2(_5698, location(_5698)=home) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5698).
+cachingOrder2(_9400, location(_9400)=home) :- % level in dependency graph: 1, processing order in component: 1
+     person(_9400).
 
-cachingOrder2(_5676, location(_5676)=work) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5676).
+cachingOrder2(_9378, location(_9378)=work) :- % level in dependency graph: 1, processing order in component: 1
+     person(_9378).
 
-cachingOrder2(_6092, happy(_6092)=true) :- % level in dependency graph: 2, processing order in component: 1
-     person(_6092).
+cachingOrder2(_9794, happy(_9794)=true) :- % level in dependency graph: 2, processing order in component: 1
+     person(_9794).
 

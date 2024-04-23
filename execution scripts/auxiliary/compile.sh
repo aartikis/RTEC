@@ -42,8 +42,6 @@ if [ ! -z $dependency_graph ]; then
 	dependency_graph_png_file=${dependency_graph_directory}${sep}dependency_graph.png
 fi
 
-echo $sep
-
 Compiler=..${sep}src${sep}compiler.prolog
 
 if [ -z $dependency_graph ]
