@@ -15,7 +15,6 @@ fi
 
 # Parse parameters provided by the user
 input_parser $@
-echo $application
 
 # The parameters provided by the user are now stored in the variables with the corresponding names (see auxiliary/utils.sh).
 # The variables of the parameters that were not provided by the user do not have a value yet.
@@ -37,14 +36,14 @@ echo "Window size: $window_size"
 echo "Step: $step"
 echo "Start time: $start_time"
 echo "End time: $end_time"
-echo "Input mode: $input_mode"
-echo "Stream rate: $stream_rate"
+#echo "Input mode: $input_mode"
+#echo "Stream rate: $stream_rate"
 #echo "Clock tick: $clock_tick"
-#echo "Event description file (precompiled): $event_description"
+echo "Event description file (precompiled): $event_description"
 #echo "Background knowledge: $background_knowledge"
 echo "Input stream providers: $input_providers"
 #echo "Output mode: $output_mode"
-#echo "Results directory: $results_directory"
+echo "Results directory: $results_directory"
 #echo "Predicates to run before invoking RTEC: $goals"
 #printf "Will a dependency graph be produced?: " && [ ! -z $dependency_graph ] && echo "yes" || echo "no" 
 #echo "Dependency graph directory: $dependency_graph_directory"
@@ -73,7 +72,6 @@ esac
 [ $input_mode == "socket" ] && [ ! -S $input_providers ] && start_socket_writers
 
 set_prolog_command
-echo "Executing: $prolog_command"
 $prolog_command 
 
 [ $input_mode == "fifo" ] && delete_fifos

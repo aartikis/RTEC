@@ -27,25 +27,6 @@
 #       dependency_graph_directory: The directory in which RTEC will store the dependency graph of the event description.
 #       include_input: If true, the dependency graph will include both input and output entities. Otherwise, the graph only includes output entities.
 
-[quote]
-# RTEC execution parameters 
-event_description = '../examples/quote/resources/patterns/rules.prolog'
-input_mode = "csv"
-input_providers = ['../examples/quote/dataset/csv/netbill.csv']
-results_directory = "../examples/quote/results"
-window_size = 10
-step = 10
-start_time = 0
-end_time = 10
-clock_tick = 1
-goals = []
-background_knowledge = ['../examples/quote/dataset/auxiliary/netbill_static_generator.prolog']
-stream_rate = 1
-# Compiler parameters
-dependency_graph_flag = true
-dependency_graph_directory = '../examples/quote/resources/graphs'
-include_input = false
-
 [toy]
 # Execution Parameters 
 window_size = 50
@@ -64,7 +45,7 @@ background_knowledge = ['../examples/toy/dataset/auxiliary/toy_var_domain.prolog
 output_mode = "file"
 results_directory = "../examples/toy/results"
 # Compiler Parameters
-dependency_graph_flag = true
+dependency_graph_flag = false
 dependency_graph_directory = '../examples/toy/resources/graphs'
 include_input = false
 
@@ -86,7 +67,7 @@ background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog
 output_mode = "file"
 results_directory = "../examples/maritime/results"
 # Compiler Parameters
-dependency_graph_flag = true
+dependency_graph_flag = false
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
 
@@ -108,7 +89,7 @@ background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_gene
 output_mode = "fifo"
 results_directory = "../examples/voting/results"
 # Compiler parameters
-dependency_graph_flag = true
+dependency_graph_flag = false
 dependency_graph_directory = '../examples/voting/resources/graphs'
 include_input = false
 
@@ -130,7 +111,7 @@ background_knowledge = ['../examples/netbill/dataset/auxiliary/netbill_static_ge
 output_mode = "file"
 results_directory = "../examples/netbill/results"
 # Compiler Parameters
-dependency_graph_flag = true
+dependency_graph_flag = false
 dependency_graph_directory = '../examples/netbill/resources/graphs'
 include_input = false
 
@@ -152,7 +133,7 @@ background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.p
 output_mode = "file"
 results_directory = "../examples/caviar/results"
 # Compiler Parameters
-dependency_graph_flag = true
+dependency_graph_flag = false
 dependency_graph_directory = '../examples/caviar/resources/graphs'
 include_input = false
 
@@ -174,7 +155,7 @@ background_knowledge = ['../examples/ctm/dataset/auxiliary/vehicles.prolog']
 output_mode = "file"
 results_directory = "../examples/ctm/results"
 # Compiler Parameters
-dependency_graph_flag = true
+dependency_graph_flag = false
 dependency_graph_directory = '../examples/ctm/resources/graphs'
 include_input = false
 
