@@ -78,4 +78,4 @@ $prolog_command
 
 [ $input_mode == "fifo" ] && delete_fifos
 
-sleep 5000
+#sleep 5000
