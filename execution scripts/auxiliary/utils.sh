@@ -1,20 +1,27 @@
 #!/bin/bash
+
 function get_all_defaults (){
 	# Input: An application name
 	# Effects: For each parameter, if a value was not provided by the user, we assign to it its default value.
 	application=$1
         # Execution Parameters
 	[ -z $window_size ] && window_size=`get_default_param $application window_size`
+        echo "Window size: $window_size"
 	[ -z $step ] && step=`get_default_param $application step`
+        echo "Step: $step"
 	[ -z $start_time ] && start_time=`get_default_param $application start_time`
+        echo "Start time: $start_time"
 	[ -z $end_time ] && end_time=`get_default_param $application end_time`
+        echo "End time: $end_time"
 	[ -z $clock_tick ] && clock_tick=`get_default_param $application clock_tick`
         # Input Specification Parameters
 	[ -z $input_mode ] && input_mode=`get_default_param $application input_mode`
 	[ -z $input_providers ] && input_providers=(`get_default_param $application input_providers`)
+        echo "Input Providers: $input_providers"
 	[ -z $stream_rate ] && stream_rate=`get_default_param $application stream_rate`
         # Knowledge Base
 	[ -z $event_description ] && event_description=`get_default_param $application event_description`
+        echo "Event Description: $event_description"
 	[ -z $background_knowledge ] && background_knowledge=(`get_default_param $application background_knowledge`)
         # Output Specification Parameters
 	[ -z $output_mode ] && output_mode=`get_default_param $application output_mode`
@@ -109,7 +116,7 @@ function set_prolog_command() {
         # Effects: <prolog_command> contains the execution command for running RTEC in SWI Prolog for the chosen application and execution parameters.
         # Knowledge Base
 	# This function is called after compilation. So, the compiled event description is available in the following file:
-	compiled_event_description=${event_description%/*}/compiled_rules.prolog # "%/*" fetches all characters of string until the last occurrence of "/"
+	compiled_event_description=${event_description%${sep}*}${sep}compiled_rules.prolog # "%/*" fetches all characters of string until the last occurrence of "/"
 	background_knowledge+=("${compiled_event_description}")
 	# Construct an RTEC query corresponding to the provided parameters
 	printf -v event_description_files "'%s'," "${background_knowledge[@]}"
@@ -275,7 +282,7 @@ function start_fifos() {
 # while the input_provider of RTEC should be that socket.
 function fix_rtec_and_socket_client_input() {
     csv_input_files=(${input_providers[@]})
-    input_providers=(../examples/${application}/${application}.socket)
+    input_providers=(..${sep}examples${sep}${application}${sep}${application}.socket)
 }
 
 # After setting the csv_input_files parameters to the csv files given to RTEC, 

@@ -3,8 +3,15 @@
 # Author: Periklis Mantenoglou
 # Run rtec on an event description.
 
+# Set separateor $sep depending on OS.
+if [[ "$OSTYPE" == "win32" ]] || [[ "OSTYPE" == "msys" ]]; then 
+    sep="\\"
+else
+    sep="/"
+fi
+
 # Load the functions in 'auxiliary/utils.sh'
-. $(dirname "$0")/auxiliary/utils.sh
+. $(dirname "$0")${sep}auxiliary${sep}utils.sh
 
 # Parse parameters provided by the user
 input_parser $@
@@ -45,11 +52,11 @@ compile_command="./auxiliary/compile.sh --event-description=${event_description}
 [ ! -z $dependency_graph ] && compile_command+="--dependency-graph "
 [ ! -z $dependency_graph_directory ] && compile_command+="--dependency-graph-directory=${dependency_graph_directory} "
 [ -z $include_input ] && compile_command+="--no-events"
-#echo "Executing: $compile_command"
+echo "Executing: $compile_command"
 $compile_command
 case $? in 
 	0)
-	echo "Successful compilation! Compiled event description in: ${event_description%/*}/compiled_rules.prolog"
+	echo "Successful compilation! Compiled event description in: ${event_description%/*}${sep}compiled_rules.prolog"
 	;;
 	*)
 	exit_func $?
