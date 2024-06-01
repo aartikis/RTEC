@@ -1,451 +1,431 @@
 :- dynamic id/1.
 
-initiatedAt(person(_110)=true, _156, _80, _162) :-
-     happensAtProcessedIE(_110,start(walking(_110)=true),_80),_156=<_80,_80<_162,
-     \+happensAtIE(disappear(_110),_80).
+initiatedAt(person(_1882)=true, _1928, _1852, _1934) :-
+     happensAtProcessedIE(_1882,start(walking(_1882)=true),_1852),_1928=<_1852,_1852<_1934,
+     \+happensAtIE(disappear(_1882),_1852).
 
-initiatedAt(person(_110)=true, _156, _80, _162) :-
-     happensAtProcessedIE(_110,start(running(_110)=true),_80),_156=<_80,_80<_162,
-     \+happensAtIE(disappear(_110),_80).
+initiatedAt(person(_1882)=true, _1928, _1852, _1934) :-
+     happensAtProcessedIE(_1882,start(running(_1882)=true),_1852),_1928=<_1852,_1852<_1934,
+     \+happensAtIE(disappear(_1882),_1852).
 
-initiatedAt(person(_110)=true, _156, _80, _162) :-
-     happensAtProcessedIE(_110,start(active(_110)=true),_80),_156=<_80,_80<_162,
-     \+happensAtIE(disappear(_110),_80).
+initiatedAt(person(_1882)=true, _1928, _1852, _1934) :-
+     happensAtProcessedIE(_1882,start(active(_1882)=true),_1852),_1928=<_1852,_1852<_1934,
+     \+happensAtIE(disappear(_1882),_1852).
 
-initiatedAt(person(_110)=true, _156, _80, _162) :-
-     happensAtProcessedIE(_110,start(abrupt(_110)=true),_80),_156=<_80,_80<_162,
-     \+happensAtIE(disappear(_110),_80).
+initiatedAt(person(_1882)=true, _1928, _1852, _1934) :-
+     happensAtProcessedIE(_1882,start(abrupt(_1882)=true),_1852),_1928=<_1852,_1852<_1934,
+     \+happensAtIE(disappear(_1882),_1852).
 
-initiatedAt(person(_110)=false, _126, _80, _132) :-
-     happensAtIE(disappear(_110),_80),
-     _126=<_80,
-     _80<_132.
+initiatedAt(person(_1882)=false, _1898, _1852, _1904) :-
+     happensAtIE(disappear(_1882),_1852),
+     _1898=<_1852,
+     _1852<_1904.
 
-initiatedAt(leaving_object(_110,_112)=true, _198, _80, _204) :-
-     happensAtIE(appear(_112),_80),_198=<_80,_80<_204,
-     holdsAtProcessedIE(_112,inactive(_112)=true,_80),
-     holdsAtProcessedSimpleFluent(_110,person(_110)=true,_80),
-     holdsAtProcessedSDFluent(_110,closeSymmetric(_110,_112,30)=true,_80).
+initiatedAt(leaving_object(_1882,_1884)=true, _1970, _1852, _1976) :-
+     happensAtIE(appear(_1884),_1852),_1970=<_1852,_1852<_1976,
+     holdsAtProcessedIE(_1884,inactive(_1884)=true,_1852),
+     holdsAtProcessedSimpleFluent(_1882,person(_1882)=true,_1852),
+     holdsAtProcessedSDFluent(_1882,closeSymmetric(_1882,_1884,30)=true,_1852).
 
-initiatedAt(leaving_object(_110,_112)=false, _128, _80, _134) :-
-     happensAtIE(disappear(_112),_80),
-     _128=<_80,
-     _80<_134.
+initiatedAt(leaving_object(_1882,_1884)=false, _1900, _1852, _1906) :-
+     happensAtIE(disappear(_1884),_1852),
+     _1900=<_1852,
+     _1852<_1906.
 
-initiatedAt(meeting(_110,_112)=true, _180, _80, _186) :-
-     happensAtProcessedSDFluent(_110,start(greeting1(_110,_112)=true),_80),_180=<_80,_80<_186,
-     \+happensAtIE(disappear(_110),_80),
-     \+happensAtIE(disappear(_112),_80).
+initiatedAt(meeting(_1882,_1884)=true, _1952, _1852, _1958) :-
+     happensAtProcessedSDFluent(_1882,start(greeting1(_1882,_1884)=true),_1852),_1952=<_1852,_1852<_1958,
+     \+happensAtIE(disappear(_1882),_1852),
+     \+happensAtIE(disappear(_1884),_1852).
 
-initiatedAt(meeting(_110,_112)=true, _180, _80, _186) :-
-     happensAtProcessedSDFluent(_110,start(greeting2(_110,_112)=true),_80),_180=<_80,_80<_186,
-     \+happensAtIE(disappear(_110),_80),
-     \+happensAtIE(disappear(_112),_80).
+initiatedAt(meeting(_1882,_1884)=true, _1952, _1852, _1958) :-
+     happensAtProcessedSDFluent(_1882,start(greeting2(_1882,_1884)=true),_1852),_1952=<_1852,_1852<_1958,
+     \+happensAtIE(disappear(_1882),_1852),
+     \+happensAtIE(disappear(_1884),_1852).
 
-initiatedAt(meeting(_110,_112)=false, _138, _80, _144) :-
-     happensAtProcessedIE(_110,start(running(_110)=true),_80),
-     _138=<_80,
-     _80<_144.
+initiatedAt(meeting(_1882,_1884)=false, _1910, _1852, _1916) :-
+     happensAtProcessedIE(_1882,start(running(_1882)=true),_1852),
+     _1910=<_1852,
+     _1852<_1916.
 
-initiatedAt(meeting(_110,_112)=false, _138, _80, _144) :-
-     happensAtProcessedIE(_112,start(running(_112)=true),_80),
-     _138=<_80,
-     _80<_144.
+initiatedAt(meeting(_1882,_1884)=false, _1910, _1852, _1916) :-
+     happensAtProcessedIE(_1884,start(running(_1884)=true),_1852),
+     _1910=<_1852,
+     _1852<_1916.
 
-initiatedAt(meeting(_110,_112)=false, _138, _80, _144) :-
-     happensAtProcessedIE(_110,start(abrupt(_110)=true),_80),
-     _138=<_80,
-     _80<_144.
+initiatedAt(meeting(_1882,_1884)=false, _1910, _1852, _1916) :-
+     happensAtProcessedIE(_1882,start(abrupt(_1882)=true),_1852),
+     _1910=<_1852,
+     _1852<_1916.
 
-initiatedAt(meeting(_110,_112)=false, _138, _80, _144) :-
-     happensAtProcessedIE(_112,start(abrupt(_112)=true),_80),
-     _138=<_80,
-     _80<_144.
+initiatedAt(meeting(_1882,_1884)=false, _1910, _1852, _1916) :-
+     happensAtProcessedIE(_1884,start(abrupt(_1884)=true),_1852),
+     _1910=<_1852,
+     _1852<_1916.
 
-initiatedAt(meeting(_110,_112)=false, _142, _80, _148) :-
-     happensAtProcessedSDFluent(_110,start(close(_110,_112,34)=false),_80),
-     _142=<_80,
-     _80<_148.
+initiatedAt(meeting(_1882,_1884)=false, _1914, _1852, _1920) :-
+     happensAtProcessedSDFluent(_1882,start(close(_1882,_1884,34)=false),_1852),
+     _1914=<_1852,
+     _1852<_1920.
 
-holdsForSDFluent(close(_110,_112,24)=true,_80) :-
-     holdsForProcessedIE(_110,distance(_110,_112,24)=true,_80).
+initiatedAt(meeting(_1882,_1884)=false, _1900, _1852, _1906) :-
+     happensAtIE(disappear(_1882),_1852),
+     _1900=<_1852,
+     _1852<_1906.
 
-holdsForSDFluent(close(_110,_112,25)=true,_80) :-
-     holdsForProcessedSDFluent(_110,close(_110,_112,24)=true,_134),
-     holdsForProcessedIE(_110,distance(_110,_112,25)=true,_154),
-     union_all([_134,_154],_80).
+initiatedAt(meeting(_1882,_1884)=false, _1900, _1852, _1906) :-
+     happensAtIE(disappear(_1884),_1852),
+     _1900=<_1852,
+     _1852<_1906.
 
-holdsForSDFluent(close(_110,_112,30)=true,_80) :-
-     holdsForProcessedSDFluent(_110,close(_110,_112,25)=true,_134),
-     holdsForProcessedIE(_110,distance(_110,_112,30)=true,_154),
-     union_all([_134,_154],_80).
+holdsForSDFluent(close(_1882,_1884,24)=true,_1852) :-
+     holdsForProcessedIE(_1882,distance(_1882,_1884,24)=true,_1852).
 
-holdsForSDFluent(close(_110,_112,34)=true,_80) :-
-     holdsForProcessedSDFluent(_110,close(_110,_112,30)=true,_134),
-     holdsForProcessedIE(_110,distance(_110,_112,34)=true,_154),
-     union_all([_134,_154],_80).
+holdsForSDFluent(close(_1882,_1884,25)=true,_1852) :-
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,24)=true,_1906),
+     holdsForProcessedIE(_1882,distance(_1882,_1884,25)=true,_1926),
+     union_all([_1906,_1926],_1852).
 
-holdsForSDFluent(close(_110,_112,24)=false,_80) :-
-     holdsForProcessedSDFluent(_110,close(_110,_112,24)=true,_134),
-     complement_all([_134],_80).
+holdsForSDFluent(close(_1882,_1884,30)=true,_1852) :-
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,25)=true,_1906),
+     holdsForProcessedIE(_1882,distance(_1882,_1884,30)=true,_1926),
+     union_all([_1906,_1926],_1852).
 
-holdsForSDFluent(closeSymmetric(_110,_112,24)=true,_80) :-
-     holdsForProcessedSDFluent(_110,close(_110,_112,24)=true,_134),
-     holdsForProcessedSDFluent(_112,close(_112,_110,24)=true,_154),
-     union_all([_134,_154],_80).
+holdsForSDFluent(close(_1882,_1884,34)=true,_1852) :-
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,30)=true,_1906),
+     holdsForProcessedIE(_1882,distance(_1882,_1884,34)=true,_1926),
+     union_all([_1906,_1926],_1852).
 
-holdsForSDFluent(greeting1(_110,_112)=true,_80) :-
-     holdsForProcessedSDFluent(_110,activeOrInactivePerson(_110)=true,_128),
-     \+_128=[],
-     holdsForProcessedSimpleFluent(_112,person(_112)=true,_154),
-     \+_154=[],
-     holdsForProcessedSDFluent(_110,close(_110,_112,25)=true,_184),
-     \+_184=[],
-     intersect_all([_128,_184,_154],_218),
-     \+_218=[],
+holdsForSDFluent(close(_1882,_1884,_1886)=false,_1852) :-
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,_1886)=true,_1906),
+     complement_all([_1906],_1852).
+
+holdsForSDFluent(closeSymmetric(_1882,_1884,_1886)=true,_1852) :-
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,_1886)=true,_1906),
+     holdsForProcessedSDFluent(_1884,close(_1884,_1882,_1886)=true,_1926),
+     union_all([_1906,_1926],_1852).
+
+holdsForSDFluent(greeting1(_1882,_1884)=true,_1852) :-
+     holdsForProcessedSDFluent(_1882,activeOrInactivePerson(_1882)=true,_1900),
+     \+_1900=[],
+     holdsForProcessedSimpleFluent(_1884,person(_1884)=true,_1926),
+     \+_1926=[],
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,25)=true,_1956),
+     \+_1956=[],
+     intersect_all([_1900,_1956,_1926],_1990),
+     \+_1990=[],
      !,
-     holdsForProcessedIE(_112,running(_112)=true,_244),
-     holdsForProcessedIE(_112,abrupt(_112)=true,_260),
-     relative_complement_all(_218,[_244,_260],_80).
+     holdsForProcessedIE(_1884,running(_1884)=true,_2016),
+     holdsForProcessedIE(_1884,abrupt(_1884)=true,_2032),
+     relative_complement_all(_1990,[_2016,_2032],_1852).
 
-holdsForSDFluent(greeting1(_104,_106)=true,[]).
+holdsForSDFluent(greeting1(_1876,_1878)=true,[]).
 
-holdsForSDFluent(greeting2(_110,_112)=true,_80) :-
-     holdsForProcessedIE(_110,walking(_110)=true,_128),
-     \+_128=[],
-     holdsForProcessedSDFluent(_112,activeOrInactivePerson(_112)=true,_154),
-     \+_154=[],
-     holdsForProcessedSDFluent(_112,close(_112,_110,25)=true,_184),
-     \+_184=[],
+holdsForSDFluent(greeting2(_1882,_1884)=true,_1852) :-
+     holdsForProcessedIE(_1882,walking(_1882)=true,_1900),
+     \+_1900=[],
+     holdsForProcessedSDFluent(_1884,activeOrInactivePerson(_1884)=true,_1926),
+     \+_1926=[],
+     holdsForProcessedSDFluent(_1884,close(_1884,_1882,25)=true,_1956),
+     \+_1956=[],
      !,
-     intersect_all([_128,_154,_184],_80).
+     intersect_all([_1900,_1926,_1956],_1852).
 
-holdsForSDFluent(greeting2(_104,_106)=true,[]).
+holdsForSDFluent(greeting2(_1876,_1878)=true,[]).
 
-holdsForSDFluent(activeOrInactivePerson(_110)=true,_80) :-
-     holdsForProcessedIE(_110,active(_110)=true,_126),
-     holdsForProcessedIE(_110,inactive(_110)=true,_142),
-     holdsForProcessedSimpleFluent(_110,person(_110)=true,_158),
-     intersect_all([_142,_158],_176),
-     union_all([_126,_176],_80).
+holdsForSDFluent(activeOrInactivePerson(_1882)=true,_1852) :-
+     holdsForProcessedIE(_1882,active(_1882)=true,_1898),
+     holdsForProcessedIE(_1882,inactive(_1882)=true,_1914),
+     holdsForProcessedSimpleFluent(_1882,person(_1882)=true,_1930),
+     intersect_all([_1914,_1930],_1948),
+     union_all([_1898,_1948],_1852).
 
-holdsForSDFluent(moving(_110,_112)=true,_80) :-
-     holdsForProcessedIE(_110,walking(_110)=true,_128),
-     holdsForProcessedIE(_112,walking(_112)=true,_144),
-     intersect_all([_128,_144],_162),
-     \+_162=[],
-     holdsForProcessedSDFluent(_110,close(_110,_112,34)=true,_192),
-     \+_192=[],
+holdsForSDFluent(moving(_1882,_1884)=true,_1852) :-
+     holdsForProcessedIE(_1882,walking(_1882)=true,_1900),
+     holdsForProcessedIE(_1884,walking(_1884)=true,_1916),
+     intersect_all([_1900,_1916],_1934),
+     \+_1934=[],
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,34)=true,_1964),
+     \+_1964=[],
      !,
-     intersect_all([_162,_192],_80).
+     intersect_all([_1934,_1964],_1852).
 
-holdsForSDFluent(moving(_104,_106)=true,[]).
+holdsForSDFluent(moving(_1876,_1878)=true,[]).
 
-holdsForSDFluent(fighting(_110,_112)=true,_80) :-
-     holdsForProcessedIE(_110,abrupt(_110)=true,_128),
-     holdsForProcessedIE(_112,abrupt(_112)=true,_144),
-     union_all([_128,_144],_162),
-     \+_162=[],
-     holdsForProcessedSDFluent(_110,close(_110,_112,24)=true,_192),
-     \+_192=[],
-     intersect_all([_162,_192],_220),
-     \+_220=[],
+holdsForSDFluent(fighting(_1882,_1884)=true,_1852) :-
+     holdsForProcessedIE(_1882,abrupt(_1882)=true,_1900),
+     holdsForProcessedIE(_1884,abrupt(_1884)=true,_1916),
+     union_all([_1900,_1916],_1934),
+     \+_1934=[],
+     holdsForProcessedSDFluent(_1882,close(_1882,_1884,24)=true,_1964),
+     \+_1964=[],
+     intersect_all([_1934,_1964],_1992),
+     \+_1992=[],
      !,
-     holdsForProcessedIE(_110,inactive(_110)=true,_246),
-     holdsForProcessedIE(_112,inactive(_112)=true,_262),
-     union_all([_246,_262],_280),
-     relative_complement_all(_220,[_280],_80).
+     holdsForProcessedIE(_1882,inactive(_1882)=true,_2018),
+     holdsForProcessedIE(_1884,inactive(_1884)=true,_2034),
+     union_all([_2018,_2034],_2052),
+     relative_complement_all(_1992,[_2052],_1852).
 
-holdsForSDFluent(fighting(_104,_106)=true,[]).
+holdsForSDFluent(fighting(_1876,_1878)=true,[]).
 
-buildFromPoints2(_84, walking(_84)=true) :-
-     id(_84).
+buildFromPoints2(_1856, walking(_1856)=true) :-
+     id(_1856).
 
-buildFromPoints2(_84, active(_84)=true) :-
-     id(_84).
+buildFromPoints2(_1856, active(_1856)=true) :-
+     id(_1856).
 
-buildFromPoints2(_84, inactive(_84)=true) :-
-     id(_84).
+buildFromPoints2(_1856, inactive(_1856)=true) :-
+     id(_1856).
 
-buildFromPoints2(_84, running(_84)=true) :-
-     id(_84).
+buildFromPoints2(_1856, running(_1856)=true) :-
+     id(_1856).
 
-buildFromPoints2(_84, abrupt(_84)=true) :-
-     id(_84).
+buildFromPoints2(_1856, abrupt(_1856)=true) :-
+     id(_1856).
 
-points(orientation(_406)=_402).
+points(orientation(_2150)=_2146).
 
-points(appearance(_406)=_402).
+points(appearance(_2150)=_2146).
 
-points(coord(_406,_408,_410)=true).
+points(coord(_2150,_2152,_2154)=true).
 
-points(walking(_406)=true).
+points(walking(_2150)=true).
 
-points(active(_406)=true).
+points(active(_2150)=true).
 
-points(inactive(_406)=true).
+points(inactive(_2150)=true).
 
-points(running(_406)=true).
+points(running(_2150)=true).
 
-points(abrupt(_406)=true).
+points(abrupt(_2150)=true).
 
-grounding(appear(_406)) :- 
-     id(_406).
+grounding(appear(_2150)) :- 
+     id(_2150).
 
-grounding(disappear(_406)) :- 
-     id(_406).
+grounding(disappear(_2150)) :- 
+     id(_2150).
 
-grounding(orientation(_412)=_408) :- 
-     id(_412).
+grounding(orientation(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(appearance(_412)=_408) :- 
-     id(_412).
+grounding(appearance(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(coord(_412,_414,_416)=_408) :- 
-     id(_412).
+grounding(coord(_2156,_2158,_2160)=_2152) :- 
+     id(_2156).
 
-grounding(walking(_412)=_408) :- 
-     id(_412).
+grounding(walking(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(active(_412)=_408) :- 
-     id(_412).
+grounding(active(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(inactive(_412)=_408) :- 
-     id(_412).
+grounding(inactive(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(running(_412)=_408) :- 
-     id(_412).
+grounding(running(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(abrupt(_412)=_408) :- 
-     id(_412).
+grounding(abrupt(_2156)=_2152) :- 
+     id(_2156).
 
-grounding(close(_412,_414,24)=true) :- 
-     id(_412),id(_414),_412@<_414.
+grounding(close(_2156,_2158,24)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
 
-grounding(close(_412,_414,25)=true) :- 
-     id(_412),id(_414),_412@<_414.
+grounding(close(_2156,_2158,25)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
 
-grounding(close(_412,_414,30)=true) :- 
-     id(_412),id(_414),_412@<_414.
+grounding(close(_2156,_2158,30)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
 
-grounding(close(_412,_414,34)=true) :- 
-     id(_412),id(_414),_412@<_414.
+grounding(close(_2156,_2158,34)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
 
-grounding(close(_412,_414,34)=false) :- 
-     id(_412),id(_414),_412@<_414.
+grounding(close(_2156,_2158,34)=false) :- 
+     id(_2156),id(_2158),_2156@<_2158.
 
-grounding(closeSymmetric(_412,_414,30)=true) :- 
-     id(_412),id(_414),_412@<_414.
+grounding(closeSymmetric(_2156,_2158,30)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
 
-grounding(walking(_412)=true) :- 
-     id(_412).
+grounding(walking(_2156)=true) :- 
+     id(_2156).
 
-grounding(active(_412)=true) :- 
-     id(_412).
+grounding(active(_2156)=true) :- 
+     id(_2156).
 
-grounding(inactive(_412)=true) :- 
-     id(_412).
+grounding(inactive(_2156)=true) :- 
+     id(_2156).
 
-grounding(abrupt(_412)=true) :- 
-     id(_412).
-
-grounding(running(_412)=true) :- 
-     id(_412).
-
-grounding(person(_412)=true) :- 
-     id(_412).
-
-grounding(activeOrInactivePerson(_412)=true) :- 
-     id(_412).
-
-grounding(greeting1(_412,_414)=true) :- 
-     id(_412),id(_414),_412@<_414.
-
-grounding(greeting2(_412,_414)=true) :- 
-     id(_412),id(_414),_412@<_414.
-
-grounding(leaving_object(_412,_414)=true) :- 
-     id(_412),id(_414),_412@<_414.
-
-grounding(meeting(_412,_414)=true) :- 
-     id(_412),id(_414),_412@<_414.
-
-grounding(moving(_412,_414)=true) :- 
-     id(_412),id(_414),_412@<_414.
-
-grounding(fighting(_412,_414)=true) :- 
-     id(_412),id(_414),_412@<_414.
-
-inputEntity(walking(_140)=true).
-inputEntity(disappear(_134)).
-inputEntity(running(_140)=true).
-inputEntity(active(_140)=true).
-inputEntity(abrupt(_140)=true).
-inputEntity(appear(_134)).
-inputEntity(inactive(_140)=true).
-inputEntity(distance(_140,_142,24)=true).
-inputEntity(distance(_140,_142,25)=true).
-inputEntity(distance(_140,_142,30)=true).
-inputEntity(distance(_140,_142,34)=true).
-inputEntity(orientation(_140)=_136).
-inputEntity(appearance(_140)=_136).
-inputEntity(coord(_140,_142,_144)=_136).
-
-outputEntity(person(_280)=true).
-outputEntity(person(_280)=false).
-outputEntity(leaving_object(_280,_282)=true).
-outputEntity(leaving_object(_280,_282)=false).
-outputEntity(meeting(_280,_282)=true).
-outputEntity(meeting(_280,_282)=false).
-outputEntity(close(_280,_282,24)=true).
-outputEntity(close(_280,_282,25)=true).
-outputEntity(close(_280,_282,30)=true).
-outputEntity(close(_280,_282,34)=true).
-outputEntity(close(_280,_282,_284)=false).
-outputEntity(closeSymmetric(_280,_282,_284)=true).
-outputEntity(greeting1(_280,_282)=true).
-outputEntity(greeting2(_280,_282)=true).
-outputEntity(activeOrInactivePerson(_280)=true).
-outputEntity(moving(_280,_282)=true).
-outputEntity(fighting(_280,_282)=true).
-
-event(disappear(_432)).
-event(appear(_432)).
-
-simpleFluent(person(_506)=true).
-simpleFluent(person(_506)=false).
-simpleFluent(leaving_object(_506,_508)=true).
-simpleFluent(leaving_object(_506,_508)=false).
-simpleFluent(meeting(_506,_508)=true).
-simpleFluent(meeting(_506,_508)=false).
-
-sDFluent(close(_598,_600,24)=true).
-sDFluent(close(_598,_600,25)=true).
-sDFluent(close(_598,_600,30)=true).
-sDFluent(close(_598,_600,34)=true).
-sDFluent(close(_598,_600,_602)=false).
-sDFluent(closeSymmetric(_598,_600,_602)=true).
-sDFluent(greeting1(_598,_600)=true).
-sDFluent(greeting2(_598,_600)=true).
-sDFluent(activeOrInactivePerson(_598)=true).
-sDFluent(moving(_598,_600)=true).
-sDFluent(fighting(_598,_600)=true).
-sDFluent(walking(_598)=true).
-sDFluent(running(_598)=true).
-sDFluent(active(_598)=true).
-sDFluent(abrupt(_598)=true).
-sDFluent(inactive(_598)=true).
-sDFluent(distance(_598,_600,24)=true).
-sDFluent(distance(_598,_600,25)=true).
-sDFluent(distance(_598,_600,30)=true).
-sDFluent(distance(_598,_600,34)=true).
-sDFluent(orientation(_598)=_594).
-sDFluent(appearance(_598)=_594).
-sDFluent(coord(_598,_600,_602)=_594).
-
-index(disappear(_738),_738).
-index(appear(_738),_738).
-index(person(_738)=true,_738).
-index(person(_738)=false,_738).
-index(leaving_object(_738,_798)=true,_738).
-index(leaving_object(_738,_798)=false,_738).
-index(meeting(_738,_798)=true,_738).
-index(meeting(_738,_798)=false,_738).
-index(close(_738,_798,24)=true,_738).
-index(close(_738,_798,25)=true,_738).
-index(close(_738,_798,30)=true,_738).
-index(close(_738,_798,34)=true,_738).
-index(close(_738,_798,_800)=false,_738).
-index(closeSymmetric(_738,_798,_800)=true,_738).
-index(greeting1(_738,_798)=true,_738).
-index(greeting2(_738,_798)=true,_738).
-index(activeOrInactivePerson(_738)=true,_738).
-index(moving(_738,_798)=true,_738).
-index(fighting(_738,_798)=true,_738).
-index(walking(_738)=true,_738).
-index(running(_738)=true,_738).
-index(active(_738)=true,_738).
-index(abrupt(_738)=true,_738).
-index(inactive(_738)=true,_738).
-index(distance(_738,_798,24)=true,_738).
-index(distance(_738,_798,25)=true,_738).
-index(distance(_738,_798,30)=true,_738).
-index(distance(_738,_798,34)=true,_738).
-index(orientation(_738)=_792,_738).
-index(appearance(_738)=_792,_738).
-index(coord(_738,_798,_800)=_792,_738).
-
-
-cachingOrder2(_1206, person(_1206)=true) :- % level: 1
-     id(_1206).
-
-cachingOrder2(_1190, person(_1190)=false). % level: 1
-cachingOrder2(_1172, leaving_object(_1172,_1174)=false). % level: 1
-cachingOrder2(_1152, close(_1152,_1154,24)=true) :- % level: 1
-     id(_1152),id(_1154),_1152@<_1154.
-
-cachingOrder2(_1438, close(_1438,_1440,25)=true) :- % level: 2
-     id(_1438),id(_1440),_1438@<_1440.
-
-cachingOrder2(_1418, close(_1418,_1420,34)=false) :- % level: 2
-     id(_1418),id(_1420),_1418@<_1420.
-
-cachingOrder2(_1398, closeSymmetric(_1398,_1400,30)=true) :- % level: 2
-     id(_1398),id(_1400),_1398@<_1400.
-
-cachingOrder2(_1382, activeOrInactivePerson(_1382)=true) :- % level: 2
-     id(_1382).
-
-cachingOrder2(_1364, fighting(_1364,_1366)=true) :- % level: 2
-     id(_1364),id(_1366),_1364@<_1366.
-
-cachingOrder2(_1804, close(_1804,_1806,30)=true) :- % level: 3
-     id(_1804),id(_1806),_1804@<_1806.
-
-cachingOrder2(_1786, greeting1(_1786,_1788)=true) :- % level: 3
-     id(_1786),id(_1788),_1786@<_1788.
-
-cachingOrder2(_1768, greeting2(_1768,_1770)=true) :- % level: 3
-     id(_1768),id(_1770),_1768@<_1770.
-
-cachingOrder2(_2062, meeting(_2062,_2064)=true) :- % level: 4
-     id(_2062),id(_2064),_2062@<_2064.
-
-cachingOrder2(_2042, close(_2042,_2044,34)=true) :- % level: 4
-     id(_2042),id(_2044),_2042@<_2044.
-
-cachingOrder2(_2260, leaving_object(_2260,_2262)=true) :- % level: 5
-     id(_2260),id(_2262),_2260@<_2262.
-
-cachingOrder2(_2242, moving(_2242,_2244)=true) :- % level: 5
-     id(_2242),id(_2244),_2242@<_2244.
-
-cachingOrder2(_2438, meeting(_2438,_2440)=false). % level: 6
-collectGrounds([walking(_738)=true, walking(_738)=true, disappear(_738), running(_738)=true, running(_738)=true, active(_738)=true, active(_738)=true, abrupt(_738)=true, abrupt(_738)=true, appear(_738), inactive(_738)=true, inactive(_738)=true, orientation(_738)=_752, appearance(_738)=_752, coord(_738,_758,_760)=_752],id(_738)).
-
-dgrounded(person(_1544)=true, id(_1544)).
-dgrounded(leaving_object(_1488,_1490)=true, id(_1488)).
-dgrounded(leaving_object(_1488,_1490)=true, id(_1490)).
-dgrounded(meeting(_1432,_1434)=true, id(_1432)).
-dgrounded(meeting(_1432,_1434)=true, id(_1434)).
-dgrounded(close(_1374,_1376,24)=true, id(_1374)).
-dgrounded(close(_1374,_1376,24)=true, id(_1376)).
-dgrounded(close(_1316,_1318,25)=true, id(_1316)).
-dgrounded(close(_1316,_1318,25)=true, id(_1318)).
-dgrounded(close(_1258,_1260,30)=true, id(_1258)).
-dgrounded(close(_1258,_1260,30)=true, id(_1260)).
-dgrounded(close(_1200,_1202,34)=true, id(_1200)).
-dgrounded(close(_1200,_1202,34)=true, id(_1202)).
-dgrounded(close(_1142,_1144,34)=false, id(_1142)).
-dgrounded(close(_1142,_1144,34)=false, id(_1144)).
-dgrounded(closeSymmetric(_1084,_1086,30)=true, id(_1084)).
-dgrounded(closeSymmetric(_1084,_1086,30)=true, id(_1086)).
-dgrounded(greeting1(_1028,_1030)=true, id(_1028)).
-dgrounded(greeting1(_1028,_1030)=true, id(_1030)).
-dgrounded(greeting2(_972,_974)=true, id(_972)).
-dgrounded(greeting2(_972,_974)=true, id(_974)).
-dgrounded(activeOrInactivePerson(_940)=true, id(_940)).
-dgrounded(moving(_884,_886)=true, id(_884)).
-dgrounded(moving(_884,_886)=true, id(_886)).
-dgrounded(fighting(_828,_830)=true, id(_828)).
-dgrounded(fighting(_828,_830)=true, id(_830)).
+grounding(abrupt(_2156)=true) :- 
+     id(_2156).
+
+grounding(running(_2156)=true) :- 
+     id(_2156).
+
+grounding(person(_2156)=true) :- 
+     id(_2156).
+
+grounding(activeOrInactivePerson(_2156)=true) :- 
+     id(_2156).
+
+grounding(greeting1(_2156,_2158)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
+
+grounding(greeting2(_2156,_2158)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
+
+grounding(leaving_object(_2156,_2158)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
+
+grounding(meeting(_2156,_2158)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
+
+grounding(moving(_2156,_2158)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
+
+grounding(fighting(_2156,_2158)=true) :- 
+     id(_2156),id(_2158),_2156@<_2158.
+
+inputEntity(walking(_1918)=true).
+inputEntity(disappear(_1912)).
+inputEntity(running(_1918)=true).
+inputEntity(active(_1918)=true).
+inputEntity(abrupt(_1918)=true).
+inputEntity(appear(_1912)).
+inputEntity(inactive(_1918)=true).
+inputEntity(distance(_1918,_1920,_1922)=true).
+inputEntity(orientation(_1918)=_1914).
+inputEntity(appearance(_1918)=_1914).
+inputEntity(coord(_1918,_1920,_1922)=_1914).
+
+outputEntity(person(_2046)=true).
+outputEntity(person(_2046)=false).
+outputEntity(leaving_object(_2046,_2048)=true).
+outputEntity(leaving_object(_2046,_2048)=false).
+outputEntity(meeting(_2046,_2048)=true).
+outputEntity(meeting(_2046,_2048)=false).
+outputEntity(close(_2046,_2048,_2050)=true).
+outputEntity(close(_2046,_2048,_2050)=false).
+outputEntity(closeSymmetric(_2046,_2048,_2050)=true).
+outputEntity(greeting1(_2046,_2048)=true).
+outputEntity(greeting2(_2046,_2048)=true).
+outputEntity(activeOrInactivePerson(_2046)=true).
+outputEntity(moving(_2046,_2048)=true).
+outputEntity(fighting(_2046,_2048)=true).
+
+event(disappear(_2186)).
+event(appear(_2186)).
+
+simpleFluent(person(_2266)=true).
+simpleFluent(person(_2266)=false).
+simpleFluent(leaving_object(_2266,_2268)=true).
+simpleFluent(leaving_object(_2266,_2268)=false).
+simpleFluent(meeting(_2266,_2268)=true).
+simpleFluent(meeting(_2266,_2268)=false).
+
+sDFluent(close(_2364,_2366,_2368)=true).
+sDFluent(close(_2364,_2366,_2368)=false).
+sDFluent(closeSymmetric(_2364,_2366,_2368)=true).
+sDFluent(greeting1(_2364,_2366)=true).
+sDFluent(greeting2(_2364,_2366)=true).
+sDFluent(activeOrInactivePerson(_2364)=true).
+sDFluent(moving(_2364,_2366)=true).
+sDFluent(fighting(_2364,_2366)=true).
+sDFluent(walking(_2364)=true).
+sDFluent(running(_2364)=true).
+sDFluent(active(_2364)=true).
+sDFluent(abrupt(_2364)=true).
+sDFluent(inactive(_2364)=true).
+sDFluent(distance(_2364,_2366,_2368)=true).
+sDFluent(orientation(_2364)=_2360).
+sDFluent(appearance(_2364)=_2360).
+sDFluent(coord(_2364,_2366,_2368)=_2360).
+
+index(disappear(_2468),_2468).
+index(appear(_2468),_2468).
+index(person(_2468)=true,_2468).
+index(person(_2468)=false,_2468).
+index(leaving_object(_2468,_2534)=true,_2468).
+index(leaving_object(_2468,_2534)=false,_2468).
+index(meeting(_2468,_2534)=true,_2468).
+index(meeting(_2468,_2534)=false,_2468).
+index(close(_2468,_2534,_2536)=true,_2468).
+index(close(_2468,_2534,_2536)=false,_2468).
+index(closeSymmetric(_2468,_2534,_2536)=true,_2468).
+index(greeting1(_2468,_2534)=true,_2468).
+index(greeting2(_2468,_2534)=true,_2468).
+index(activeOrInactivePerson(_2468)=true,_2468).
+index(moving(_2468,_2534)=true,_2468).
+index(fighting(_2468,_2534)=true,_2468).
+index(walking(_2468)=true,_2468).
+index(running(_2468)=true,_2468).
+index(active(_2468)=true,_2468).
+index(abrupt(_2468)=true,_2468).
+index(inactive(_2468)=true,_2468).
+index(distance(_2468,_2534,_2536)=true,_2468).
+index(orientation(_2468)=_2528,_2468).
+index(appearance(_2468)=_2528,_2468).
+index(coord(_2468,_2534,_2536)=_2528,_2468).
+
+
+cachingOrder2(_2938, close(_2938,_2940,_3056)=true) :- % level in dependency graph: 1, processing order in component: 1
+     id(_2938),id(_2940),_2938@<_2940.
+
+cachingOrder2(_2916, person(_2916)=true) :- % level in dependency graph: 1, processing order in component: 1
+     id(_2916).
+
+cachingOrder2(_3308, close(_3308,_3310,_3426)=false) :- % level in dependency graph: 2, processing order in component: 1
+     id(_3308),id(_3310),_3308@<_3310.
+
+cachingOrder2(_3282, closeSymmetric(_3282,_3284,_3550)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_3282),id(_3284),_3282@<_3284.
+
+cachingOrder2(_3260, activeOrInactivePerson(_3260)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_3260).
+
+cachingOrder2(_3236, moving(_3236,_3238)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_3236),id(_3238),_3236@<_3238.
+
+cachingOrder2(_3212, fighting(_3212,_3214)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_3212),id(_3214),_3212@<_3214.
+
+cachingOrder2(_3994, leaving_object(_3994,_3996)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_3994),id(_3996),_3994@<_3996.
+
+cachingOrder2(_3946, greeting1(_3946,_3948)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_3946),id(_3948),_3946@<_3948.
+
+cachingOrder2(_3922, greeting2(_3922,_3924)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_3922),id(_3924),_3922@<_3924.
+
+cachingOrder2(_4396, meeting(_4396,_4398)=true) :- % level in dependency graph: 4, processing order in component: 1
+     id(_4396),id(_4398),_4396@<_4398.
+
+collectGrounds([walking(_2522)=true, walking(_2522)=true, disappear(_2522), running(_2522)=true, running(_2522)=true, active(_2522)=true, active(_2522)=true, abrupt(_2522)=true, abrupt(_2522)=true, appear(_2522), inactive(_2522)=true, inactive(_2522)=true, orientation(_2522)=_2536, appearance(_2522)=_2536, coord(_2522,_2542,_2544)=_2536],id(_2522)).
+
+dgrounded(person(_3334)=true, id(_3334)).
+dgrounded(leaving_object(_3278,_3280)=true, id(_3278)).
+dgrounded(leaving_object(_3278,_3280)=true, id(_3280)).
+dgrounded(meeting(_3222,_3224)=true, id(_3222)).
+dgrounded(meeting(_3222,_3224)=true, id(_3224)).
+dgrounded(close(_3164,_3166,24)=true, id(_3164)).
+dgrounded(close(_3164,_3166,24)=true, id(_3166)).
+dgrounded(close(_3106,_3108,25)=true, id(_3106)).
+dgrounded(close(_3106,_3108,25)=true, id(_3108)).
+dgrounded(close(_3048,_3050,30)=true, id(_3048)).
+dgrounded(close(_3048,_3050,30)=true, id(_3050)).
+dgrounded(close(_2990,_2992,34)=true, id(_2990)).
+dgrounded(close(_2990,_2992,34)=true, id(_2992)).
+dgrounded(close(_2932,_2934,34)=false, id(_2932)).
+dgrounded(close(_2932,_2934,34)=false, id(_2934)).
+dgrounded(closeSymmetric(_2874,_2876,30)=true, id(_2874)).
+dgrounded(closeSymmetric(_2874,_2876,30)=true, id(_2876)).
+dgrounded(greeting1(_2818,_2820)=true, id(_2818)).
+dgrounded(greeting1(_2818,_2820)=true, id(_2820)).
+dgrounded(greeting2(_2762,_2764)=true, id(_2762)).
+dgrounded(greeting2(_2762,_2764)=true, id(_2764)).
+dgrounded(activeOrInactivePerson(_2730)=true, id(_2730)).
+dgrounded(moving(_2674,_2676)=true, id(_2674)).
+dgrounded(moving(_2674,_2676)=true, id(_2676)).
+dgrounded(fighting(_2618,_2620)=true, id(_2618)).
+dgrounded(fighting(_2618,_2620)=true, id(_2620)).

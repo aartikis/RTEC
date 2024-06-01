@@ -1053,6 +1053,8 @@ deadlinesPredicate(fi(_,_,_)).
 %  We will write these declarations in the output file later, in order for the them to be below the compiled rules.
 processRules:-
 	deriveEntitySorts, % assert all inputEntity, outputEntity, event, simpleFluent, sDFluent declarations.
+    %translateSDF2SF,
+    %translateSDF2SF,
 	deriveIndices, % assert all index/2 declarations that have not been provided.
 	%deriveOutputGroundings, % we could consider producing grounding rules for output entities based on the groundings of their dependencies.
 	deriveCachingOrder, % assert dependency/2, scc/2 and cyclic/2 declarations that are useful to derive the caching order.
@@ -1765,9 +1767,830 @@ writeCachingOrderRulesOf([_|Rest], ProcOrd, Level):-
         %tab(5), write(Body), write('.'), nl, nl), _), 
         %writeCachingOrderRulesOf(Rest, NextProcOrd, Level).
 
+%%%%%% TRANSLATOR FROM SFs TO SDFs, AND VICE VERSA %%%%%%
+
+translateSF2SDF:-
+    % Find all simple FVPs and check if the definition of each simple FVP is translatable.
+    findall(F=V, simpleFluent(F=V), SimpleFVPs),
+    checkAndTranslateSFs(SimpleFVPs).
+
+checkAndTranslateSFs([]).
+checkAndTranslateSFs([F=V|RestFVPs]):-
+    write("FVP: "), write(F=V), nl,
+    % Fetch the initiation rules of F=V in InitRules.
+    findall(Rule, (clause(initiatedAt(F=V, T), Body0), toProperList(Body0, Body), Rule=[initiatedAt(F=V, T)|Body]), InitRules),
+    % The arguments of the FVPs and the time arguments of predicates need to be propertly unified, because findall destroys the free variable names in clause/2.
+    write(InitRules), nl,
+    unifyArgs(InitRules, initiatedAt(F=V, T)),
+    write("Initiation Rules: "), write(InitRules), nl, nl,
+    % Check if InitRules is a order symmetric set of rules.
+    (isOrderSymmetric(InitRules) -> 
+                                    write("Initiation rules defining: "), write(F=V), write(" are order symmetric."), nl, nl;
+                                    write("Initiation rules defining: "), write(F=V), write(" are NOT order symmetric."), nl, nl),
+    findOrderSymmetricRepresentatives(InitRules, [], InitRepresentatives),
+    write("Init Representatives: "), write(InitRepresentatives), nl, nl,
+    % Repeat for termination rules.
+    findall(Rule, (clause(terminatedAt(F=V, T), Body0), toProperList(Body0, Body), Rule=[terminatedAt(F=V, T)|Body]), TermRules),
+    unifyArgs(TermRules, terminatedAt(F=V, T)),
+    write("Termination Rules: "), write(TermRules), nl, nl,
+    (isOrderSymmetric(TermRules) -> 
+                                    write("Termination rules defining: "), write(F=V), write(" are order symmetric."), nl, nl;
+                                    write("Termination rules defining: "), write(F=V), write(" are NOT order symmetric."), nl, nl),
+    findOrderSymmetricRepresentatives(TermRules, [], TermRepresentatives),
+    write("Term Representatives: "), write(TermRepresentatives), nl, nl,
+    % We check if InitRules and TermRules are polarity symmetric.
+    (arePolaritySymmetric(InitRepresentatives, TermRepresentatives) -> 
+                                    write("Rules defining: "), write(F=V), write(" are polarity symmetric."), nl, nl;
+                                    write("Rules defining: "), write(F=V), write(" are NOT polarity symmetric."), nl, nl),
+    translateSF(F=V,InitRepresentatives),
+    checkAndTranslateSFs(RestFVPs).
+
+% isOrderSymmetric(+Rules) 
+isOrderSymmetric([]).
+isOrderSymmetric(Rules):-
+    isOrderSymmetric0(Rules, Rules).
+% isOrderSymmetric0(+Rules, +Rules)
+% For each rule r in <Rules>:
+%   1. Check if r is fluent-based.
+%   2. Compute the order completion set Or of r.
+%   3. Check if Or is a subset of <Rules>.
+% If 1 and 3 are satisfied for all rules in <Rules>, then <Rules> is an order symmetric set.
+isOrderSymmetric0([], _).
+isOrderSymmetric0([Rule|RestRules], AllRules):-
+    %write("Rule: "), write(Rule), nl, 
+    isFluentBased(Rule),
+    %write("Rule is fluent-based"), nl,
+    genOrderCompletionOfRule(Rule, OrderCompletionSet),
+    %write("Order Completion: "), write(OrderCompletionSet), nl, nl,
+    checkMembershipOfRules(OrderCompletionSet, AllRules),
+    isOrderSymmetric0(RestRules, AllRules).
+
+% isFluentBased(+Rule)
+isFluentBased([_Head|Body]):-
+    fluentBasedBody(Body).
+
+%fluentBasedBody(+RuleBody)
+fluentBasedBody([]).
+fluentBasedBody([happensAt(start(_),_)|RestBody]):-
+    fluentBasedBody(RestBody).
+fluentBasedBody([happensAt(end(_),_)|RestBody]):-
+    fluentBasedBody(RestBody).
+fluentBasedBody([holdsAt(F=V,T)|RestBody0]):-
+    select(\+happensAt(end(F=V), T), RestBody0, RestBody),
+    fluentBasedBody(RestBody).
+fluentBasedBody([\+happensAt(end(F=V), T)|RestBody0]):-
+    select(holdsAt(F=V, T), RestBody0, RestBody),
+    fluentBasedBody(RestBody).
+fluentBasedBody([\+holdsAt(F=V,T)|RestBody0]):-
+    select(\+happensAt(start(F=V), T), RestBody0, RestBody),
+    fluentBasedBody(RestBody).
+fluentBasedBody([\+happensAt(start(F=V), T)|RestBody0]):-
+    select(\+holdsAt(F=V, T), RestBody0, RestBody),
+    fluentBasedBody(RestBody).
+
+% genOrderCompletionOfRule(+Rule, -OrderCompletionSetOfRules)
+genOrderCompletionOfRule([Head|Body], OrderCompletionSetOfRules):-
+   findall(Rule, (generateRuleInOrderCompletion(Body, GenBody), \+allHolds(GenBody), Rule=[Head|GenBody]), OrderCompletionSetOfRules),
+   unifyArgs(OrderCompletionSetOfRules, Head).
+
+% checkMembershipOfRules(+Rules1, +Rules2)
+% Return true iff Rules1 \subseteq Rules2.
+checkMembershipOfRules([], _).
+checkMembershipOfRules([Rule1|RestRules1], Rules2):-
+    existsSameBody(Rules2, Rule1),
+    checkMembershipOfRules(RestRules1, Rules2).
+% existsSameBody(+Rules, +Rule)
+existsSameBody([[NextHead|NextBody]|_RestRules], [Head|Body]):-
+    NextHead==Head,
+    sameBody(NextBody, Body), !.
+existsSameBody([_NextRule|RestRules], Rule):-
+    existsSameBody(RestRules, Rule).
+% sameBody(+Body1, Body2)
+sameBody([], []).
+sameBody([Condition1|RestBody1], Body2):-
+    existsSameCondition(Body2, Condition1, [], RestBody2),
+    %select(Condition1, Body2, RestBody2),
+    sameBody(RestBody1, RestBody2).
+% existsSameCondition(+Body, +Condition)
+existsSameCondition([NextCondition|RestConditions], Condition, ProcessedBody, NewBody):-
+    NextCondition==Condition, !,
+    append(ProcessedBody,RestConditions, NewBody).
+    %select(NextCondition, Body2, RestBody2).
+
+existsSameCondition([NextCondition|RestConditions], Condition, ProcessedBody, NewBody):-
+    append([NextCondition], ProcessedBody, NewProcessedBody),
+    existsSameCondition(RestConditions, Condition, NewProcessedBody, NewBody).
 
 
+% findOrderSymmetricKernels(+OrderSymmSet, -Representatives)
+% An order symmetric set of rules can be partitioned into m order completion sets.
+% All rules in an order completion set have the same order completion.
+% We compactly represent order completion sets with a "representative list".
+% A representative list is a conjunction of [FVP, Sign], 
+% where Sign denotes if FVP appears in positive or negative conditions in the rules of the order completion set.
+findOrderSymmetricRepresentatives([], _, []).
+findOrderSymmetricRepresentatives([[_Head|Body]|RestRules], RepresentativesSoFar, [Representative|RestRepresentatives]):-
+    bodyToProp(Body, Representative),
+    \+ existsSameDisjunct(RepresentativesSoFar, Representative), !,
+    findOrderSymmetricRepresentatives(RestRules, [Representative|RepresentativesSoFar], RestRepresentatives).
+findOrderSymmetricRepresentatives([_|RestRules], RepresentativesSoFar, Representatives):-
+    findOrderSymmetricRepresentatives(RestRules, RepresentativesSoFar, Representatives).
+    
 
+% Not deterministic "order flip" implementation. 
+% generateRuleInOrderCompletion(+Body, +NewBody)
+
+generateRuleInOrderCompletion([], []).
+
+% case: starts. 
+generateRuleInOrderCompletion([happensAt(start(F=V), T)|RestFVPs], [happensAt(start(F=V), T)|RestConditions]):-
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+generateRuleInOrderCompletion([happensAt(start(F=V), T)|RestFVPs], [holdsAt(F=V, T), \+happensAt(end(F=V), T)|RestConditions]):-
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+
+% case: ends.
+generateRuleInOrderCompletion([happensAt(end(F=V), T)|RestFVPs], [happensAt(end(F=V), T)|RestConditions]):-
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+generateRuleInOrderCompletion([happensAt(end(F=V), T)|RestFVPs], [\+holdsAt(F=V, T), \+happensAt(start(F=V), T)|RestConditions]):-
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+
+% case: holds and not ends.
+generateRuleInOrderCompletion([holdsAt(F=V, T)|RestFVPs0], [happensAt(start(F=V), T)|RestConditions]):-
+    select(\+happensAt(end(F=V), T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+generateRuleInOrderCompletion([holdsAt(F=V, T)|RestFVPs0], [holdsAt(F=V, T), \+happensAt(end(F=V), T)|RestConditions]):-
+    select(\+happensAt(end(F=V), T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+
+generateRuleInOrderCompletion([\+happensAt(end(F=V), T)|RestFVPs0], [happensAt(start(F=V), T)|RestConditions]):-
+    select(holdsAt(F=V, T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+generateRuleInOrderCompletion([\+happensAt(end(F=V), T)|RestFVPs0], [holdsAt(F=V, T), \+happensAt(end(F=V), T)|RestConditions]):-
+    select(holdsAt(F=V, T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+
+% case: not holds and not starts.
+generateRuleInOrderCompletion([\+holdsAt(F=V, T)|RestFVPs0], [happensAt(end(F=V), T)|RestConditions]):-
+    select(\+happensAt(start(F=V), T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+generateRuleInOrderCompletion([\+holdsAt(F=V, T)|RestFVPs0], [\+holdsAt(F=V, T), \+happensAt(start(F=V), T)|RestConditions]):-
+    select(\+happensAt(start(F=V), T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).
+
+generateRuleInOrderCompletion([\+happensAt(start(F=V), T)|RestFVPs0], [happensAt(end(F=V), T)|RestConditions]):-
+    select(\+holdsAt(F=V, T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+generateRuleInOrderCompletion([\+happensAt(start(F=V), T)|RestFVPs0], [\+holdsAt(F=V, T), \+happensAt(start(F=V), T)|RestConditions]):-
+    select(\+holdsAt(F=V, T), RestFVPs0, RestFVPs),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).  
+
+% "null" will never be a condition of an input rule, rendering the set not order symmetric.
+generateRuleInOrderCompletion([Other|RestFVPs], [null|RestConditions]):-
+    \+ Other=holdsAt(_,_),
+    \+ Other=(\+holdsAt(_,_)),
+    \+ Other=happensAt(start(_),_),
+    \+ Other=happensAt(end(_),_),
+    \+ Other=(\+happensAt(start(_),_)),
+    \+ Other=(\+happensAt(end(_),_)),
+    generateRuleInOrderCompletion(RestFVPs, RestConditions).
+
+% This predicate works only for the rules generated by generateRuleInOrderCompletion/2.
+% notAllHolds(+RuleBody) 
+% Returns true if at least one body condition is not a holdsAt.
+%
+allHolds([]).
+allHolds([holdsAt(F=V, T),\+happensAt(end(F=V), T)|Rest]):-
+    allHolds(Rest).
+allHolds([\+holdsAt(F=V, T),\+happensAt(start(F=V), T)|Rest]):-
+    allHolds(Rest).
+
+toProperList((Elem, Rest), [Elem|RestList]):-
+    !, toProperList(Rest, RestList).
+toProperList(Elem, [Elem]).
+
+% existsSameDisjunct(+Disjuncts, +Disjunct)
+existsSameDisjunct([NextDisjunct|_RestDisjuncts], Disjunct):-
+    checkSameProps(NextDisjunct, Disjunct), !.
+existsSameDisjunct([_NextDisjunct|RestDisjuncts], Disjunct):-
+    existsSameDisjunct(RestDisjuncts, Disjunct).
+
+% checkSameProps(+Disjunct1, +Disjunct2)
+% Check if Disjunct1 and Disjunct2 contain the same propositions.
+checkSameProps([], []).
+checkSameProps([Prop|RestProps], Disjunct):-
+    propInDisjunct(Disjunct, Prop),
+    select(Prop, Disjunct, DisjunctMinus),
+    checkSameProps(RestProps, DisjunctMinus).
+% propInDisjunct(+Prop, +Disjunct)
+propInDisjunct([NextProp|_RestProps], Prop):-
+    NextProp == Prop, !.
+propInDisjunct([_|RestProps], Prop):-
+    propInDisjunct(RestProps, Prop).
+
+% bodyToProp(+Conditions, -FVPsAndSigns)
+bodyToProp([], []).
+bodyToProp([happensAt(start(FVP), _)|RestConditions], [[FVP, plus]|RestFVPsAndSigns]):-
+    bodyToProp(RestConditions,RestFVPsAndSigns).
+bodyToProp([happensAt(end(FVP), _)|RestConditions], [[FVP, minus]|RestFVPsAndSigns]):-
+    bodyToProp(RestConditions,RestFVPsAndSigns).
+bodyToProp([holdsAt(FVP, T), \+happensAt(end(FVP), T)|RestConditions], [[FVP, plus]|RestFVPsAndSigns]):-
+    bodyToProp(RestConditions,RestFVPsAndSigns).
+bodyToProp([\+holdsAt(FVP, T), \+happensAt(start(FVP), T)|RestConditions], [[FVP, minus]|RestFVPsAndSigns]):-
+    bodyToProp(RestConditions,RestFVPsAndSigns).
+
+% negationOfInitPIsTermP(+InitP, TermP)
+% We check if the DNF forms ~InitP and TermP are equivalent.
+arePolaritySymmetric(InitP, TermP):-
+    % We need to check the "existsSameDisjunct" condition in the goal clause of findall.
+    % If we were to collect the negated clauses in the output list of findall, then the free variables in the clauses would change names.
+    % As a result, checking the "existsSameDisjunct" condition is not possible after findall.
+    write("InitP: "), write(InitP), nl,
+    write("TermP: "), write(TermP), nl,
+    % TODO implement this.
+    % We prove that the DNF forms of ~InitP and TermP are equivalent by showing ~InitP->TermP and TermP->~InitP.
+    % For ~InitP->TermP, we show that each disjunct d in ~InitP, d->TermP is true.
+    findall(Bool, (getDisjunctOfNegation(InitP, NegInitPDisjunct), write("Found Negative Disjunct: "), write(NegInitPDisjunct), nl,
+                             (disjunctImpliesDNF(NegInitPDisjunct, TermP)->Bool=1;Bool=0)), Bools),
+    \+ member(0, Bools),
+    write("All disjuncts in ~InitP imply TermP."), nl, nl,
+    % 
+    impliesNegOf(TermP, InitP),
+    write("All disjuncts in TermP imply ~InitP."), nl, nl.
+
+% Not deterministic predicate used in a findall
+% getDisjunctOfNegation(+P, -NegPClause)
+% Consider a propositional formula p in DNF form.
+% A disjunct c' of the DNF form of ~p can be constructed as follows:
+%   For each disjunct c in p:
+%       choose a literal l in c.
+%       add ~l in c'.
+% Repeating the above steps for all possible choices yields ~p in DNF form.
+getDisjunctOfNegation([], []).
+getDisjunctOfNegation([Disjunct|RestDisjuncts], [[FVP,RevSign]|RestNegPDisjuncts]):-
+    member([FVP,Sign],Disjunct),
+    reverseSign(Sign,RevSign),
+    getDisjunctOfNegation(RestDisjuncts, RestNegPDisjuncts).
+
+% disjunctImpliesDNF(+Disjunct, +DNF)
+disjunctImpliesDNF(Disjunct, [NextDisjunct|_RestDisjuncts]):-
+    write("Check if "), write(Disjunct), write("\n\timplies "), write(NextDisjunct), nl,
+    includesConditionsOf(Disjunct, NextDisjunct), !.
+disjunctImpliesDNF(Disjunct, [_NextDisjunct|RestDisjuncts]):-
+    disjunctImpliesDNF(Disjunct, RestDisjuncts).
+
+includesConditionsOf(_Disjunct, []):-
+    write("\tIncluded!"), nl.
+includesConditionsOf(Disjunct, [NextLiteral|RestLiterals]):-
+    write("\tNextLiteral: "), write(NextLiteral), nl,
+    write("\tDisjunct: "), write(Disjunct), nl,
+    member(NextLiteral, Disjunct),
+    includesConditionsOf(Disjunct, RestLiterals).
+
+impliesNegOf([],_).
+impliesNegOf([Disjunct|RestDisjuncts],InitP):-
+    write("Disjunct: "), write(Disjunct), nl,
+    findall(Bool, (getDisjunctOfNegation(InitP, NegInitPDisjunct), write("Found Negative Disjunct: "), write(NegInitPDisjunct), nl,
+                             (includesConditionsOf(Disjunct, NegInitPDisjunct)->Bool=1;Bool=0)), Bools),
+    member(1, Bools),
+    impliesNegOf(RestDisjuncts,InitP).
+
+translateSF(F=V, InitRepresentation):-
+    write('holdsForSDFluent('), write(F=V), write(', I) :-'), nl,
+    translateSF0(InitRepresentation, 0, []).
+
+translateSF0([], _CurrentCounter, CurrentIntervalLists):-
+    tab(5), write('union_all(['), writeList(CurrentIntervalLists), write('], I).'), nl, nl.
+translateSF0([Disjunct|RestDisjuncts], CurrentCounter, CurrentIntervalLists):-
+    translateDisjunct(Disjunct, CurrentCounter, MyIntervalLists),
+    NewCounter is CurrentCounter + 1, 
+    translateSF0(RestDisjuncts, NewCounter, [MyIntervalLists|CurrentIntervalLists]).
+
+translateDisjunct(Disjunct, CurrentCounter, IntervalList):-
+    translateDisjunct0(Disjunct, 0, CurrentCounter, [], IntervalList).
+
+translateDisjunct0([], _InnerCounter, OuterCounter, FinalIntervalList, MyIntervalList):-
+    getListName(OuterCounter, MyIntervalList),
+    tab(5), write('intersect_all(['), writeList(FinalIntervalList), write('], '), write(MyIntervalList), write('),'), nl.
+translateDisjunct0([Literal|RestLiterals], InnerCounter, OuterCounter, CurrentIntervalLists, DisjunctIntervalList):-
+    translateLiteral(Literal, InnerCounter, OuterCounter, MyIntervalList),
+    NewInnerCounter is InnerCounter + 1,
+    translateDisjunct0(RestLiterals, NewInnerCounter, OuterCounter, [MyIntervalList|CurrentIntervalLists], DisjunctIntervalList).
+
+translateLiteral([FVP, plus], InnerCounter, OuterCounter, MyIntervalList):-
+    getListName(OuterCounter, InnerCounter, MyIntervalList),
+    tab(5), write('holdsFor('), write(FVP), write(', '), write(MyIntervalList), write('),'), nl.
+
+translateLiteral([FVP, minus], InnerCounter, OuterCounter, MyIntervalList):-
+    getListName(OuterCounter, InnerCounter, "c", IntervalListC),
+    getListName(OuterCounter, InnerCounter, MyIntervalList),
+    tab(5), write('holdsFor('), write(FVP), write(', '), write(IntervalListC), write('),'), nl,
+    tab(5), write('complement_all('), write(IntervalListC), write(', '), write(MyIntervalList), write('),'), nl.
+
+translateSDF2SF:-
+    % Find all statically determined FVPs and translate them into simple FVPs.
+    findall(F=V, (clause(grounding(F=V), _), outputEntity(F=V), sDFluent(F=V)), SDFVPs),
+    %write(SDFVPs), nl,
+    translateSDFs(SDFVPs).
+
+translateSDFs([]).
+translateSDFs([F=V|RestFVPs]):-
+    %write("FVP: "), write(F=V), nl,
+    clause(holdsFor(F=V,_I), Body0), toProperList(Body0, Body),
+    %write("Rule Head: "), write(holdsFor(F=V,I)), nl, write("Rule Body: "), write(Body), nl,
+    sdf2holdsAt(Body, HoldsAtDef),
+    %write("Formula of "), write(F=V), write(" is: "), write(HoldsAtDef), nl, nl,
+    getBarHoldsAtDef(HoldsAtDef, BarHoldsAtDef),
+    %write("Bar Formula of "), write(F=V), write(" is: "), write(BarHoldsAtDef), nl, nl,
+    inertialConditions(HoldsAtDef, T, IC),
+    %write("Inertial Conditions: "), write(IC), nl, nl,
+    inertialConditions(BarHoldsAtDef, T, BarIC),
+    %write("Bar Inertial Conditions: "), write(BarIC), nl, nl,
+    guardConditions(HoldsAtDef, T, G),
+    %write("Guard Conditions: "), write(G), nl, nl,
+    guardConditions(BarHoldsAtDef, T, BarG),
+    %write("Bar Guard Conditions: "), write(BarG), nl, nl,
+    %gfunczeros(IC, GS),
+    %gfunczeros(BarIC, GE),
+    OnesPercentage=0.4,
+    gfuncpercentage(IC, OnesPercentage, GS),
+    gfuncpercentage(BarIC, OnesPercentage, GE),
+    %write("GS: "), write(GS), nl,
+    %write("GE: "), write(GE), nl,
+    %gfuncones(IC, GS),
+    %gfuncones(BarIC, GE),
+    %
+    constructSFRules(initiatedAt(F=V,T),IC,G,GS), %,InitRules),
+    %write("InitRules: "), write(InitRules), nl, nl,
+    constructSFRules(terminatedAt(F=V,T),BarIC,BarG,GE), %,TermRules),
+    %write("TermRules: "), write(TermRules), nl, nl,
+    %translateSDF(InitRules, TermRules),
+    sdf2sfDeclaration(F=V),
+    %write(F=V), write(" Done!"), nl,
+    translateSDFs(RestFVPs).
+
+sdf2holdsAt(HoldsForBody, FVPDNF):-
+    sdf2holdsAt0(HoldsForBody, [], FVPDNF).
+
+sdf2holdsAt0([], [LastFormula|_RestFormulas], FVPDNF):-
+    formula2dnf(LastFormula, FVPDNF).
+sdf2holdsAt0([holdsFor(F=V,I)|RestConditions], PrevFormulas, FVPDNF):- 
+    !,
+    sdf2holdsAt0(RestConditions, [[I,F=V]|PrevFormulas], FVPDNF).
+sdf2holdsAt0([union_all(L,I)|RestConditions], PrevFormulas, FVPDNF):- 
+    !,
+    findFormulasOfAllLists(L, PrevFormulas, Formulas),
+    disjunctionOfFormulas(Formulas,Disjunction),
+    sdf2holdsAt0(RestConditions, [[I,Disjunction]|PrevFormulas], FVPDNF).
+sdf2holdsAt0([intersect_all(L,I)|RestConditions], PrevFormulas, FVPDNF):- 
+    !,
+    findFormulasOfAllLists(L, PrevFormulas, Formulas),
+    conjunctionOfFormulas(Formulas,Conjunction),
+    sdf2holdsAt0(RestConditions, [[I,Conjunction]|PrevFormulas], FVPDNF).
+sdf2holdsAt0([relative_complement_all(I0,L,I)|RestConditions], PrevFormulas, FVPDNF):- 
+    !,
+    findFormulasOfAllLists([I0|L], PrevFormulas, Formulas),
+    complementOfFormulas(Formulas,Complement),
+    sdf2holdsAt0(RestConditions, [[I,Complement]|PrevFormulas], FVPDNF).
+sdf2holdsAt0([_|RestConditions], PrevFormulas, FVPDNF):- 
+    sdf2holdsAt0(RestConditions, PrevFormulas, FVPDNF).
+
+findFormulasOfAllLists([], _, []).
+findFormulasOfAllLists([I|RestLists], PrevFormulas, [Formula|RestFormulas]):-
+    findFormulaOfList(I, PrevFormulas, Formula),
+    findFormulasOfAllLists(RestLists, PrevFormulas, RestFormulas).
+
+findFormulaOfList(I, [[Icurr,Formula]|_RestFormulas], Formula):-
+    I==Icurr, !.
+findFormulaOfList(I, [_|RestFormulas], Formula):-
+    findFormulaOfList(I, RestFormulas, Formula).
+
+disjunctionOfFormulas(Formulas,Disjunction):-
+    Disjunction =.. [disjunction|Formulas].
+
+conjunctionOfFormulas(Formulas,Conjunction):-
+    Conjunction =.. [conjunction|Formulas].
+    
+complementOfFormulas([FirstFormula|RestFormulas],Complement):-
+    negateFormulas(RestFormulas,NegatedFormulas),
+    Complement =.. [conjunction,FirstFormula|NegatedFormulas].
+
+negateFormulas([],[]).
+negateFormulas([Formula|RestFormulas],[negation(Formula)|RestNegatedFormulas]):-
+    negateFormulas(RestFormulas, RestNegatedFormulas).
+   
+formula2dnf([_I,Formula], DNF):-
+    pushNegation(Formula, plus, NNF),
+    flattenFormula(NNF, FlatFormula),
+    moveDisjunctionsOutside(FlatFormula, DNF).
+    %flattenFormula(DisjFirst, DNF).
+
+pushNegation([], _, []).
+pushNegation(F=V, plus, F=V):- !.
+pushNegation(F=V, minus, negation(F=V)):- !.
+
+pushNegation(Formula, Sign, NewFormula):-
+    Formula =.. [negation,SubFormula], !,
+    reverseSign(Sign, RevSign),
+    pushNegation(SubFormula, RevSign, NewFormula).
+
+pushNegation(Formula, plus, NewFormula):-
+    !, Formula =.. [Connective|SubFormulas],
+    pushNegationList(SubFormulas, plus, NewSubFormulas),
+    NewFormula =.. [Connective|NewSubFormulas].
+
+pushNegation(Formula, minus, NewFormula):-
+    Formula =.. [conjunction|SubFormulas], !,
+    pushNegationList(SubFormulas, minus, NewSubFormulas),
+    NewFormula =.. [disjunction|NewSubFormulas].
+    
+pushNegation(Formula, minus, NewFormula):-
+    Formula =.. [disjunction|SubFormulas], !,
+    pushNegationList(SubFormulas, minus, NewSubFormulas),
+    NewFormula =.. [conjunction|NewSubFormulas].
+
+pushNegationList([], _, []).
+pushNegationList([Formula|RestFormulas], Sign, [NewFormula|RestNewFormulas]):-
+    pushNegation(Formula, Sign, NewFormula),
+    pushNegationList(RestFormulas, Sign, RestNewFormulas).
+
+flattenFormula(Formula, FlatFormula):-
+    flattenFormula0(Formula, none, [FlatFormula]).
+
+flattenFormula0(F=V, _, [F=V]):- !.
+flattenFormula0(negation(F=V), _, [negation(F=V)]):- !.
+%flattenFormula0(Formula, _, FlatFormula):-
+
+flattenFormula0(Formula, none, [FlatFormula]):-
+    !, Formula =.. [Connective|SubFormulas],
+    flattenFormulasInList(SubFormulas, Connective, FlatSubFormulasLists), flatten(FlatSubFormulasLists, FlatSubFormulas),
+    FlatFormula =.. [Connective|FlatSubFormulas].
+
+flattenFormula0(Formula, LastConnective, FlatSubFormulas):-
+    Formula =.. [LastConnective|SubFormulas], !,
+    flattenFormulasInList(SubFormulas, LastConnective, FlatSubFormulasLists), flatten(FlatSubFormulasLists, FlatSubFormulas).
+    
+flattenFormula0(Formula, _LastConnective, [FlatFormula]):-
+    Formula =.. [Connective|SubFormulas],
+    flattenFormulasInList(SubFormulas, Connective, FlatSubFormulasLists), flatten(FlatSubFormulasLists, FlatSubFormulas),
+    FlatFormula =.. [Connective|FlatSubFormulas].
+
+flattenFormulasInList([], _, []).
+flattenFormulasInList([Formula|RestFormulas], Connective, [FlatFormulas|RestFlatFormulas]):-
+    flattenFormula0(Formula, Connective, FlatFormulasLists),
+    flattenSubLists(FlatFormulasLists, FlatFormulas),
+    flattenFormulasInList(RestFormulas, Connective, RestFlatFormulas).
+
+flattenSubLists([],[]).
+flattenSubLists([[HH|HT]|T],Tail):-
+    !, flattenSubLists(T, TFlat),
+    append([HH|HT], TFlat, Tail).
+flattenSubLists([H|T1],[H|T2]):-
+    flattenSubLists(T1, T2).
+
+moveDisjunctionsOutside(F=V, F=V):- !.
+moveDisjunctionsOutside(negation(F=V), negation(F=V)):- !.
+moveDisjunctionsOutside(FlatFormula, DisjOutFormula):-
+    FlatFormula =.. [disjunction|SubFormulas], !,
+    moveDisjunctionsOutsideInList(SubFormulas, SubFormulasFixed),
+    %findall(Disjunct, getDisjunct(SubFormulasFixed, Disjunct), Disjuncts),
+    DisjOutFormula0 =.. [disjunction|SubFormulasFixed],
+    flattenFormula(DisjOutFormula0, DisjOutFormula).
+
+moveDisjunctionsOutside(FlatFormula, DisjOutFormula):-
+    FlatFormula =.. [conjunction|SubFormulas], !,
+    moveDisjunctionsOutsideInList(SubFormulas, SubFormulasFixed),
+    ConjFormula0 =.. [conjunction|SubFormulasFixed],
+    flattenFormula(ConjFormula0, ConjFormula),
+    ConjFormula =.. [conjunction|FlatSubFormulasFixed], 
+    getAllDisjuncts(FlatSubFormulasFixed, Disjuncts),
+    DisjOutFormula =.. [disjunction|Disjuncts].
+
+moveDisjunctionsOutsideInList([],[]).
+moveDisjunctionsOutsideInList([Formula|RestFormulas], [DisjOutFormula|RestDisjOutFormulas]):-
+    moveDisjunctionsOutside(Formula, DisjOutFormula),
+    %flattenFormula0(Formula, Connective, FlatDisjOutFormula),
+    moveDisjunctionsOutsideInList(RestFormulas, RestDisjOutFormulas).
+
+getBarHoldsAtDef(DNF,BarDNF):-
+    DNF =.. [disjunction|Formulas], !,
+    getIndexesPerFormula(Formulas, IndexesPerFormula),
+    findall(IndexCombination, getIndexCombination(IndexesPerFormula, IndexCombination), IndexCombinations),
+    getNegDisjunctPerIndexCombination(IndexCombinations, Formulas, Disjuncts),
+    BarDNF =.. [disjunction|Disjuncts].
+
+getBarHoldsAtDef(F=V,negation(F=V)).
+getBarHoldsAtDef(negation(F=V),F=V).
+
+getAllDisjuncts(Formulas, Disjuncts):-
+    getIndexesPerFormula(Formulas, IndexesPerFormula),
+    findall(IndexCombination, getIndexCombination(IndexesPerFormula, IndexCombination), IndexCombinations),
+    getDisjunctPerIndexCombination(IndexCombinations, Formulas, Disjuncts).
+
+
+getIndexesPerFormula([],[]).
+getIndexesPerFormula([_F=_V|RestFormulas],[[1]|RestLists]):-
+    !,
+    getIndexesPerFormula(RestFormulas, RestLists).
+getIndexesPerFormula([negation(_F=_V)|RestFormulas],[[1]|RestLists]):-
+    !,
+    getIndexesPerFormula(RestFormulas, RestLists).
+getIndexesPerFormula([DisjFormula|RestFormulas],[IndexList|RestLists]):-
+    DisjFormula =.. [_|SubFormulas], !,
+    length(SubFormulas, Length),
+    numlist(1, Length, IndexList),
+    getIndexesPerFormula(RestFormulas, RestLists).
+
+getIndexCombination([], []).
+getIndexCombination([IndexList|RestLists], [Index|RestIndexes]):-
+    member(Index, IndexList),
+    getIndexCombination(RestLists, RestIndexes).
+
+getDisjunctPerIndexCombination([], _, []).
+getDisjunctPerIndexCombination([IndexCombination|RestCombinations], Formulas, [Disjunct|RestDisjuncts]):-
+    buildDisjunct(IndexCombination, Formulas, Disjunct0), 
+    Disjunct =.. [conjunction|Disjunct0],
+    getDisjunctPerIndexCombination(RestCombinations, Formulas, RestDisjuncts).
+
+buildDisjunct([], [], []).
+buildDisjunct([Index|RestIndexes], [Formula|RestFormulas], [SubFormula|RestSubFormulas]):-
+    Formula =.. [disjunction|SubFormulas], !,
+    nth1(Index, SubFormulas, SubFormula),
+    buildDisjunct(RestIndexes, RestFormulas, RestSubFormulas).
+buildDisjunct([_Index|RestIndexes], [Formula|RestFormulas], [Formula|RestSubFormulas]):-
+    buildDisjunct(RestIndexes, RestFormulas, RestSubFormulas).
+
+getNegDisjunctPerIndexCombination([], _, []).
+getNegDisjunctPerIndexCombination([IndexCombination|RestCombinations], Formulas, [Disjunct|RestDisjuncts]):-
+    buildNegDisjunct(IndexCombination, Formulas, Disjunct0), 
+    Disjunct =.. [conjunction|Disjunct0],
+    getNegDisjunctPerIndexCombination(RestCombinations, Formulas, RestDisjuncts).
+
+buildNegDisjunct([], [], []).
+buildNegDisjunct([Index|RestIndexes], [Formula|RestFormulas], [negation(F=V)|RestSubFormulas]):-
+    Formula =.. [conjunction|SubFormulas], 
+    nth1(Index, SubFormulas, F=V),!,
+    buildNegDisjunct(RestIndexes, RestFormulas, RestSubFormulas).
+buildNegDisjunct([Index|RestIndexes], [Formula|RestFormulas], [F=V|RestSubFormulas]):-
+    Formula =.. [conjunction|SubFormulas], !,
+    nth1(Index, SubFormulas, negation(F=V)),
+    buildNegDisjunct(RestIndexes, RestFormulas, RestSubFormulas).
+buildNegDisjunct([_Index|RestIndexes], [F=V|RestFormulas], [negation(F=V)|RestSubFormulas]):-
+    !, buildNegDisjunct(RestIndexes, RestFormulas, RestSubFormulas).
+buildNegDisjunct([_Index|RestIndexes], [negation(F=V)|RestFormulas], [F=V|RestSubFormulas]):-
+    !, buildNegDisjunct(RestIndexes, RestFormulas, RestSubFormulas).
+
+inertialConditions(HoldsAtDef, T, ICs):-
+    HoldsAtDef =.. [disjunction|Disjuncts], !,
+    inertialConditions0(Disjuncts, T, ICs).
+
+inertialConditions(F=V, T, [[LiteralICs]]):-
+    inertialConditionsOfLiteral(F=V, T, LiteralICs).
+inertialConditions(negation(F=V), T, [[LiteralICs]]):-
+    inertialConditionsOfLiteral(negation(F=V), T, LiteralICs).
+
+inertialConditions0([], _, []).
+inertialConditions0([Disjunct|RestDisjuncts], T, [ICSet|RestSets]):-
+    Disjunct =.. [conjunction|Literals], !,
+    inertialConditionsOfLiterals(Literals, T, ICSet),
+    inertialConditions0(RestDisjuncts, T, RestSets).
+inertialConditions0([F=V|RestDisjuncts], T, [[ICSet]|RestSets]):-
+    !, inertialConditionsOfLiteral(F=V, T, ICSet),
+    inertialConditions0(RestDisjuncts, T, RestSets).
+inertialConditions0([negation(F=V)|RestDisjuncts], T, [[ICSet]|RestSets]):-
+    !, inertialConditionsOfLiteral(negation(F=V), T, ICSet),
+    inertialConditions0(RestDisjuncts, T, RestSets).
+
+inertialConditionsOfLiterals([], _, []).
+inertialConditionsOfLiterals([Literal|RestLiterals], T, [ICSet|RestSets]):-
+    inertialConditionsOfLiteral(Literal, T, ICSet),
+    inertialConditionsOfLiterals(RestLiterals, T, RestSets).
+
+inertialConditionsOfLiteral(F=V, T, [[happensAt(start(F=V), T)], [holdsAt(F=V, T),\+ happensAt(end(F=V), T)]]):- !.
+inertialConditionsOfLiteral(negation(F=V), T, [[happensAt(end(F=V), T)], [\+holdsAt(F=V, T),\+ happensAt(start(F=V), T)]]):- !.
+    
+guardConditions(HoldsAtDef, T, Gs):-
+    HoldsAtDef =.. [disjunction|Disjuncts], !,
+    guardConditions0(Disjuncts, T, Gs).
+
+guardConditions(F=V, T, [[\+holdsAt(F=V, T)]]).
+guardConditions(negation(F=V), T, [[holdsAt(F=V, T)]]).
+
+guardConditions0([], _, []).
+guardConditions0([Disjunct|RestDisjuncts], T, [GSet|RestSets]):-
+    Disjunct =.. [conjunction|Literals], !,
+    guardConditionsOfLiterals(Literals, T, GSet),
+    guardConditions0(RestDisjuncts, T, RestSets).
+guardConditions0([F=V|RestDisjuncts], T, [[GSet]|RestSets]):-
+    !, guardConditionsOfLiteral(F=V, T, GSet),
+    guardConditions0(RestDisjuncts, T, RestSets).
+guardConditions0([negation(F=V)|RestDisjuncts], T, [[GSet]|RestSets]):-
+    !, guardConditionsOfLiteral(negation(F=V), T, GSet),
+    guardConditions0(RestDisjuncts, T, RestSets).
+    
+guardConditionsOfLiterals([], _, []).
+guardConditionsOfLiterals([Literal|RestLiterals], T, [GSet|RestSets]):-
+    guardConditionsOfLiteral(Literal, T, GSet),
+    guardConditionsOfLiterals(RestLiterals, T, RestSets).
+
+guardConditionsOfLiteral(F=V, T, \+holdsAt(F=V, T)):- !.
+guardConditionsOfLiteral(negation(F=V), T, holdsAt(F=V, T)):- !.
+
+gfunczeros([],[]).
+gfunczeros([_|T],[0|Rest0s]):-
+    gfunczeros(T,Rest0s).
+gfuncones([],[]).
+gfuncones([_|T],[1|Rest1s]):-
+    gfuncones(T,Rest1s).
+gfuncpercentage([], _, []).
+gfuncpercentage([_|T], OnesPercentage, [0|Rest]):-
+    random(X), X>OnesPercentage, !,
+    gfuncpercentage(T, OnesPercentage, Rest).
+gfuncpercentage([_|T], OnesPercentage, [1|Rest]):-
+    gfuncpercentage(T, OnesPercentage, Rest).
+    
+constructSFRules(_Head,[],_G,_GS):- !. %,[]):- !.
+constructSFRules(Head,[ICs|RestICs],G,GS):- %,[SetOfRules|RestSetsOfRules]):-
+    %write("Adding inertial Conditions"), nl,
+    addInertialConditions(ICs, BodiesICs),
+    %write("Bodies ICs: "), write(BodiesICs), nl,
+    addGuardConditions(BodiesICs, G, GS, Head), %, BodiesICGs0),
+    %flattenOneLevel(BodiesICGs0, [], BodiesICGs),
+    %write("Bodies ICGs: "), write(BodiesICGs), nl,
+    %addHead(BodiesICGs, Head, SetOfRules),
+    constructSFRules(Head,RestICs,G,GS). %,RestSetsOfRules).
+
+addInertialConditions(ICs, BodiesICs):-
+    getIndexCombinationsICs(ICs, IndexCombinations),
+    %write("IndexCombinations: "), write(IndexCombinations), nl,
+    addInertialConditions0(IndexCombinations, ICs, BodiesICs).
+
+addInertialConditions0([], _ICs, []).
+addInertialConditions0([IndexCombination|RestCombinations], ICs, [RuleBodyICs|RestBodies]):-
+    buildRuleBodyICs(IndexCombination, ICs, RuleBodyICs),
+    addInertialConditions0(RestCombinations, ICs, RestBodies).
+    
+buildRuleBodyICs([], [], []).
+buildRuleBodyICs([Index|RestIndexes], [LiteralICs|RestICs], [HappensCond|RestBodyICs]):-
+    nth1(Index, LiteralICs, [HappensCond]), !,
+    buildRuleBodyICs(RestIndexes, RestICs, RestBodyICs).
+buildRuleBodyICs([Index|RestIndexes], [LiteralICs|RestICs], [NotHoldsCond,NotHappensCond|RestBodyICs]):-
+    nth1(Index, LiteralICs, [NotHoldsCond, NotHappensCond]), !,
+    buildRuleBodyICs(RestIndexes, RestICs, RestBodyICs).
+
+getIndexCombinationsICs(ICs, IndexCombinations):-
+    getIndexesPerIC(ICs, IndexesPerIC),
+    findall(IndexCombination, getIndexCombination(IndexesPerIC, IndexCombination), IndexCombinations0),
+    getAllSecondIndexes(ICs, Twos),
+    delete(IndexCombinations0, Twos, IndexCombinations).
+
+getIndexesPerIC([], []).
+getIndexesPerIC([_|T], [[1,2]|Rest]):-
+    getIndexesPerIC(T, Rest).
+
+getAllSecondIndexes([], []).
+getAllSecondIndexes([_|T], [2|Rest]):-
+    getAllSecondIndexes(T, Rest).
+
+addGuardConditions([], _, _, _). %, []).
+addGuardConditions([RuleBody|RestBodies], G, GS, Head):- %, [RuleBodiesGs|RestSetsOfRules]):-
+    (getGuardConditionCombination(G, GS, GCombination), append(RuleBody, GCombination, Body), assertSFRule(Head, Body), fail); true,
+    %
+    %addGuardConditionsInRules(G, GS, [RuleBody], RuleBodiesGs),
+    %addHead(RuleBodiesGs, Head, SetOfRules),
+    %%write("SetOfRules: "), write(SetOfRules), nl,
+    %assertSFRules0(SetOfRules),
+    %write("Zero: "), write(RuleBodiesGs0), nl,
+    %flattenOneLevel(RuleBodiesGs0, [], RuleBodiesGs),
+    %write("Proper: "), write(RuleBodiesGs), nl,
+    %write("RuleBody: "), write(RuleBody), write(" OK!"), nl,
+    addGuardConditions(RestBodies, G, GS, Head). %, RestSetsOfRules).
+
+getGuardConditionCombination([], [], []).
+getGuardConditionCombination([_List|RestLists], [0|RestSelectors], Guards):-
+    !, getGuardConditionCombination(RestLists, RestSelectors, Guards).
+getGuardConditionCombination([GuardsList|RestLists], [1|RestSelectors], [Guard|RestGuards]):-
+    member(Guard, GuardsList),
+    getGuardConditionCombination(RestLists, RestSelectors, RestGuards).
+
+addGuardConditionsInRules([], [], FinalRules, FinalRules).
+addGuardConditionsInRules([_GuardsList|RestGuards], [0|RestSelectors], RuleBodies, FinalRuleBodies):- 
+    !, addGuardConditionsInRules(RestGuards, RestSelectors, RuleBodies, FinalRuleBodies).
+addGuardConditionsInRules([GuardsList|RestGuards], [1|RestSelectors], RuleBodies, FinalRuleBodies):-
+    %write("Guards List: "), write(GuardsList), nl,
+    addGuardListInRules(RuleBodies, GuardsList, RulesWithGuards0),
+    flattenOneLevel(RulesWithGuards0, [], RulesWithGuards),
+    %write("RulesWithGuards: "), write(RulesWithGuards), nl, nl,
+    addGuardConditionsInRules(RestGuards, RestSelectors, RulesWithGuards, FinalRuleBodies).
+
+addGuardListInRules([], _GuardsList, []).
+addGuardListInRules([RuleBody|RestBodies], GuardsList, [CurrRulesWithGuards|RestRulesWithGuards]):-
+    %write("Adding guards: "), write(GuardsList), write(" in rule body: "), write(RuleBody), nl,
+    guardsAllComb(GuardsList, RuleBody, CurrRulesWithGuards),
+    %write("CurrRules with Guards: "), write(CurrRulesWithGuards), nl,
+    addGuardListInRules(RestBodies, GuardsList, RestRulesWithGuards).
+
+guardsAllComb([], _, []).
+guardsAllComb([Guard|RestGuards], RuleBody, [RuleBodyWithGuard|RestBodiesWithGuard]):-
+    append(RuleBody, [Guard], RuleBodyWithGuard),
+    guardsAllComb(RestGuards, RuleBody, RestBodiesWithGuard).
+
+flattenOneLevel([], Final, Final).
+flattenOneLevel([ListOfRuleBodies|RestLists], Curr, Final):-
+    append(Curr, ListOfRuleBodies, New),
+    flattenOneLevel(RestLists, New, Final).
+
+addHead([], _Head, []).
+addHead([Body|RestBodies], Head, [[Head|Body]|RestRules]):-
+    addHead(RestBodies, Head, RestRules).
+
+addHead0(Body, Head, [Head|Body]).
+
+translateSDF(InitRules, TermRules):-
+    assertSFRules(InitRules),
+    assertSFRules(TermRules).
+
+assertSFRules([]).
+assertSFRules([SetOfRules|RestSets]):-
+    assertSFRules0(SetOfRules),
+    assertSFRules(RestSets).
+
+assertSFRules0([]).
+assertSFRules0([[Head|Body]|RestRules]):-
+    assertSFRule(Head, Body),
+    assertSFRules0(RestRules).
+
+assertSFRule(Head, Body):-
+    sort_body(Body, BodySorted),
+    list_to_conjunction(BodySorted, BodyConj),
+    %write("Asserting rule: "), write(Head:- BodyConj), nl,
+    assertz((Head :- BodyConj)).
+    
+
+sort_body(Body, BodySorted):-
+    sort_body0(Body, [], BodySorted).
+
+%sort_body0([\+happensAt(U, T)|RestBody], PrevBody, FinalBody):-
+    %!, append(RestBody, [\+happensAt(U,T)|PrevBody], FinalBody).
+sort_body0([happensAt(U, T)|RestBody], PrevBody, [happensAt(U, T)|Body0]):-
+    !, append(RestBody, PrevBody, Body0).
+
+sort_body0([X|RestBody], PrevBody, FinalBody):-
+    sort_body0(RestBody, [X|PrevBody], FinalBody).
+
+    
+%sdf2sfDeclaration(+(F=V))
+sdf2sfDeclaration(F=V):-
+    freeConstants(F=V, U),
+    sDFluent(U), !,
+    retract(sDFluent(U)),
+    assertz(simpleFluent(U)).
+sdf2sfDeclaration(_).
+
+% Convert a list of predictes into a conjunction of predicates
+% ex. list_to_conjunction([a,b,c], (a, (b, (c, true)))).
+list_to_conjunction([], true).
+list_to_conjunction([P|Ps], (P, Conjuncts)) :- list_to_conjunction(Ps, Conjuncts).
+
+%%% Auxiliary definitions. %%%
+
+% reverseSign(?Sign, ?Sign)
+reverseSign(plus,minus).
+reverseSign(minus,plus).
+
+% unifyArgs(+Rules, +Head/null)
+% If the second argument is the Head of a rule, then we unify <Head> with the head predicates of the rules in <Rules>.
+% If the second argument is null, we unify the head of the first rule in <Rules> with the heads of the remaining rules in <Rules>.
+unifyArgs([], _).
+unifyArgs([[Head|_Body]|RestRules], null):-
+    !,
+    unifyArgs(RestRules, Head).
+unifyArgs([[Head|_Body]|RestRules], Head):-
+    unifyArgs(RestRules, Head).
+
+% writeList(+List)
+writeList([]).
+writeList([Elem]):-
+    write(Elem).
+writeList([Elem1,Elem2|Tail]):-
+    write(Elem1), write(','),
+    writeList([Elem2|Tail]).
+
+getListName(Counter, ListName):-
+    atom_number(CounterAtom, Counter),
+    atom_concat("I", CounterAtom, ListName).
+
+getListName(OuterCounter, InnerCounter, ListName):-
+    getListName(OuterCounter, ListName0),
+    atom_concat(ListName0, "x", ListName1),
+    atom_number(InnerCounterAtom, InnerCounter),
+    atom_concat(ListName1, InnerCounterAtom, ListName).
+
+getListName(OuterCounter, InnerCounter, Char, ListName):-
+    getListName(OuterCounter, InnerCounter, ListName0),
+    atom_concat(ListName0, Char, ListName).
+
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TRANSLATION END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
