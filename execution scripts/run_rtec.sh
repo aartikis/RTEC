@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Author: Periklis Mantenoglou
 # Run rtec on an event description.
 
 # Set separateor $sep depending on OS.
