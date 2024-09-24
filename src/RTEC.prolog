@@ -92,6 +92,8 @@ loadSocketLibrary(_).
 :- ['processEvents.prolog'].
 :- ['utilities/interval-manipulation.prolog'].
 :- ['utilities/amalgamate-periods.prolog'].
+% Load allen relations module
+:- ['allen.prolog'].
 % Load the dynamic grounding module
 :- ['dynamic grounding/dynamicGrounding.prolog'].
 % Load module for handling deadlines
@@ -100,7 +102,10 @@ loadSocketLibrary(_).
 /***** dynamic predicates *****/
 
 % The predicates below are asserted/retracted
-:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, queryTime/1, iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3.
+:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, queryTime/1, 
+		   iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, 
+		   processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3, 
+		   step/1, allenMemory/1, cachedIntervalsAllen/5.
 
 % The predicates below may or may not appear in the event description of an application;
 % thus they must be declared dynamic
@@ -147,8 +152,8 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Tempor
 	(PreProcessingFlag=preprocessing ; assertz(preProcessing(_))), !.
 
 
-initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, ForgetThreshold, DynamicGroundingThreshold, TemporalDistance) :-
-	assertz(temporalDistance(TemporalDistance)), 
+initialiseRecognition(Step, InputFlag, DynamicGroundingFlag, PreProcessingFlag, ForgetThreshold, DynamicGroundingThreshold, TemporalDistance, AllenMem) :-
+	assert(temporalDistance(TemporalDistance)), 
 	% Assert threshold for forget and dynamic grounding mechanisms here 
 	% to avoid carrying these values forever 
 	assertz(eventsPerTimepointThreshold(ForgetThreshold)), 
@@ -159,7 +164,9 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Forget
 	(DynamicGroundingFlag=dynamicgrounding ; assertz(noDynamicGrounding)),	
 	% if we need preprocessing then preProcessing/1 is already defined
 	% so there is no need to assert anything here
-	(PreProcessingFlag=preprocessing ; assertz(preProcessing(_))), !.
+	(PreProcessingFlag=preprocessing ; assert(preProcessing(_))), 
+	assertz(step(Step)),
+	assertz(allenMemory(AllenMem)), !.
 
 
 /************************************* EVENT RECOGNITION *************************************/

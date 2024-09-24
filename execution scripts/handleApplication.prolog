@@ -260,7 +260,7 @@ set_parameter([ParameterName=Value|_T], ParameterName, _Application, _InputMode,
 set_parameter([_H|T], ParameterName, Application, InputMode, Value):-
 	set_parameter(T, ParameterName, Application, InputMode, Value).	
 
-handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, OutputMode, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate) :-
+handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProviders, LogFile, OutputMode, ResultsFile, WindowSize, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, AllenMem) :-
 	% Set window and step size
 	set_parameter(ParameterList, window_size, App, WindowSize),
 	set_parameter(ParameterList, step, App, Step),
@@ -287,7 +287,7 @@ handleApplication(App, Prolog, ParameterList, PrologFiles, InputMode, InputProvi
 	set_parameter(ParameterList, dynamic_grounding_threshold, App, DynamicGroundingThreshold),
 	set_parameter(ParameterList, sde_batch, App, SDEBatch),
         %set_parameter(ParameterList, goals, App, Goals),
-	%set_parameter(ParameterList, allen_memory, App, AllenMem),
+	set_parameter(ParameterList, allen_memory, App, AllenMem),
 	atom_concat(ResultsDir, '/log', ResultsDirLog),
 	add_info(ResultsDirLog, '-log.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], LogFile), % execution logs file
 	add_info(ResultsDirLog, '-recognised-intervals.txt', [Prolog, WindowSize, Step, InputMode, OutputMode], ResultsFile). % recognised intervals file

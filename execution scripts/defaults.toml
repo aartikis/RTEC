@@ -71,6 +71,28 @@ dependency_graph_flag = false
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
 
+[maritime_allen]
+# Execution Parameters 
+window_size = 36000 # 1 day = 86400 seconds
+step = 36000
+start_time = 1443650400 
+end_time = 1448834400
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_allen.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+
 [voting]
 # Execution Parameters 
 window_size = 10

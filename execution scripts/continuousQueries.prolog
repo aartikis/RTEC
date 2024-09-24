@@ -32,7 +32,7 @@ continuousQueries(App, ParamList) :-
     % The flag we use to measure cpu time depends on the Prolog environment.
     handleProlog(Prolog, StatisticsFlag), 
     % Assign the value provided in <ParamList> to each parameter of RTEC. Assign the default value, if no value is provided in <ParamList>
-    handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, OutputMode, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate),
+    handleApplication(App, Prolog, ParamList, PrologFiles, InputMode, InputPaths, LogFile, OutputMode, ResultsFile, WM, Step, StartReasoningTime, EndReasoningTime, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, SDEBatch, StreamRate, AllenMem),
     % <PrologFiles> includes, at the very least, the compiled rules of the event description.
     % The remaining files in <PrologFiles> contain background knowledge.
     consultInputFiles(PrologFiles),
@@ -48,7 +48,7 @@ continuousQueries(App, ParamList) :-
     QueryTime is StartReasoningTime + Step,
     init_output(OutputMode, ResultsFile, WM, Step, QueryTime, OutputThreadID),
     % initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
-    initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick),
+    initialiseRecognition(Step, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
     % In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
     sleep_if_live_stream(InputMode, Step, StreamRate, 0),
     % This predicates runs RTEC for the next query time. Afterwards, it is being called recursively until we have passed the EndReasoningTime.
