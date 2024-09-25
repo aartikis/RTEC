@@ -1,71 +1,72 @@
-initiatedAt(strength(_5010)=tired, _5054, _4980, _5060) :-
-     happensAtIE(ends_working(_5010),_4980),_5054=<_4980,_4980<_5060,
-     holdsAtCyclic(_5010,strength(_5010)=lowering,_4980).
+initiatedAt(strength(_106)=tired, _150, _76, _156) :-
+     happensAtIE(ends_working(_106),_76),_150=<_76,_76<_156,
+     holdsAtCyclic(_106,strength(_106)=lowering,_76).
 
-initiatedAt(strength(_5010)=lowering, _5054, _4980, _5060) :-
-     happensAtIE(starts_working(_5010),_4980),_5054=<_4980,_4980<_5060,
-     holdsAtCyclic(_5010,strength(_5010)=full,_4980).
+initiatedAt(strength(_106)=lowering, _150, _76, _156) :-
+     happensAtIE(starts_working(_106),_76),_150=<_76,_76<_156,
+     holdsAtCyclic(_106,strength(_106)=full,_76).
 
-initiatedAt(strength(_5010)=full, _5054, _4980, _5060) :-
-     happensAtIE(sleep_end(_5010),_4980),_5054=<_4980,_4980<_5060,
-     holdsAtCyclic(_5010,strength(_5010)=tired,_4980).
+initiatedAt(strength(_106)=full, _150, _76, _156) :-
+     happensAtIE(sleep_end(_106),_76),_150=<_76,_76<_156,
+     holdsAtCyclic(_106,strength(_106)=tired,_76).
 
-initiatedAt(strength(_5018)=full, _4980, -1, _4984) :-
-     _4980=< -1,
-     -1<_4984.
+initiatedAt(strength(_114)=full, _76, -1, _80) :-
+     _76=< -1,
+     -1<_80.
 
-grounding(ends_working(_5262)) :- 
-     person(_5262).
+grounding(ends_working(_358)) :- 
+     person(_358).
 
-grounding(starts_working(_5262)) :- 
-     person(_5262).
+grounding(starts_working(_358)) :- 
+     person(_358).
 
-grounding(sleep_end(_5262)) :- 
-     person(_5262).
+grounding(sleep_end(_358)) :- 
+     person(_358).
 
-grounding(strength(_5268)=tired) :- 
-     person(_5268).
+grounding(strength(_364)=tired) :- 
+     person(_364).
 
-grounding(strength(_5268)=lowering) :- 
-     person(_5268).
+grounding(strength(_364)=lowering) :- 
+     person(_364).
 
-grounding(strength(_5268)=full) :- 
-     person(_5268).
+grounding(strength(_364)=full) :- 
+     person(_364).
 
-inputEntity(ends_working(_5034)).
-inputEntity(starts_working(_5034)).
-inputEntity(sleep_end(_5034)).
+inputEntity(ends_working(_130)).
+inputEntity(starts_working(_130)).
+inputEntity(sleep_end(_130)).
 
-outputEntity(strength(_5114)=tired).
-outputEntity(strength(_5114)=lowering).
-outputEntity(strength(_5114)=full).
+outputEntity(strength(_210)=tired).
+outputEntity(strength(_210)=lowering).
+outputEntity(strength(_210)=full).
 
-event(ends_working(_5182)).
-event(starts_working(_5182)).
-event(sleep_end(_5182)).
+event(ends_working(_278)).
+event(starts_working(_278)).
+event(sleep_end(_278)).
 
-simpleFluent(strength(_5262)=tired).
-simpleFluent(strength(_5262)=lowering).
-simpleFluent(strength(_5262)=full).
+simpleFluent(strength(_358)=tired).
+simpleFluent(strength(_358)=lowering).
+simpleFluent(strength(_358)=full).
 
 
-index(ends_working(_5338),_5338).
-index(starts_working(_5338),_5338).
-index(sleep_end(_5338),_5338).
-index(strength(_5338)=tired,_5338).
-index(strength(_5338)=lowering,_5338).
-index(strength(_5338)=full,_5338).
 
-cyclic(strength(_5548)=tired).
-cyclic(strength(_5548)=lowering).
-cyclic(strength(_5548)=full).
+index(ends_working(_490),_490).
+index(starts_working(_490),_490).
+index(sleep_end(_490),_490).
+index(strength(_490)=tired,_490).
+index(strength(_490)=lowering,_490).
+index(strength(_490)=full,_490).
 
-cachingOrder2(_5656, strength(_5656)=full) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5656).
+cyclic(strength(_700)=tired).
+cyclic(strength(_700)=lowering).
+cyclic(strength(_700)=full).
 
-cachingOrder2(_5672, strength(_5672)=lowering) :- % level in dependency graph: 1, processing order in component: 2
-     person(_5672).
+cachingOrder2(_808, strength(_808)=tired) :- % level in dependency graph: 1, processing order in component: 1
+     person(_808).
 
-cachingOrder2(_5688, strength(_5688)=tired) :- % level in dependency graph: 1, processing order in component: 3
-     person(_5688).
+cachingOrder2(_824, strength(_824)=lowering) :- % level in dependency graph: 1, processing order in component: 2
+     person(_824).
+
+cachingOrder2(_840, strength(_840)=full) :- % level in dependency graph: 1, processing order in component: 3
+     person(_840).
 

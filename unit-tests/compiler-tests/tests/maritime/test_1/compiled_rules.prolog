@@ -513,139 +513,140 @@ simpleFluent(sarMovement(_628)=true).
 simpleFluent(trawlingMovement(_628)=false).
 simpleFluent(sarMovement(_628)=false).
 
-sDFluent(underWay(_798)=true).
-sDFluent(anchoredOrMoored(_798)=true).
-sDFluent(tugging(_798,_800)=true).
-sDFluent(rendezVous(_798,_800)=true).
-sDFluent(trawling(_798)=true).
-sDFluent(inSAR(_798)=true).
-sDFluent(loitering(_798)=true).
-sDFluent(pilotOps(_798,_800)=true).
-sDFluent(proximity(_798,_800)=true).
 
-index(entersArea(_854,_908),_854).
-index(gap_start(_854),_854).
-index(stop_start(_854),_854).
-index(slow_motion_start(_854),_854).
-index(change_in_speed_start(_854),_854).
-index(velocity(_854,_908,_910,_912),_854).
-index(change_in_heading(_854),_854).
-index(leavesArea(_854,_908),_854).
-index(gap_end(_854),_854).
-index(stop_end(_854),_854).
-index(slow_motion_end(_854),_854).
-index(change_in_speed_end(_854),_854).
-index(coord(_854,_908,_910),_854).
-index(withinArea(_854,_914)=true,_854).
-index(gap(_854)=nearPorts,_854).
-index(gap(_854)=farFromPorts,_854).
-index(stopped(_854)=nearPorts,_854).
-index(stopped(_854)=farFromPorts,_854).
-index(lowSpeed(_854)=true,_854).
-index(changingSpeed(_854)=true,_854).
-index(highSpeedNearCoast(_854)=true,_854).
-index(movingSpeed(_854)=below,_854).
-index(movingSpeed(_854)=normal,_854).
-index(movingSpeed(_854)=above,_854).
-index(drifting(_854)=true,_854).
-index(tuggingSpeed(_854)=true,_854).
-index(trawlSpeed(_854)=true,_854).
-index(trawlingMovement(_854)=true,_854).
-index(sarSpeed(_854)=true,_854).
-index(sarMovement(_854)=true,_854).
-index(trawlingMovement(_854)=false,_854).
-index(sarMovement(_854)=false,_854).
-index(underWay(_854)=true,_854).
-index(anchoredOrMoored(_854)=true,_854).
-index(tugging(_854,_914)=true,_854).
-index(rendezVous(_854,_914)=true,_854).
-index(trawling(_854)=true,_854).
-index(inSAR(_854)=true,_854).
-index(loitering(_854)=true,_854).
-index(pilotOps(_854,_914)=true,_854).
-index(proximity(_854,_914)=true,_854).
+sDFluent(underWay(_854)=true).
+sDFluent(anchoredOrMoored(_854)=true).
+sDFluent(tugging(_854,_856)=true).
+sDFluent(rendezVous(_854,_856)=true).
+sDFluent(trawling(_854)=true).
+sDFluent(inSAR(_854)=true).
+sDFluent(loitering(_854)=true).
+sDFluent(pilotOps(_854,_856)=true).
+sDFluent(proximity(_854,_856)=true).
+
+index(entersArea(_910,_964),_910).
+index(gap_start(_910),_910).
+index(stop_start(_910),_910).
+index(slow_motion_start(_910),_910).
+index(change_in_speed_start(_910),_910).
+index(velocity(_910,_964,_966,_968),_910).
+index(change_in_heading(_910),_910).
+index(leavesArea(_910,_964),_910).
+index(gap_end(_910),_910).
+index(stop_end(_910),_910).
+index(slow_motion_end(_910),_910).
+index(change_in_speed_end(_910),_910).
+index(coord(_910,_964,_966),_910).
+index(withinArea(_910,_970)=true,_910).
+index(gap(_910)=nearPorts,_910).
+index(gap(_910)=farFromPorts,_910).
+index(stopped(_910)=nearPorts,_910).
+index(stopped(_910)=farFromPorts,_910).
+index(lowSpeed(_910)=true,_910).
+index(changingSpeed(_910)=true,_910).
+index(highSpeedNearCoast(_910)=true,_910).
+index(movingSpeed(_910)=below,_910).
+index(movingSpeed(_910)=normal,_910).
+index(movingSpeed(_910)=above,_910).
+index(drifting(_910)=true,_910).
+index(tuggingSpeed(_910)=true,_910).
+index(trawlSpeed(_910)=true,_910).
+index(trawlingMovement(_910)=true,_910).
+index(sarSpeed(_910)=true,_910).
+index(sarMovement(_910)=true,_910).
+index(trawlingMovement(_910)=false,_910).
+index(sarMovement(_910)=false,_910).
+index(underWay(_910)=true,_910).
+index(anchoredOrMoored(_910)=true,_910).
+index(tugging(_910,_970)=true,_910).
+index(rendezVous(_910,_970)=true,_910).
+index(trawling(_910)=true,_910).
+index(inSAR(_910)=true,_910).
+index(loitering(_910)=true,_910).
+index(pilotOps(_910,_970)=true,_910).
+index(proximity(_910,_970)=true,_910).
 
 
-cachingOrder2(_1334, withinArea(_1334,_1336)=true) :- % level in dependency graph: 1, processing order in component: 1
-     vessel(_1334),areaType(_1336).
+cachingOrder2(_1390, withinArea(_1390,_1392)=true) :- % level in dependency graph: 1, processing order in component: 1
+     vessel(_1390),areaType(_1392).
 
-cachingOrder2(_1584, gap(_1584)=nearPorts) :- % level in dependency graph: 2, processing order in component: 1
-     vessel(_1584),portStatus(nearPorts).
+cachingOrder2(_1618, gap(_1618)=farFromPorts) :- % level in dependency graph: 2, processing order in component: 1
+     vessel(_1618),portStatus(farFromPorts).
 
-cachingOrder2(_1562, gap(_1562)=farFromPorts) :- % level in dependency graph: 2, processing order in component: 1
-     vessel(_1562),portStatus(farFromPorts).
+cachingOrder2(_1634, gap(_1634)=nearPorts) :- % level in dependency graph: 2, processing order in component: 2
+     vessel(_1634),portStatus(nearPorts).
 
-cachingOrder2(_1540, highSpeedNearCoast(_1540)=true) :- % level in dependency graph: 2, processing order in component: 1
-     vessel(_1540).
+cachingOrder2(_1596, highSpeedNearCoast(_1596)=true) :- % level in dependency graph: 2, processing order in component: 1
+     vessel(_1596).
 
-cachingOrder2(_1502, trawlingMovement(_1502)=true) :- % level in dependency graph: 2, processing order in component: 1
-     vessel(_1502),vesselType(_1502,fishing).
+cachingOrder2(_1558, trawlingMovement(_1558)=true) :- % level in dependency graph: 2, processing order in component: 1
+     vessel(_1558),vesselType(_1558,fishing).
 
-cachingOrder2(_1502, trawlingMovement(_1502)=false) :- % level in dependency graph: 2, processing order in component: 2
-     vessel(_1502),vesselType(_1502,fishing).
+cachingOrder2(_1558, trawlingMovement(_1558)=false) :- % level in dependency graph: 2, processing order in component: 2
+     vessel(_1558),vesselType(_1558,fishing).
 
-cachingOrder2(_2246, stopped(_2246)=nearPorts) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2246),portStatus(nearPorts).
+cachingOrder2(_2262, stopped(_2262)=farFromPorts) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2262),portStatus(farFromPorts).
 
-cachingOrder2(_2224, stopped(_2224)=farFromPorts) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2224),portStatus(farFromPorts).
+cachingOrder2(_2278, stopped(_2278)=nearPorts) :- % level in dependency graph: 3, processing order in component: 2
+     vessel(_2278),portStatus(nearPorts).
 
-cachingOrder2(_2202, lowSpeed(_2202)=true) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2202).
+cachingOrder2(_2240, lowSpeed(_2240)=true) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2240).
 
-cachingOrder2(_2180, changingSpeed(_2180)=true) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2180).
+cachingOrder2(_2218, changingSpeed(_2218)=true) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2218).
 
-cachingOrder2(_2158, movingSpeed(_2158)=below) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2158),movingStatus(below).
+cachingOrder2(_2164, movingSpeed(_2164)=above) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2164),movingStatus(above).
 
-cachingOrder2(_2136, movingSpeed(_2136)=normal) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2136),movingStatus(normal).
+cachingOrder2(_2180, movingSpeed(_2180)=normal) :- % level in dependency graph: 3, processing order in component: 2
+     vessel(_2180),movingStatus(normal).
 
-cachingOrder2(_2114, movingSpeed(_2114)=above) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2114),movingStatus(above).
+cachingOrder2(_2196, movingSpeed(_2196)=below) :- % level in dependency graph: 3, processing order in component: 3
+     vessel(_2196),movingStatus(below).
 
-cachingOrder2(_2092, tuggingSpeed(_2092)=true) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2092).
+cachingOrder2(_2142, tuggingSpeed(_2142)=true) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2142).
 
-cachingOrder2(_2070, trawlSpeed(_2070)=true) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2070),vesselType(_2070,fishing).
+cachingOrder2(_2120, trawlSpeed(_2120)=true) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2120),vesselType(_2120,fishing).
 
-cachingOrder2(_2048, sarSpeed(_2048)=true) :- % level in dependency graph: 3, processing order in component: 1
-     vessel(_2048),vesselType(_2048,sar).
+cachingOrder2(_2098, sarSpeed(_2098)=true) :- % level in dependency graph: 3, processing order in component: 1
+     vessel(_2098),vesselType(_2098,sar).
 
-cachingOrder2(_3228, sarMovement(_3228)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vessel(_3228),vesselType(_3228,sar).
+cachingOrder2(_3260, sarMovement(_3260)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vessel(_3260),vesselType(_3260,sar).
 
-cachingOrder2(_3228, sarMovement(_3228)=false) :- % level in dependency graph: 4, processing order in component: 2
-     vessel(_3228),vesselType(_3228,sar).
+cachingOrder2(_3260, sarMovement(_3260)=false) :- % level in dependency graph: 4, processing order in component: 2
+     vessel(_3260),vesselType(_3260,sar).
 
-cachingOrder2(_3206, underWay(_3206)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vessel(_3206).
+cachingOrder2(_3238, underWay(_3238)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vessel(_3238).
 
-cachingOrder2(_3184, anchoredOrMoored(_3184)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vessel(_3184).
+cachingOrder2(_3216, anchoredOrMoored(_3216)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vessel(_3216).
 
-cachingOrder2(_3160, tugging(_3160,_3162)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vpair(_3160,_3162).
+cachingOrder2(_3192, tugging(_3192,_3194)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vpair(_3192,_3194).
 
-cachingOrder2(_3136, rendezVous(_3136,_3138)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vpair(_3136,_3138).
+cachingOrder2(_3168, rendezVous(_3168,_3170)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vpair(_3168,_3170).
 
-cachingOrder2(_3114, trawling(_3114)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vessel(_3114).
+cachingOrder2(_3146, trawling(_3146)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vessel(_3146).
 
-cachingOrder2(_3090, pilotOps(_3090,_3092)=true) :- % level in dependency graph: 4, processing order in component: 1
-     vpair(_3090,_3092).
+cachingOrder2(_3122, pilotOps(_3122,_3124)=true) :- % level in dependency graph: 4, processing order in component: 1
+     vpair(_3122,_3124).
 
-cachingOrder2(_3996, drifting(_3996)=true) :- % level in dependency graph: 5, processing order in component: 1
-     vessel(_3996).
+cachingOrder2(_4028, drifting(_4028)=true) :- % level in dependency graph: 5, processing order in component: 1
+     vessel(_4028).
 
-cachingOrder2(_3974, inSAR(_3974)=true) :- % level in dependency graph: 5, processing order in component: 1
-     vessel(_3974).
+cachingOrder2(_4006, inSAR(_4006)=true) :- % level in dependency graph: 5, processing order in component: 1
+     vessel(_4006).
 
-cachingOrder2(_3952, loitering(_3952)=true) :- % level in dependency graph: 5, processing order in component: 1
-     vessel(_3952).
+cachingOrder2(_3984, loitering(_3984)=true) :- % level in dependency graph: 5, processing order in component: 1
+     vessel(_3984).
 
 collectGrounds([entersArea(_676,_690), gap_start(_676), stop_start(_676), slow_motion_start(_676), change_in_speed_start(_676), velocity(_676,_690,_692,_694), change_in_heading(_676), leavesArea(_676,_690), gap_end(_676), stop_end(_676), slow_motion_end(_676), change_in_speed_end(_676), coord(_676,_690,_692)],vessel(_676)).
 

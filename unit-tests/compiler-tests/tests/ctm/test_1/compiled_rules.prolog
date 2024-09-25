@@ -257,97 +257,98 @@ simpleFluent(passenger_density(_514,_516)=low).
 simpleFluent(noise_level(_514,_516)=low).
 simpleFluent(internal_temperature(_514,_516)=normal).
 
-sDFluent(punctuality(_618,_620)=non_punctual).
-sDFluent(driving_style(_618,_620)=unsafe).
-sDFluent(driving_style(_618,_620)=uncomfortable).
-sDFluent(driving_quality(_618,_620)=high).
-sDFluent(driving_quality(_618,_620)=medium).
-sDFluent(driving_quality(_618,_620)=low).
-sDFluent(passenger_comfort(_618,_620)=reducing).
-sDFluent(driver_comfort(_618,_620)=reducing).
-sDFluent(passenger_satisfaction(_618,_620)=reducing).
-sDFluent(sharp_turn(_618,_620)=very_sharp).
-sDFluent(abrupt_acceleration(_618,_620)=very_abrupt).
-sDFluent(abrupt_deceleration(_618,_620)=very_abrupt).
-sDFluent(sharp_turn(_618,_620)=sharp).
-sDFluent(abrupt_acceleration(_618,_620)=abrupt).
-sDFluent(abrupt_deceleration(_618,_620)=abrupt).
 
-index(punctuality_change(_710,_764,_766),_710).
-index(stop_enter(_710,_764,_766,_768),_710).
-index(internal_temperature_change(_710,_764,_766),_710).
-index(stop_leave(_710,_764,_766,_768),_710).
-index(noise_level_change(_710,_764,_766),_710).
-index(passenger_density_change(_710,_764,_766),_710).
-index(punctuality(_710,_770)=punctual,_710).
-index(internal_temperature(_710,_770)=very_warm,_710).
-index(internal_temperature(_710,_770)=very_cold,_710).
-index(passenger_density(_710,_770)=high,_710).
-index(noise_level(_710,_770)=high,_710).
-index(passenger_density(_710,_770)=low,_710).
-index(noise_level(_710,_770)=low,_710).
-index(internal_temperature(_710,_770)=normal,_710).
-index(punctuality(_710,_770)=non_punctual,_710).
-index(driving_style(_710,_770)=unsafe,_710).
-index(driving_style(_710,_770)=uncomfortable,_710).
-index(driving_quality(_710,_770)=high,_710).
-index(driving_quality(_710,_770)=medium,_710).
-index(driving_quality(_710,_770)=low,_710).
-index(passenger_comfort(_710,_770)=reducing,_710).
-index(driver_comfort(_710,_770)=reducing,_710).
-index(passenger_satisfaction(_710,_770)=reducing,_710).
-index(sharp_turn(_710,_770)=very_sharp,_710).
-index(abrupt_acceleration(_710,_770)=very_abrupt,_710).
-index(abrupt_deceleration(_710,_770)=very_abrupt,_710).
-index(sharp_turn(_710,_770)=sharp,_710).
-index(abrupt_acceleration(_710,_770)=abrupt,_710).
-index(abrupt_deceleration(_710,_770)=abrupt,_710).
+sDFluent(punctuality(_674,_676)=non_punctual).
+sDFluent(driving_style(_674,_676)=unsafe).
+sDFluent(driving_style(_674,_676)=uncomfortable).
+sDFluent(driving_quality(_674,_676)=high).
+sDFluent(driving_quality(_674,_676)=medium).
+sDFluent(driving_quality(_674,_676)=low).
+sDFluent(passenger_comfort(_674,_676)=reducing).
+sDFluent(driver_comfort(_674,_676)=reducing).
+sDFluent(passenger_satisfaction(_674,_676)=reducing).
+sDFluent(sharp_turn(_674,_676)=very_sharp).
+sDFluent(abrupt_acceleration(_674,_676)=very_abrupt).
+sDFluent(abrupt_deceleration(_674,_676)=very_abrupt).
+sDFluent(sharp_turn(_674,_676)=sharp).
+sDFluent(abrupt_acceleration(_674,_676)=abrupt).
+sDFluent(abrupt_deceleration(_674,_676)=abrupt).
+
+index(punctuality_change(_766,_820,_822),_766).
+index(stop_enter(_766,_820,_822,_824),_766).
+index(internal_temperature_change(_766,_820,_822),_766).
+index(stop_leave(_766,_820,_822,_824),_766).
+index(noise_level_change(_766,_820,_822),_766).
+index(passenger_density_change(_766,_820,_822),_766).
+index(punctuality(_766,_826)=punctual,_766).
+index(internal_temperature(_766,_826)=very_warm,_766).
+index(internal_temperature(_766,_826)=very_cold,_766).
+index(passenger_density(_766,_826)=high,_766).
+index(noise_level(_766,_826)=high,_766).
+index(passenger_density(_766,_826)=low,_766).
+index(noise_level(_766,_826)=low,_766).
+index(internal_temperature(_766,_826)=normal,_766).
+index(punctuality(_766,_826)=non_punctual,_766).
+index(driving_style(_766,_826)=unsafe,_766).
+index(driving_style(_766,_826)=uncomfortable,_766).
+index(driving_quality(_766,_826)=high,_766).
+index(driving_quality(_766,_826)=medium,_766).
+index(driving_quality(_766,_826)=low,_766).
+index(passenger_comfort(_766,_826)=reducing,_766).
+index(driver_comfort(_766,_826)=reducing,_766).
+index(passenger_satisfaction(_766,_826)=reducing,_766).
+index(sharp_turn(_766,_826)=very_sharp,_766).
+index(abrupt_acceleration(_766,_826)=very_abrupt,_766).
+index(abrupt_deceleration(_766,_826)=very_abrupt,_766).
+index(sharp_turn(_766,_826)=sharp,_766).
+index(abrupt_acceleration(_766,_826)=abrupt,_766).
+index(abrupt_deceleration(_766,_826)=abrupt,_766).
 
 
-cachingOrder2(_1334, punctuality(_1334,_1336)=punctual) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1334,_1336).
+cachingOrder2(_1360, punctuality(_1360,_1362)=punctual) :- % level in dependency graph: 1, processing order in component: 1
+     vehicle(_1360,_1362).
 
-cachingOrder2(_1310, internal_temperature(_1310,_1312)=very_warm) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1310,_1312).
+cachingOrder2(_1378, punctuality(_1378,_1380)=non_punctual) :- % level in dependency graph: 1, processing order in component: 2
+     vehicle(_1378,_1380).
 
-cachingOrder2(_1286, internal_temperature(_1286,_1288)=very_cold) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1286,_1288).
+cachingOrder2(_1318, internal_temperature(_1318,_1320)=very_cold) :- % level in dependency graph: 1, processing order in component: 1
+     vehicle(_1318,_1320).
 
-cachingOrder2(_1262, passenger_density(_1262,_1264)=high) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1262,_1264).
+cachingOrder2(_1336, internal_temperature(_1336,_1338)=very_warm) :- % level in dependency graph: 1, processing order in component: 2
+     vehicle(_1336,_1338).
 
-cachingOrder2(_1238, noise_level(_1238,_1240)=high) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1238,_1240).
+cachingOrder2(_1276, passenger_density(_1276,_1278)=high) :- % level in dependency graph: 1, processing order in component: 1
+     vehicle(_1276,_1278).
 
-cachingOrder2(_1142, driving_style(_1142,_1144)=unsafe) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1142,_1144).
+cachingOrder2(_1234, noise_level(_1234,_1236)=high) :- % level in dependency graph: 1, processing order in component: 1
+     vehicle(_1234,_1236).
 
-cachingOrder2(_1118, driving_style(_1118,_1120)=uncomfortable) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1118,_1120).
+cachingOrder2(_1174, driving_style(_1174,_1176)=uncomfortable) :- % level in dependency graph: 1, processing order in component: 1
+     vehicle(_1174,_1176).
 
-cachingOrder2(_2118, punctuality(_2118,_2120)=non_punctual) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2118,_2120).
+cachingOrder2(_1192, driving_style(_1192,_1194)=unsafe) :- % level in dependency graph: 1, processing order in component: 2
+     vehicle(_1192,_1194).
 
-cachingOrder2(_2094, driving_quality(_2094,_2096)=high) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2094,_2096).
+cachingOrder2(_2222, driving_quality(_2222,_2224)=low) :- % level in dependency graph: 2, processing order in component: 1
+     vehicle(_2222,_2224).
 
-cachingOrder2(_2070, driving_quality(_2070,_2072)=medium) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2070,_2072).
+cachingOrder2(_2240, driving_quality(_2240,_2242)=medium) :- % level in dependency graph: 2, processing order in component: 2
+     vehicle(_2240,_2242).
 
-cachingOrder2(_2046, passenger_comfort(_2046,_2048)=reducing) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2046,_2048).
+cachingOrder2(_2258, driving_quality(_2258,_2260)=high) :- % level in dependency graph: 2, processing order in component: 3
+     vehicle(_2258,_2260).
 
-cachingOrder2(_2022, driver_comfort(_2022,_2024)=reducing) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2022,_2024).
+cachingOrder2(_2198, passenger_comfort(_2198,_2200)=reducing) :- % level in dependency graph: 2, processing order in component: 1
+     vehicle(_2198,_2200).
 
-cachingOrder2(_2672, punctuality_change(_2672,_2674,_2676)) :- % level in dependency graph: 3, processing order in component: 1
-     vehicle(_2672,_2674).
+cachingOrder2(_2174, driver_comfort(_2174,_2176)=reducing) :- % level in dependency graph: 2, processing order in component: 1
+     vehicle(_2174,_2176).
 
-cachingOrder2(_2654, driving_quality(_2654,_2656)=low) :- % level in dependency graph: 3, processing order in component: 1
-     vehicle(_2654,_2656).
+cachingOrder2(_2148, punctuality_change(_2148,_2150,_2152)) :- % level in dependency graph: 2, processing order in component: 1
+     vehicle(_2148,_2150).
 
-cachingOrder2(_2630, passenger_satisfaction(_2630,_2632)=reducing) :- % level in dependency graph: 3, processing order in component: 1
-     vehicle(_2630,_2632).
+cachingOrder2(_2862, passenger_satisfaction(_2862,_2864)=reducing) :- % level in dependency graph: 3, processing order in component: 1
+     vehicle(_2862,_2864).
 
 collectGrounds([stop_enter(_618,_620,_636,_638), internal_temperature_change(_618,_620,_636), stop_leave(_618,_620,_636,_638), sharp_turn(_618,_620)=very_sharp, abrupt_acceleration(_618,_620)=very_abrupt, abrupt_deceleration(_618,_620)=very_abrupt, sharp_turn(_618,_620)=sharp, abrupt_acceleration(_618,_620)=abrupt, abrupt_deceleration(_618,_620)=abrupt, noise_level_change(_618,_620,_636), passenger_density_change(_618,_620,_636)],vehicle(_618,_620)).
 

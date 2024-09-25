@@ -180,72 +180,73 @@ simpleFluent(obl(send_goods(_446,_448,_450))=true).
 simpleFluent(contract(_442,_444,_446)=false).
 simpleFluent(suspended(_442,_444)=false).
 
-sDFluent(pow(accept_quote(_574,_576,_578))=true).
 
-index(accept_quote(_578,_632,_634),_578).
-index(present_quote(_578,_632,_634,_636),_578).
-index(request_quote(_578,_632,_634),_578).
-index(send_EPO(_578,_632,_634,_636),_578).
-index(send_goods(_578,_632,_634,_636,_638),_578).
-index(quote(_578,_638,_640)=false,_578).
-index(quote(_578,_638,_640)=true,_578).
-index(contract(_578,_638,_640)=true,_578).
-index(per(present_quote(_578,_642))=true,_578).
-index(per(present_quote(_578,_642))=false,_578).
-index(obl(send_EPO(_578,_642,_644))=false,_578).
-index(obl(send_goods(_578,_642,_644))=false,_578).
-index(suspended(_578,_638)=true,_578).
-index(obl(send_EPO(_578,_642,_644))=true,_578).
-index(obl(send_goods(_578,_642,_644))=true,_578).
-index(contract(_578,_638,_640)=false,_578).
-index(suspended(_578,_638)=false,_578).
-index(pow(accept_quote(_578,_642,_644))=true,_578).
+sDFluent(pow(accept_quote(_630,_632,_634))=true).
 
-cyclic(contract(_860,_862,_864)=true).
-cyclic(suspended(_860,_862)=true).
-cyclic(obl(send_EPO(_864,_866,_868))=true).
-cyclic(obl(send_goods(_864,_866,_868))=true).
-cyclic(contract(_860,_862,_864)=false).
-cyclic(suspended(_860,_862)=false).
+index(accept_quote(_634,_688,_690),_634).
+index(present_quote(_634,_688,_690,_692),_634).
+index(request_quote(_634,_688,_690),_634).
+index(send_EPO(_634,_688,_690,_692),_634).
+index(send_goods(_634,_688,_690,_692,_694),_634).
+index(quote(_634,_694,_696)=false,_634).
+index(quote(_634,_694,_696)=true,_634).
+index(contract(_634,_694,_696)=true,_634).
+index(per(present_quote(_634,_698))=true,_634).
+index(per(present_quote(_634,_698))=false,_634).
+index(obl(send_EPO(_634,_698,_700))=false,_634).
+index(obl(send_goods(_634,_698,_700))=false,_634).
+index(suspended(_634,_694)=true,_634).
+index(obl(send_EPO(_634,_698,_700))=true,_634).
+index(obl(send_goods(_634,_698,_700))=true,_634).
+index(contract(_634,_694,_696)=false,_634).
+index(suspended(_634,_694)=false,_634).
+index(pow(accept_quote(_634,_698,_700))=true,_634).
 
-cachingOrder2(_1094, quote(_1094,_1096,_1098)=true) :- % level in dependency graph: 1, processing order in component: 1
-     person_pair(_1094,_1096),role_of(_1096,consumer),role_of(_1094,merchant),\+_1094=_1096,queryGoodsDescription(_1098).
+cyclic(contract(_916,_918,_920)=true).
+cyclic(suspended(_916,_918)=true).
+cyclic(obl(send_EPO(_920,_922,_924))=true).
+cyclic(obl(send_goods(_920,_922,_924))=true).
+cyclic(contract(_916,_918,_920)=false).
+cyclic(suspended(_916,_918)=false).
 
-cachingOrder2(_1094, quote(_1094,_1096,_1098)=false) :- % level in dependency graph: 1, processing order in component: 2
-     person_pair(_1094,_1096),role_of(_1096,consumer),role_of(_1094,merchant),\+_1094=_1096,queryGoodsDescription(_1098).
+cachingOrder2(_1150, quote(_1150,_1152,_1154)=true) :- % level in dependency graph: 1, processing order in component: 1
+     person_pair(_1150,_1152),role_of(_1152,consumer),role_of(_1150,merchant),\+_1150=_1152,queryGoodsDescription(_1154).
 
-cachingOrder2(_1048, per(present_quote(_1048,_1050))=false) :- % level in dependency graph: 1, processing order in component: 1
-     person_pair(_1048,_1050),role_of(_1048,merchant),role_of(_1050,consumer),\+_1050=_1048.
+cachingOrder2(_1150, quote(_1150,_1152,_1154)=false) :- % level in dependency graph: 1, processing order in component: 2
+     person_pair(_1150,_1152),role_of(_1152,consumer),role_of(_1150,merchant),\+_1150=_1152,queryGoodsDescription(_1154).
 
-cachingOrder2(_1048, per(present_quote(_1048,_1050))=true) :- % level in dependency graph: 1, processing order in component: 2
-     person_pair(_1048,_1050),role_of(_1048,merchant),role_of(_1050,consumer),\+_1050=_1048.
+cachingOrder2(_1104, per(present_quote(_1104,_1106))=false) :- % level in dependency graph: 1, processing order in component: 1
+     person_pair(_1104,_1106),role_of(_1104,merchant),role_of(_1106,consumer),\+_1106=_1104.
 
-cachingOrder2(_1824, obl(send_goods(_1824,_2060,_1828))=true) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1824),role_of(_1824,merchant),queryGoodsDescription(_1828).
+cachingOrder2(_1104, per(present_quote(_1104,_1106))=true) :- % level in dependency graph: 1, processing order in component: 2
+     person_pair(_1104,_1106),role_of(_1104,merchant),role_of(_1106,consumer),\+_1106=_1104.
 
-cachingOrder2(_1848, obl(send_EPO(_1848,_2218,_1852))=true) :- % level in dependency graph: 2, processing order in component: 2
-     person(_1848),role_of(_1848,consumer),queryGoodsDescription(_1852).
+cachingOrder2(_1876, contract(_1876,_1878,_1880)=true) :- % level in dependency graph: 2, processing order in component: 1
+     person_pair(_1876,_1878),role_of(_1876,merchant),role_of(_1878,consumer),\+_1876=_1878,queryGoodsDescription(_1880).
 
-cachingOrder2(_1868, suspended(_1868,_1870)=true) :- % level in dependency graph: 2, processing order in component: 3
-     person(_1868),role_of(_1868,_1870).
+cachingOrder2(_1896, contract(_1896,_1898,_1900)=false) :- % level in dependency graph: 2, processing order in component: 2
+     person_pair(_1896,_1898),role_of(_1896,merchant),role_of(_1898,consumer),\+_1896=_1898,queryGoodsDescription(_1900).
 
-cachingOrder2(_1886, suspended(_1886,_1888)=false) :- % level in dependency graph: 2, processing order in component: 4
-     person(_1886),role_of(_1886,_1888).
+cachingOrder2(_1920, obl(send_EPO(_1920,_2472,_1924))=false) :- % level in dependency graph: 2, processing order in component: 3
+     person(_1920),role_of(_1920,consumer),queryGoodsDescription(_1924).
 
-cachingOrder2(_1904, contract(_1904,_1906,_1908)=true) :- % level in dependency graph: 2, processing order in component: 5
-     person_pair(_1904,_1906),role_of(_1904,merchant),role_of(_1906,consumer),\+_1904=_1906,queryGoodsDescription(_1908).
+cachingOrder2(_1944, obl(send_EPO(_1944,_2630,_1948))=true) :- % level in dependency graph: 2, processing order in component: 4
+     person(_1944),role_of(_1944,consumer),queryGoodsDescription(_1948).
 
-cachingOrder2(_1924, contract(_1924,_1926,_1928)=false) :- % level in dependency graph: 2, processing order in component: 6
-     person_pair(_1924,_1926),role_of(_1924,merchant),role_of(_1926,consumer),\+_1924=_1926,queryGoodsDescription(_1928).
+cachingOrder2(_1968, obl(send_goods(_1968,_2788,_1972))=false) :- % level in dependency graph: 2, processing order in component: 5
+     person(_1968),role_of(_1968,merchant),queryGoodsDescription(_1972).
 
-cachingOrder2(_2882, obl(send_EPO(_2882,_3018,_2886))=false) :- % level in dependency graph: 3, processing order in component: 1
-     person(_2882),role_of(_2882,consumer),queryGoodsDescription(_2886).
+cachingOrder2(_1992, obl(send_goods(_1992,_2946,_1996))=true) :- % level in dependency graph: 2, processing order in component: 6
+     person(_1992),role_of(_1992,merchant),queryGoodsDescription(_1996).
 
-cachingOrder2(_2852, obl(send_goods(_2852,_3176,_2856))=false) :- % level in dependency graph: 3, processing order in component: 1
-     person(_2852),role_of(_2852,merchant),queryGoodsDescription(_2856).
+cachingOrder2(_2012, suspended(_2012,_2014)=true) :- % level in dependency graph: 2, processing order in component: 7
+     person(_2012),role_of(_2012,_2014).
 
-cachingOrder2(_2822, pow(accept_quote(_2822,_2824,_2826))=true) :- % level in dependency graph: 3, processing order in component: 1
-     person_pair(_2824,_2822),role_of(_2824,merchant),role_of(_2822,consumer),\+_2822=_2824,queryGoodsDescription(_2826).
+cachingOrder2(_2030, suspended(_2030,_2032)=false) :- % level in dependency graph: 2, processing order in component: 8
+     person(_2030),role_of(_2030,_2032).
+
+cachingOrder2(_3242, pow(accept_quote(_3242,_3244,_3246))=true) :- % level in dependency graph: 3, processing order in component: 1
+     person_pair(_3244,_3242),role_of(_3244,merchant),role_of(_3242,consumer),\+_3242=_3244,queryGoodsDescription(_3246).
 
 collectGrounds([send_EPO(_378,_392,_394,_396), send_goods(_378,_392,_394,_396,_398)],person(_378)).
 

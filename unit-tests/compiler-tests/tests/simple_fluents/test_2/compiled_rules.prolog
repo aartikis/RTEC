@@ -1,71 +1,72 @@
-initiatedAt(sleeping(_5012)=true, _5028, _4982, _5034) :-
-     happensAtIE(sleep_start(_5012),_4982),
-     _5028=<_4982,
-     _4982<_5034.
+initiatedAt(sleeping(_1974)=true, _1990, _1944, _1996) :-
+     happensAtIE(sleep_start(_1974),_1944),
+     _1990=<_1944,
+     _1944<_1996.
 
-initiatedAt(rich(_5012)=true, _5054, _4982, _5060) :-
-     happensAtIE(win_lottery(_5012),_4982),_5054=<_4982,_4982<_5060,
-     \+holdsAtProcessedSimpleFluent(_5012,sleeping(_5012)=true,_4982).
+initiatedAt(rich(_1974)=true, _2016, _1944, _2022) :-
+     happensAtIE(win_lottery(_1974),_1944),_2016=<_1944,_1944<_2022,
+     \+holdsAtProcessedSimpleFluent(_1974,sleeping(_1974)=true,_1944).
 
-terminatedAt(sleeping(_5012)=true, _5028, _4982, _5034) :-
-     happensAtIE(sleep_end(_5012),_4982),
-     _5028=<_4982,
-     _4982<_5034.
+terminatedAt(sleeping(_1974)=true, _1990, _1944, _1996) :-
+     happensAtIE(sleep_end(_1974),_1944),
+     _1990=<_1944,
+     _1944<_1996.
 
-terminatedAt(rich(_5012)=true, _5028, _4982, _5034) :-
-     happensAtIE(lose_wallet(_5012),_4982),
-     _5028=<_4982,
-     _4982<_5034.
+terminatedAt(rich(_1974)=true, _1990, _1944, _1996) :-
+     happensAtIE(lose_wallet(_1974),_1944),
+     _1990=<_1944,
+     _1944<_1996.
 
-grounding(sleep_start(_5260)) :- 
-     person(_5260).
+grounding(sleep_start(_2222)) :- 
+     person(_2222).
 
-grounding(sleep_end(_5260)) :- 
-     person(_5260).
+grounding(sleep_end(_2222)) :- 
+     person(_2222).
 
-grounding(win_lottery(_5260)) :- 
-     person(_5260).
+grounding(win_lottery(_2222)) :- 
+     person(_2222).
 
-grounding(lose_lottery(_5260)) :- 
-     person(_5260).
+grounding(lose_lottery(_2222)) :- 
+     person(_2222).
 
-grounding(sleeping(_5266)=true) :- 
-     person(_5266).
+grounding(sleeping(_2228)=true) :- 
+     person(_2228).
 
-grounding(rich(_5266)=true) :- 
-     person(_5266).
+grounding(rich(_2228)=true) :- 
+     person(_2228).
 
-inputEntity(sleep_start(_5036)).
-inputEntity(win_lottery(_5036)).
-inputEntity(sleep_end(_5036)).
-inputEntity(lose_wallet(_5036)).
-inputEntity(lose_lottery(_5036)).
+inputEntity(sleep_start(_1998)).
+inputEntity(win_lottery(_1998)).
+inputEntity(sleep_end(_1998)).
+inputEntity(lose_wallet(_1998)).
+inputEntity(lose_lottery(_1998)).
 
-outputEntity(sleeping(_5128)=true).
-outputEntity(rich(_5128)=true).
+outputEntity(sleeping(_2090)=true).
+outputEntity(rich(_2090)=true).
 
-event(sleep_start(_5190)).
-event(win_lottery(_5190)).
-event(sleep_end(_5190)).
-event(lose_wallet(_5190)).
-event(lose_lottery(_5190)).
+event(sleep_start(_2152)).
+event(win_lottery(_2152)).
+event(sleep_end(_2152)).
+event(lose_wallet(_2152)).
+event(lose_lottery(_2152)).
 
-simpleFluent(sleeping(_5282)=true).
-simpleFluent(rich(_5282)=true).
-
-
-index(sleep_start(_5352),_5352).
-index(win_lottery(_5352),_5352).
-index(sleep_end(_5352),_5352).
-index(lose_wallet(_5352),_5352).
-index(lose_lottery(_5352),_5352).
-index(sleeping(_5352)=true,_5352).
-index(rich(_5352)=true,_5352).
+simpleFluent(sleeping(_2244)=true).
+simpleFluent(rich(_2244)=true).
 
 
-cachingOrder2(_5628, sleeping(_5628)=true) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5628).
 
-cachingOrder2(_5768, rich(_5768)=true) :- % level in dependency graph: 2, processing order in component: 1
-     person(_5768).
+index(sleep_start(_2370),_2370).
+index(win_lottery(_2370),_2370).
+index(sleep_end(_2370),_2370).
+index(lose_wallet(_2370),_2370).
+index(lose_lottery(_2370),_2370).
+index(sleeping(_2370)=true,_2370).
+index(rich(_2370)=true,_2370).
+
+
+cachingOrder2(_2646, sleeping(_2646)=true) :- % level in dependency graph: 1, processing order in component: 1
+     person(_2646).
+
+cachingOrder2(_2786, rich(_2786)=true) :- % level in dependency graph: 2, processing order in component: 1
+     person(_2786).
 

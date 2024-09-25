@@ -225,7 +225,8 @@ compareResult([Ex|OtherEx],[Found|OtherFound],[(Status,Common,FP,FN)|OtherComps]
         relative_complement_all(Ex,[Found],FN),
         relative_complement_all(Found,[Ex],FP),
         compareResult(OtherEx,OtherFound,OtherComps)
-    ).
+    ),
+    retractall(step(_)), retractall(allenMemory(_)), retractall(happensAtIE(_, _)), retractall(holdsForIESI(_, _)).
 
 
 %prints the results of all tests in a human readable form

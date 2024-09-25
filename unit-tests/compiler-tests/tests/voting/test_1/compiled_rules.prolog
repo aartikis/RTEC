@@ -263,111 +263,112 @@ simpleFluent(obl(declare(_512,_514,_516))=false).
 simpleFluent(sanctioned(_508)=true).
 simpleFluent(sanctioned(_508)=false).
 
-sDFluent(pow(propose(_670,_672))=true).
-sDFluent(pow(second(_670,_672))=true).
-sDFluent(pow(vote(_670,_672))=true).
-sDFluent(pow(close_ballot(_670,_672))=true).
-sDFluent(pow(declare(_670,_672))=true).
 
-index(auxMotionOutcomeEvent(_698,_752),_698).
-index(propose(_698,_752),_698).
-index(second(_698,_752),_698).
-index(close_ballot(_698,_752),_698).
-index(declare(_698,_752,_754),_698).
-index(vote(_698,_752,_754),_698).
-index(status(_698)=proposed,_698).
-index(status(_698)=voting,_698).
-index(status(_698)=voted,_698).
-index(status(_698)=null,_698).
-index(voted(_698,_758)=aye,_698).
-index(voted(_698,_758)=nay,_698).
-index(voted(_698,_758)=null,_698).
-index(outcome(_698)=carried,_698).
-index(outcome(_698)=not_carried,_698).
-index(auxPerCloseBallot(_698)=true,_698).
-index(auxPerCloseBallot(_698)=false,_698).
-index(per(close_ballot(_698,_762))=true,_698).
-index(per(close_ballot(_698,_762))=false,_698).
-index(obl(declare(_698,_762,_764))=true,_698).
-index(obl(declare(_698,_762,_764))=false,_698).
-index(sanctioned(_698)=true,_698).
-index(sanctioned(_698)=false,_698).
-index(pow(propose(_698,_762))=true,_698).
-index(pow(second(_698,_762))=true,_698).
-index(pow(vote(_698,_762))=true,_698).
-index(pow(close_ballot(_698,_762))=true,_698).
-index(pow(declare(_698,_762))=true,_698).
+sDFluent(pow(propose(_726,_728))=true).
+sDFluent(pow(second(_726,_728))=true).
+sDFluent(pow(vote(_726,_728))=true).
+sDFluent(pow(close_ballot(_726,_728))=true).
+sDFluent(pow(declare(_726,_728))=true).
 
-cyclic(status(_1040)=proposed).
-cyclic(status(_1040)=voting).
-cyclic(status(_1040)=voted).
-cyclic(status(_1040)=null).
+index(auxMotionOutcomeEvent(_754,_808),_754).
+index(propose(_754,_808),_754).
+index(second(_754,_808),_754).
+index(close_ballot(_754,_808),_754).
+index(declare(_754,_808,_810),_754).
+index(vote(_754,_808,_810),_754).
+index(status(_754)=proposed,_754).
+index(status(_754)=voting,_754).
+index(status(_754)=voted,_754).
+index(status(_754)=null,_754).
+index(voted(_754,_814)=aye,_754).
+index(voted(_754,_814)=nay,_754).
+index(voted(_754,_814)=null,_754).
+index(outcome(_754)=carried,_754).
+index(outcome(_754)=not_carried,_754).
+index(auxPerCloseBallot(_754)=true,_754).
+index(auxPerCloseBallot(_754)=false,_754).
+index(per(close_ballot(_754,_818))=true,_754).
+index(per(close_ballot(_754,_818))=false,_754).
+index(obl(declare(_754,_818,_820))=true,_754).
+index(obl(declare(_754,_818,_820))=false,_754).
+index(sanctioned(_754)=true,_754).
+index(sanctioned(_754)=false,_754).
+index(pow(propose(_754,_818))=true,_754).
+index(pow(second(_754,_818))=true,_754).
+index(pow(vote(_754,_818))=true,_754).
+index(pow(close_ballot(_754,_818))=true,_754).
+index(pow(declare(_754,_818))=true,_754).
 
-cachingOrder2(_1164, status(_1164)=voting) :- % level in dependency graph: 1, processing order in component: 1
-     queryMotion(_1164).
+cyclic(status(_1096)=proposed).
+cyclic(status(_1096)=voting).
+cyclic(status(_1096)=voted).
+cyclic(status(_1096)=null).
 
-cachingOrder2(_1180, status(_1180)=voted) :- % level in dependency graph: 1, processing order in component: 2
-     queryMotion(_1180).
+cachingOrder2(_1220, status(_1220)=proposed) :- % level in dependency graph: 1, processing order in component: 1
+     queryMotion(_1220).
 
-cachingOrder2(_1196, status(_1196)=proposed) :- % level in dependency graph: 1, processing order in component: 3
-     queryMotion(_1196).
+cachingOrder2(_1236, status(_1236)=voting) :- % level in dependency graph: 1, processing order in component: 2
+     queryMotion(_1236).
 
-cachingOrder2(_1212, status(_1212)=null) :- % level in dependency graph: 1, processing order in component: 4
-     queryMotion(_1212).
+cachingOrder2(_1252, status(_1252)=voted) :- % level in dependency graph: 1, processing order in component: 3
+     queryMotion(_1252).
 
-cachingOrder2(_1890, voted(_1890,_1892)=aye) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1890),role_of(_1890,voter),queryMotion(_1892).
+cachingOrder2(_1268, status(_1268)=null) :- % level in dependency graph: 1, processing order in component: 4
+     queryMotion(_1268).
 
-cachingOrder2(_1866, voted(_1866,_1868)=nay) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1866),role_of(_1866,voter),queryMotion(_1868).
+cachingOrder2(_1852, voted(_1852,_1854)=nay) :- % level in dependency graph: 2, processing order in component: 1
+     person(_1852),role_of(_1852,voter),queryMotion(_1854).
 
-cachingOrder2(_1820, outcome(_1820)=carried) :- % level in dependency graph: 2, processing order in component: 1
-     queryMotion(_1820).
+cachingOrder2(_1870, voted(_1870,_1872)=aye) :- % level in dependency graph: 2, processing order in component: 2
+     person(_1870),role_of(_1870,voter),queryMotion(_1872).
 
-cachingOrder2(_1798, outcome(_1798)=not_carried) :- % level in dependency graph: 2, processing order in component: 1
-     queryMotion(_1798).
+cachingOrder2(_1796, outcome(_1796)=not_carried) :- % level in dependency graph: 2, processing order in component: 1
+     queryMotion(_1796).
 
-cachingOrder2(_1760, auxPerCloseBallot(_1760)=true) :- % level in dependency graph: 2, processing order in component: 1
-     queryMotion(_1760).
+cachingOrder2(_1812, outcome(_1812)=carried) :- % level in dependency graph: 2, processing order in component: 2
+     queryMotion(_1812).
 
-cachingOrder2(_1760, auxPerCloseBallot(_1760)=false) :- % level in dependency graph: 2, processing order in component: 2
-     queryMotion(_1760).
+cachingOrder2(_1758, auxPerCloseBallot(_1758)=true) :- % level in dependency graph: 2, processing order in component: 1
+     queryMotion(_1758).
 
-cachingOrder2(_1736, per(close_ballot(_1736,_1738))=false) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1736),role_of(_1736,chair),queryMotion(_1738).
+cachingOrder2(_1758, auxPerCloseBallot(_1758)=false) :- % level in dependency graph: 2, processing order in component: 2
+     queryMotion(_1758).
 
-cachingOrder2(_1706, obl(declare(_1706,_1708,_2668))=false) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1706),role_of(_1706,chair),queryMotion(_1708).
+cachingOrder2(_1734, pow(propose(_1734,_1736))=true) :- % level in dependency graph: 2, processing order in component: 1
+     person(_1734),queryMotion(_1736).
 
-cachingOrder2(_1678, pow(propose(_1678,_1680))=true) :- % level in dependency graph: 2, processing order in component: 1
+cachingOrder2(_1706, pow(second(_1706,_1708))=true) :- % level in dependency graph: 2, processing order in component: 1
+     person(_1706),queryMotion(_1708).
+
+cachingOrder2(_1678, pow(vote(_1678,_1680))=true) :- % level in dependency graph: 2, processing order in component: 1
      person(_1678),queryMotion(_1680).
 
-cachingOrder2(_1650, pow(second(_1650,_1652))=true) :- % level in dependency graph: 2, processing order in component: 1
+cachingOrder2(_1650, pow(close_ballot(_1650,_1652))=true) :- % level in dependency graph: 2, processing order in component: 1
      person(_1650),queryMotion(_1652).
 
-cachingOrder2(_1622, pow(vote(_1622,_1624))=true) :- % level in dependency graph: 2, processing order in component: 1
+cachingOrder2(_1622, pow(declare(_1622,_1624))=true) :- % level in dependency graph: 2, processing order in component: 1
      person(_1622),queryMotion(_1624).
 
-cachingOrder2(_1594, pow(close_ballot(_1594,_1596))=true) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1594),queryMotion(_1596).
+cachingOrder2(_3110, per(close_ballot(_3110,_3112))=false) :- % level in dependency graph: 3, processing order in component: 1
+     person(_3110),role_of(_3110,chair),queryMotion(_3112).
 
-cachingOrder2(_1566, pow(declare(_1566,_1568))=true) :- % level in dependency graph: 2, processing order in component: 1
-     person(_1566),queryMotion(_1568).
+cachingOrder2(_3132, per(close_ballot(_3132,_3134))=true) :- % level in dependency graph: 3, processing order in component: 2
+     person(_3132),role_of(_3132,chair),queryMotion(_3134).
 
-cachingOrder2(_3430, per(close_ballot(_3430,_3432))=true) :- % level in dependency graph: 3, processing order in component: 1
-     person(_3430),role_of(_3430,chair),queryMotion(_3432).
+cachingOrder2(_3082, auxMotionOutcomeEvent(_3082,_3084)) :- % level in dependency graph: 3, processing order in component: 1
+     queryMotion(_3082).
 
-cachingOrder2(_3402, auxMotionOutcomeEvent(_3402,_3404)) :- % level in dependency graph: 3, processing order in component: 1
-     queryMotion(_3402).
+cachingOrder2(_3566, obl(declare(_3566,_3568,_3732))=false) :- % level in dependency graph: 4, processing order in component: 1
+     person(_3566),role_of(_3566,chair),queryMotion(_3568).
 
-cachingOrder2(_3722, obl(declare(_3722,_3724,_3864))=true) :- % level in dependency graph: 4, processing order in component: 1
-     person(_3722),role_of(_3722,chair),queryMotion(_3724).
+cachingOrder2(_3590, obl(declare(_3590,_3592,_3890))=true) :- % level in dependency graph: 4, processing order in component: 2
+     person(_3590),role_of(_3590,chair),queryMotion(_3592).
 
-cachingOrder2(_3954, sanctioned(_3954)=true) :- % level in dependency graph: 5, processing order in component: 1
-     person(_3954),role_of(_3954,chair).
+cachingOrder2(_3980, sanctioned(_3980)=true) :- % level in dependency graph: 5, processing order in component: 1
+     person(_3980),role_of(_3980,chair).
 
-cachingOrder2(_3954, sanctioned(_3954)=false) :- % level in dependency graph: 5, processing order in component: 2
-     person(_3954),role_of(_3954,chair).
+cachingOrder2(_3980, sanctioned(_3980)=false) :- % level in dependency graph: 5, processing order in component: 2
+     person(_3980),role_of(_3980,chair).
 
 collectGrounds([propose(_396,_410), second(_396,_410), close_ballot(_396,_410), declare(_396,_410,_412), vote(_396,_410,_412)],person(_396)).
 

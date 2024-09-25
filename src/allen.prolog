@@ -254,18 +254,21 @@ allen(F=V, Index, Rel, SList0, TList0, OutputType, IsItSatisfied, OutputListOfIn
 	(CachedSourceSegment\=null -> amalgamatePeriods([CachedSourceSegment], SList0, SList1); SList1=SList0),
 	(CachedTargetSegment\=null -> amalgamatePeriods([CachedTargetSegment], TList0, TList); TList=TList0),
 	(CachedSourceIntervals\=[] -> append(CachedSourceIntervals, SList1, SList); SList=SList1),
-	compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals),
-	windowing_allen(F=V, Index, SList, TList, Rel).
+	windowing_allen(F=V, Index, SList, TList, Rel),
+	compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals).
 
 allen(F=V, Index, Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals):-
-	compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals),
-	windowing_allen(F=V, Index, SList, TList, Rel).
+	windowing_allen(F=V, Index, SList, TList, Rel),
+    compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals).
 
 % compute_allen_construct(+Rel, +SList, +TList, +OutputType, -IsItSatisfied, -OutputListOfIntervals)
 compute_allen_construct(Rel, SList, TList, OutputType, IsItSatisfied, OutputListOfIntervals):-
+    %write("SList: "), write(SList), nl,
+    %write("TList: "), write(TList), nl,
 	allen_relations(SList, TList, Rel, Tuples),
-	check_nonempty(Tuples, IsItSatisfied),
-	unwind_tuples_simple(Tuples, Rel, Srel, Trel),
+    %write("Tuples: "), write(Tuples), nl,
+	check_nonempty(Tuples, IsItSatisfied), 
+	unwind_tuples_simple(Tuples, Rel, Srel, Trel), 
 	apply_return_type(OutputType, Srel, Trel, OutputListOfIntervals).
 	
 before(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
@@ -292,7 +295,7 @@ equal(F=V, Index, L1, L2, OutputType, IsItSatisfied, OutputListOfIntervals):-
 /******* Wrapper Predicate Helpers ************/
 
 % check_nonempty(+List, -Bool)
-check_nonempty([], false).
+check_nonempty([], 0):- !.
 check_nonempty([_|_], true).
 
 % apply_return_type(+OutputType, +L1, +L2, -L)
@@ -307,7 +310,7 @@ apply_return_type(intersection, L1, L2, L):-
 apply_return_type(relative_complement, L1, L2, L):-
     relative_complement_all(L1, [L2], L).
 apply_return_type(relative_complement_inverse, L1, L2, L):-
-    relative_complement_all(L1, [L2], L).
+    relative_complement_all(L2, [L1], L).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WINDOWING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

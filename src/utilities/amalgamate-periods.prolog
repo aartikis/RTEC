@@ -10,15 +10,19 @@
    than the more general union_all.
  **********************************************************************************************/
 
-amalgamatePeriods([], Periods, Periods) :- !.
+%amalgamatePeriods([], Periods, Periods) :- !.
 
-amalgamatePeriods(Periods, [], Periods) :- !.
+%amalgamatePeriods(Periods, [], Periods) :- !.
 
-amalgamatePeriods([(OS,NS)], [(NS,NE)|TailNewPeriods], [(OS,NE)|TailNewPeriods]) :- !.
+%amalgamatePeriods([(OS,NS)], [(NS,NE)|TailNewPeriods], [(OS,NE)|TailNewPeriods]) :- !.
 
-amalgamatePeriods([(OS,ON)], [(NS,NE)|TailNewPeriods], [(OS,ON),(NS,NE)|TailNewPeriods]).
+%amalgamatePeriods([(OS,ON)], [(NS,NE)|TailNewPeriods], [(OS,ON),(NS,NE)|TailNewPeriods]).
 
+% In the case of allen relations, due to the caching of source/target intervals from the previous window, 
+% An interval from the current window may overlap the broken period. For this reason, we use union.
 
+amalgamatePeriods(Periods1, Periods2, Periods):- 
+    union_all([Periods1, Periods2], Periods).
 
 
 

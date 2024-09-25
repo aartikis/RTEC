@@ -1,33 +1,34 @@
-holdsForSDFluent(drunk(_5012)=true,_4982) :-
-     holdsForProcessedIE(_5012,happy(_5012)=true,_5028),
-     holdsForProcessedIE(_5012,infiniteBeers(_5012)=true,_5044),
-     intersect_all([_5028,_5044],_4982).
+holdsForSDFluent(drunk(_1974)=true,_1944) :-
+     holdsForProcessedIE(_1974,happy(_1974)=true,_1990),
+     holdsForProcessedIE(_1974,infiniteBeers(_1974)=true,_2006),
+     intersect_all([_1990,_2006],_1944).
 
-grounding(happy(_5266)=true) :- 
-     person(_5266).
+grounding(happy(_2228)=true) :- 
+     person(_2228).
 
-grounding(infiniteBeers(_5266)=true) :- 
-     person(_5266).
+grounding(infiniteBeers(_2228)=true) :- 
+     person(_2228).
 
-grounding(drunk(_5266)=true) :- 
-     person(_5266).
+grounding(drunk(_2228)=true) :- 
+     person(_2228).
 
-inputEntity(happy(_5042)=true).
-inputEntity(infiniteBeers(_5042)=true).
+inputEntity(happy(_2004)=true).
+inputEntity(infiniteBeers(_2004)=true).
 
-outputEntity(drunk(_5110)=true).
-
-
-
-sDFluent(drunk(_5284)=true).
-sDFluent(happy(_5284)=true).
-sDFluent(infiniteBeers(_5284)=true).
-
-index(drunk(_5304)=true,_5304).
-index(happy(_5304)=true,_5304).
-index(infiniteBeers(_5304)=true,_5304).
+outputEntity(drunk(_2072)=true).
 
 
-cachingOrder2(_5556, drunk(_5556)=true) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5556).
+
+
+sDFluent(drunk(_2302)=true).
+sDFluent(happy(_2302)=true).
+sDFluent(infiniteBeers(_2302)=true).
+
+index(drunk(_2322)=true,_2322).
+index(happy(_2322)=true,_2322).
+index(infiniteBeers(_2322)=true,_2322).
+
+
+cachingOrder2(_2574, drunk(_2574)=true) :- % level in dependency graph: 1, processing order in component: 1
+     person(_2574).
 

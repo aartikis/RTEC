@@ -1,72 +1,73 @@
-initiatedAt(rich(_5012)=true, _5028, _4982, _5034) :-
-     happensAtIE(win_lottery(_5012),_4982),
-     _5028=<_4982,
-     _4982<_5034.
+initiatedAt(rich(_1974)=true, _1990, _1944, _1996) :-
+     happensAtIE(win_lottery(_1974),_1944),
+     _1990=<_1944,
+     _1944<_1996.
 
-initiatedAt(location(_5012)=_4988, _5030, _4982, _5036) :-
-     happensAtIE(go_to(_5012,_4988),_4982),
-     _5030=<_4982,
-     _4982<_5036.
+initiatedAt(location(_1974)=_1950, _1992, _1944, _1998) :-
+     happensAtIE(go_to(_1974,_1950),_1944),
+     _1992=<_1944,
+     _1944<_1998.
 
-terminatedAt(rich(_5012)=true, _5028, _4982, _5034) :-
-     happensAtIE(lose_wallet(_5012),_4982),
-     _5028=<_4982,
-     _4982<_5034.
+terminatedAt(rich(_1974)=true, _1990, _1944, _1996) :-
+     happensAtIE(lose_wallet(_1974),_1944),
+     _1990=<_1944,
+     _1944<_1996.
 
-holdsForSDFluent(infiniteBeers(_5012)=true,_4982) :-
-     holdsForProcessedSimpleFluent(_5012,location(_5012)=pub,_5028),
-     holdsForProcessedSimpleFluent(_5012,rich(_5012)=true,_5044),
-     intersect_all([_5028,_5044],_4982).
+holdsForSDFluent(infiniteBeers(_1974)=true,_1944) :-
+     holdsForProcessedSimpleFluent(_1974,location(_1974)=pub,_1990),
+     holdsForProcessedSimpleFluent(_1974,rich(_1974)=true,_2006),
+     intersect_all([_1990,_2006],_1944).
 
-grounding(go_to(_5278,_5280)) :- 
-     person(_5278),place(_5280).
+grounding(go_to(_2240,_2242)) :- 
+     person(_2240),place(_2242).
 
-grounding(lose_wallet(_5278)) :- 
-     person(_5278).
+grounding(lose_wallet(_2240)) :- 
+     person(_2240).
 
-grounding(win_lottery(_5278)) :- 
-     person(_5278).
+grounding(win_lottery(_2240)) :- 
+     person(_2240).
 
-grounding(location(_5284)=_5280) :- 
-     person(_5284),place(_5280).
+grounding(location(_2246)=_2242) :- 
+     person(_2246),place(_2242).
 
-grounding(rich(_5284)=true) :- 
-     person(_5284).
+grounding(rich(_2246)=true) :- 
+     person(_2246).
 
-grounding(infiniteBeers(_5284)=true) :- 
-     person(_5284).
+grounding(infiniteBeers(_2246)=true) :- 
+     person(_2246).
 
-inputEntity(win_lottery(_5036)).
-inputEntity(go_to(_5036,_5038)).
-inputEntity(lose_wallet(_5036)).
+inputEntity(win_lottery(_1998)).
+inputEntity(go_to(_1998,_2000)).
+inputEntity(lose_wallet(_1998)).
 
-outputEntity(rich(_5116)=true).
-outputEntity(location(_5116)=_5112).
-outputEntity(infiniteBeers(_5116)=true).
+outputEntity(rich(_2078)=true).
+outputEntity(location(_2078)=_2074).
+outputEntity(infiniteBeers(_2078)=true).
 
-event(win_lottery(_5184)).
-event(go_to(_5184,_5186)).
-event(lose_wallet(_5184)).
+event(win_lottery(_2146)).
+event(go_to(_2146,_2148)).
+event(lose_wallet(_2146)).
 
-simpleFluent(rich(_5264)=true).
-simpleFluent(location(_5264)=_5260).
-
-sDFluent(infiniteBeers(_5332)=true).
-
-index(win_lottery(_5340),_5340).
-index(go_to(_5340,_5394),_5340).
-index(lose_wallet(_5340),_5340).
-index(rich(_5340)=true,_5340).
-index(location(_5340)=_5394,_5340).
-index(infiniteBeers(_5340)=true,_5340).
+simpleFluent(rich(_2226)=true).
+simpleFluent(location(_2226)=_2222).
 
 
-cachingOrder2(_5632, rich(_5632)=true) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5632).
+sDFluent(infiniteBeers(_2350)=true).
 
-cachingOrder2(_5610, location(_5610)=_5606) :- % level in dependency graph: 1, processing order in component: 1
-     person(_5610),place(_5606).
+index(win_lottery(_2358),_2358).
+index(go_to(_2358,_2412),_2358).
+index(lose_wallet(_2358),_2358).
+index(rich(_2358)=true,_2358).
+index(location(_2358)=_2412,_2358).
+index(infiniteBeers(_2358)=true,_2358).
 
-cachingOrder2(_5852, infiniteBeers(_5852)=true) :- % level in dependency graph: 2, processing order in component: 1
-     person(_5852).
+
+cachingOrder2(_2650, rich(_2650)=true) :- % level in dependency graph: 1, processing order in component: 1
+     person(_2650).
+
+cachingOrder2(_2628, location(_2628)=_2624) :- % level in dependency graph: 1, processing order in component: 1
+     person(_2628),place(_2624).
+
+cachingOrder2(_2870, infiniteBeers(_2870)=true) :- % level in dependency graph: 2, processing order in component: 1
+     person(_2870).
 
