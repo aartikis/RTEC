@@ -1,6 +1,7 @@
 # Documentation Contents
 
 1. [Features](features.md)
+2. [Assumptions](assumptions.md)
 2. [File Description](file-description.md)
 3. Running RTEC with a bash execution script
    1. [Requirements](requirements.md)

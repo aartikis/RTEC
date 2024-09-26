@@ -3,7 +3,7 @@
 - Interval-based.
 - Sliding window reasoning.
 - Interval manipulation constructs for non-inertial fluents.
-- Caching for avoiding unecesary re-computations.
+- Caching for avoiding unnecesary re-computations.
 - Support for out-of-order data streams.
 - Indexing for handling efficiently irrelevant data.
 - Efficient handling of cyclic dependencies among fluents.
