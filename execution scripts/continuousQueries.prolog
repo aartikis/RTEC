@@ -46,9 +46,11 @@ continuousQueries(App, ParamList) :-
     % Create a log file for writing execution statistics.
     init_log_file(LogFile),
     QueryTime is StartReasoningTime + Step,
+    % Depending on the <OutputMode>, initialise the results file or the id of the thread that write to a fifo/socket.
     init_output(OutputMode, ResultsFile, WM, Step, QueryTime, OutputThreadID),
     % initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
-    initialiseRecognition(Step, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
+    initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
+    %initGlobals,
     % In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
     sleep_if_live_stream(InputMode, Step, StreamRate, 0),
     % This predicates runs RTEC for the next query time. Afterwards, it is being called recursively until we have passed the EndReasoningTime.
@@ -57,6 +59,7 @@ continuousQueries(App, ParamList) :-
     closeInput(InputMode, InputPaths, InputStreams, InputThreadIDs),
     open(LogFile, append, LogFileStream),
     logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
+    %writeAllGlobals(LogFileStream),
     close(LogFileStream),
     closeOutput(OutputMode, OutputThreadID), !.
 
@@ -104,7 +107,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 		% (i) compute the next query-time
 		NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
                 % If the <OutputMode> is fifo, send a "ready" message to the thread writing the computed intervals into a named pipe.
-        	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions) ;
+        	((OutputMode=fifo ; OutputMode=socket), thread_send_message(OutputThreadID, printRecognitions) ;
                 % If the <OutputMode> is file, this thread writes the computed intervals into a regular file.
          	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 		% (ii) sleep until the next query time 
@@ -114,7 +117,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 	;
                 % Since this is the final window, this thread has to wait for the thread executing printRecognitions to terminate before exiting.
                 % This is why we have to wait for a "printRecognitionsOK" message in this case.
-        	(OutputMode=fifo, thread_send_message(OutputThreadID, printRecognitions), thread_get_message(printRecognitionsOK(QueryTime)) ;
+        	((OutputMode=fifo ; OutputMode=socket), thread_send_message(OutputThreadID, printRecognitions), thread_get_message(printRecognitionsOK(QueryTime)) ;
          	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
 		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
 		QueryTime >= EndReasoningTime,
@@ -129,7 +132,7 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 
 % handleProlog(-PrologCompiler, -StatisticsFlag) 
 handleProlog(yap, cputime) :-
-	current_prolog_flag(dialect, yap).
+    current_prolog_flag(dialect, yap).
 handleProlog(swi, runtime) :-
 	current_prolog_flag(dialect, swi).
 
@@ -137,7 +140,7 @@ handleProlog(swi, runtime) :-
 init_input(csv, InputPaths, InputStreams, PointerPositions, []):-
     openInputCSVFiles(InputPaths, InputStreams, PointerPositions).
 
-% For <inputMode> "fifo", we one named pipe for each input provider.
+% For <inputMode> "fifo", we need one named pipe for each input provider.
 % RTEC creates a new execution thread that continuously reads input events from each provider.
 init_input(fifo, InputPaths, [], [], InputThreadIDs):-
     initLoaderThreads(InputPaths, InputThreadIDs).
@@ -164,6 +167,13 @@ init_output(fifo, ResultsPipe, WM, Step, CurrentTime, OutputThreadID):-
     create_pipe(ResultsPipe),
     thread_self(ERThreadID),
     initWriterThread(ResultsPipe, WM, Step, CurrentTime, ERThreadID, OutputThreadID).
+init_output(socket, SocketName, WM, Step, CurrentTime, OutputThreadID):-
+    % Create a unix, i.e., local, socket.
+    unix_domain_socket(Socket),
+    % Create a socket in the current directory with name <SocketName>. 
+    tcp_bind(Socket, SocketName),
+    thread_self(ERThreadID),
+    initSocketWriterThread(Socket, SocketName, WM, Step, CurrentTime, ERThreadID, OutputThreadID).
 
 
 % touch <File>, so that it exists as an empty file before the execution of the first window.
@@ -178,6 +188,14 @@ create_pipe(PipeName):-
     process_create(path(rm), ['-f', PipeName], []),
     process_create(path(mkfifo), [PipeName], []).
 
+init_socket(SocketName,Socket):-
+    % Create a unix, i.e., local, socket.
+    unix_domain_socket(Socket),
+    % Create a socket in the current directory with name <SocketName>. 
+    tcp_bind(Socket, SocketName),
+    % The socket may have at most N clients. 
+    tcp_listen(Socket, 1000). % N = 1000
+
 % Each thread executes the goal: loadIELiveStream(InputPipe), which is specified in 'src/data loader/dataLoader.prolog' 
 % Its function is to assert the events written in the pipe as soon as they arrive.
 % initLoaderThreads(+InputPipes) 
@@ -188,17 +206,14 @@ initLoaderThreads([InputPipe|RestPipes], [ThreadID|RestIDs]):-
 
 % initSocketLoaderThread(+SocketName,-ThreadID)
 initSocketLoaderThread(SocketName, ThreadID):-
-	% Create a unix, i.e., local, socket.
-        unix_domain_socket(Socket),
-	% Create a socket in the current directory with name <SocketName>. 
-	tcp_bind(Socket, SocketName),
-	% The socket may have at most N clients. 
-	tcp_listen(Socket, 1000), % N = 1000
-	% Open the socket from the server side and fetch its input stream with file descriptor: <AcceptFd>.
-	tcp_open_socket(Socket, StreamPair),
-	stream_pair(StreamPair, AcceptFd, _),
-        % create an execution thread that accepts connection requests to the socket.
-        thread_create(dispatch_socket(AcceptFd), ThreadID).
+    % Create <Socket> with <SocketName>
+    init_socket(SocketName, Socket),
+    % Open the socket from the server side and fetch its input stream with file descriptor: <AcceptFd>.
+    tcp_open_socket(Socket, StreamPair),
+    stream_pair(StreamPair, AcceptFd, _),
+    % create an execution thread that accepts connection requests to the socket.
+    thread_create(dispatch_socket(AcceptFd), ThreadID).
+
 
 % Create a new execution thread for writing the computed intervals into the output named pipe.
 % This thread executes the predicate: sleep_and_write(OutputPipe, WM, CurrentTime). 
@@ -210,18 +225,36 @@ initSocketLoaderThread(SocketName, ThreadID):-
 initWriterThread(OutputPipe, WM, Step, CurrentTime, ERThreadID, OutputThreadID):-
 	thread_create(print_results_on_message(OutputPipe, WM, Step, CurrentTime, ERThreadID), OutputThreadID).
 
+initSocketWriterThread(Socket, SocketName, WM, Step, CurrentTime, ERThreadID, OutputThreadID):-
+    % Open the socket from the server side and fetch its writer stream.
+    %tcp_open_socket(Socket, StreamPair),
+    %stream_pair(StreamPair, AcceptFd, _),
+    % Thread <OutputThreadID> writes the recognised intervals to <WriteStream> when it receives a message from <ERThreadID>
+    thread_create(print_results_on_message_socket(Socket, SocketName, WM, Step, CurrentTime, ERThreadID), OutputThreadID, [ detached(true) ]).
+
 % print_results_on_message(+OutputPipe, +WM, +Step, +CurrentTime, +ERThreadID)
 print_results_on_message(OutputPipe, WM, Step, CurrentTime, ERThreadID):-
     open(OutputPipe, append, OutputStream),
     print_results_on_message_loop(OutputStream, WM, Step, CurrentTime, ERThreadID).
-
 % print_results_on_message_loop(+OutputStream, +WM, +Step, +CurrentTime, +ERThreadID)
+print_results_on_message_socket(Socket, SocketName, WM, Step, CurrentTime, ERThreadID):-
+    tcp_connect(Socket, SocketName),
+    tcp_open_socket(Socket, _, OutStream),
+    flush_output(OutStream),
+    print_results_on_message_loop(OutStream, WM, Step, CurrentTime, ERThreadID).
 print_results_on_message_loop(OutputStream, WM, Step, CurrentTime, ERThreadID):-
-    thread_get_message(printRecognitions),
+    thread_get_message(Message),
+    Message=printRecognitions,
     printRecognitionsThread(OutputStream, CurrentTime, WM),
     thread_send_message(ERThreadID, printRecognitionsOK(CurrentTime)),
     NextTime is CurrentTime + Step,
     print_results_on_message_loop(OutputStream, WM, Step, NextTime, ERThreadID).
+%print_results_on_message_loop(OutputStream, _WM, _Step, _CurrentTime, _ERThreadID):-
+%thread_get_message(Message),
+%Message=exit, !,
+%close(OutputStream),
+%thread_exit(_).
+
 
 % Open one input stream for each input file, while maintaining the reading position in the stream.
 % openInputCSVFiles(+InputFiles, -InputStreams, -PointerPositions)
@@ -272,25 +305,29 @@ closeOutput(file, _).
 
 % Kill the thread writing into the output pipe.
 closeOutput(fifo, ThreadID) :-
-	thread_signal(ThreadID, abort).
+    thread_signal(ThreadID, abort).
+
+% Kill the thread writing into the socket.
+closeOutput(socket, ThreadID):-
+    thread_send_message(ThreadID, exit).
 
 % closeInputFiles(+InputStreams)	
 closeStreamsList([]). 
 closeStreamsList([InputStream|MoreInputStreams]) :-
-	close(InputStream),
-	closeStreamsList(MoreInputStreams).
+    close(InputStream),
+    closeStreamsList(MoreInputStreams).
 
 % killThreads(+InputStreams)	
 killThreads([]).
 killThreads([ThreadID|RestIDs]) :-
-	thread_signal(ThreadID, abort),
-	killThreads(RestIDs).
+    thread_signal(ThreadID, abort),
+    killThreads(RestIDs).
 
 % getWindowStartTime(+QueryTime, +WM, +StartReasoningTime, -WindowStartTime)
 % If QueryTime-WM=<StartReasoningTime, the window starts at StartReasoningTime
 % Else, in the more general case that QueryTime-WM>StartReasoningTime, the window starts at QueryTime-WM
 getWindowStartTime(QueryTime, WM, StartReasoningTime, StartReasoningTime):-
-	QueryTime-WM=<StartReasoningTime, !.
+    QueryTime-WM=<StartReasoningTime, !.
 
 getWindowStartTime(QueryTime, WM, _StartReasoningTime, WindowStartTime):-
 	WindowStartTime is QueryTime - WM.	

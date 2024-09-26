@@ -149,7 +149,7 @@ input_mode = "csv"
 input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
 stream_rate = 10000
 # Knowledge Base
-event_description = '../examples/caviar/resources/patterns/rules_time24.prolog'
+event_description = '../examples/caviar/resources/patterns/rules.prolog'
 background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.prolog'] #, '../examples/caviar/dataset/auxiliary/list-of-ids.prolog']
 # Output Specification Parameters
 output_mode = "file"
