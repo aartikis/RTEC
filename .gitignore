@@ -1,7 +1,6 @@
 .DS_Store*
 ._*
 execution scripts/*.log
-examples/dgexamples/*
 examples/caviar/results/*.txt
 examples/ctm/results/*.txt
 examples/maritime/results/*.txt

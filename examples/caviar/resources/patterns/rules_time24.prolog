@@ -31,46 +31,69 @@ holdsFor(distance(Id1,Id2)=short, I) :-
 holdsFor(distance(Id1,Id2)=mid, I) :-
 	holdsFor(distance(Id1,Id2,30)=true, I).
 
-holdsFor(distance(Id1,Id2)=long, I) :-
+holdsFor(orientation(Id1,Id2)=facing, I) :-
+        % dummy body, just for compilation.
 	holdsFor(distance(Id1,Id2,34)=true, I).
 
 /****************************************************************
- *		     MEETING					*
+ *		     INTERACTION			        *
  ****************************************************************/
 
- initiatedAt(meeting(P1,P2)=greeting, T):-
+initiatedAt(interaction(P1,P2)=greeting, T):-
      happensAt(active(P1), T),
      happensAt(active(P2), T),
-     holdsAt(distance(P1,P2)=mid, T).
+     holdsAt(distance(P1,P2)=mid, T),
+     holdsAt(orientation(P1,P2)=facing, T).
 
- terminatedAt(meeting(P1,P2)=greeting, T):-
-     happensAt(walking(P1), T).
-
-terminatedAt(meeting(P1,P2)=greeting, T):-
-     happensAt(walking(P2), T).
-
-initiatedAt(gathering(P1,P2)=true, T):-
-    happensAt(walking(P1), T),
-    holdsAt(meeting(P1,P2)=greeting, T).
-
-initiatedAt(gathering(P1,P2)=true, T):-
-    happensAt(walking(P2), T),
-    holdsAt(meeting(P1,P2)=greeting, T).
-
-terminatedAt(gathering(P1,P2)=true, T):-
+initiatedAt(interaction(P1,P2)=talking, T):-
     happensAt(active(P1), T),
-    happensAt(active(P2), T),
-    holdsAt(distance(P1,P2)=short, T).
+    holdsAt(distance(P1,P2)=short, T),
+    holdsAt(orientation(P1,P2)=facing, T),
+    \+ holdsAt(movement(P1,P2)=gathering, T).
 
-initiatedAt(meeting(P1,P2)=interacting, T):-
-    happensAt(active(P1), T),
+initiatedAt(interaction(P1,P2)=talking, T):-
     happensAt(active(P2), T),
     holdsAt(distance(P1,P2)=short, T),
-    holdsAt(gathering(P1,P2)=true, T).
+    holdsAt(orientation(P1,P2)=facing, T),
+    \+ holdsAt(movement(P1,P2)=gathering, T).
 
-terminatedAt(meeting(P1,P2)=interacting, T):-
+terminatedAt(interaction(P1,P2)=talking, T):-
     happensAt(inactive(P1), T),
     happensAt(inactive(P2), T).
+
+/****************************************************************
+ *		     MOVEMENT					*
+ ****************************************************************/
+
+initiatedAt(movement(P1,P2)=gathering, T):-
+    happensAt(walking(P1), T),
+    holdsAt(distance(P1,P2)=mid, T),
+    holdsAt(orientation(P1,P2)=facing, T).
+
+initiatedAt(movement(P1,P2)=gathering, T):-
+    happensAt(walking(P2), T),
+    holdsAt(distance(P1,P2)=mid, T),
+    holdsAt(orientation(P1,P2)=facing, T).
+
+terminatedAt(movement(P1,P2)=gathering, T):-
+    happensAt(active(P1), T),
+    \+ happensAt(walking(P2), T).
+
+terminatedAt(movement(P1,P2)=gathering, T):-
+    happensAt(active(P2), T),
+    \+ happensAt(walking(P1), T).
+
+initiatedAt(movement(P1,P2)=abrupt_gestures, T):-
+    happensAt(abrupt(P1), T),
+    holdsAt(interaction(P1,P2)=talking, T).
+
+initiatedAt(movement(P1,P2)=abrupt_gestures, T):-
+    happensAt(abrupt(P2), T),
+    holdsAt(interaction(P1,P2)=talking, T).
+
+terminatedAt(movement(P1,P2)=abrupt_gestures, T):-
+    happensAt(active(P1), T),
+    happensAt(active(P2), T).
 
 % the rule below is the result of the above optimisation checks
 %holdsFor(fighting(_P1,_P2)=true, []).
@@ -100,12 +123,13 @@ grounding(running(P)=_):-
 grounding(abrupt(P)=_):-
 	id(P).
 
+grounding(orientation(P1,P2)=facing) :- id(P1), id(P2), P1@<P2.
 grounding(distance(P1,P2)=short) :- id(P1), id(P2), P1@<P2.
 grounding(distance(P1,P2)=mid) :- id(P1), id(P2), P1@<P2.
-grounding(distance(P1,P2)=long) :- id(P1), id(P2), P1@<P2.
-grounding(gathering(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
-grounding(meeting(P1,P2)=greeting) :- id(P1), id(P2), P1@<P2.
-grounding(meeting(P1,P2)=interacting) :- id(P1), id(P2), P1@<P2.
+grounding(movement(P1,P2)=gathering) :- id(P1), id(P2), P1@<P2.
+%grounding(movement(P1,P2)=abrupt_gestures) :- id(P1), id(P2), P1@<P2.
+grounding(interaction(P1,P2)=greeting) :- id(P1), id(P2), P1@<P2.
+grounding(interaction(P1,P2)=talking) :- id(P1), id(P2), P1@<P2.
 
 % For input entities expressed as statically determined fluents, state whether 
 % the fluent instances will be reported as time-points (points/1) or intervals.
