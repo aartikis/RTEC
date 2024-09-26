@@ -35,7 +35,6 @@ updateSDE(person_door_4) :-
     assertz(happensAtIE(phone_call_ends(p1), 13)).
 
 updateSDE(person_door_5, 0, 10) :-
-    write("Asserting first window"), nl,
 	assertz(holdsForIESI(far_from(p1,d1)=true, (1,4))),
 	assertz(holdsForIESI(visible_person(p1)=true, (1,6))),
 	assertz(holdsForIESI(adjacent(p1,d1)=true, (2, 7))),

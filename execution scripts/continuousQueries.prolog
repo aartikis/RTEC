@@ -49,7 +49,7 @@ continuousQueries(App, ParamList) :-
     % Depending on the <OutputMode>, initialise the results file or the id of the thread that write to a fifo/socket.
     init_output(OutputMode, ResultsFile, WM, Step, QueryTime, OutputThreadID),
     % initialise RTEC, i.e., assert the parameters provided in the predicate below, so that they are accessible by any predicate.
-    initialiseRecognition(StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
+    initialiseRecognition(Step, StreamOrderFlag, DynamicGroundingFlag, PreprocessingFlag, ForgetThreshold, DynamicGroundingThreshold, ClockTick, AllenMem),
     %initGlobals,
     % In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
     sleep_if_live_stream(InputMode, Step, StreamRate, 0),
