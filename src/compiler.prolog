@@ -23,7 +23,7 @@
 
 % these predicates are asserted dynamically by the compiler.
 % they should be retracted before terminating.
-:- dynamic scc/1, fdependency/2, idependency/2, fluentDependency/2, fluentCycle/1, fluentscc/1, fluentLevel/2, fluentsccedge/2, dynamicAndGrounder/2, fcdedge/2, frdwcc/1, fcdscc/1, cdc/1, cyclicPathInFCD/1, cdedge/2, cdcLevel/2, translatableSF/1.
+:- dynamic scc/1, fdependency/2, idependency/2, fluentDependency/2, fluentCycle/1, fluentscc/1, fluentLevel/2, fluentsccedge/2, dynamicAndGrounder/2, fcdedge/2, frdwcc/1, fcdscc/1, cdc/1, cyclicPathInFCD/1, cdedge/2, cdcLevel/2, translatableSF/1, optimise_sfs/0.
 
 % Compile the rules of <ApplicationName> found in '../examples/<ApplicationName>/resources/patterns/rules.prolog'. 
 % This incarnation of compileED does not construct a dependency graph.
@@ -38,7 +38,8 @@ compileED(EventDescription):-
 % Possible values of <EventsFlag>: 
 %	'withEvents' -> show the 0th level of the dependency graph.
 %	'withoutEvents'. -> do not show the 0th level of the dependency graph.
-compileED(EventDescription, DependencyGraphFile, EventsFlag):-
+compileED(EventDescription, DependencyGraphFile, EventsFlag, OptimisationFlag):-
+        (OptimisationFlag=withOptimisation, assertz(optimise_sfs), !; OptimisationFlag=withoutOptimisation),
 	% compile the event description specified with <ApplicationName>.
 	compileApplication(EventDescription),
 	% create dependency graph the event description.
@@ -69,7 +70,8 @@ cleanCache:-
     retractall(cdc(_)),
     retractall(cdedge(_,_)),
     retractall(cdcLevel(_,_)),
-    retractall(translatableSF(_)).
+    retractall(translatableSF(_)),
+    retractall(optimise_sfs).
 
 %compileApplication(+ApplicationName)
 % Compile the event description of the selected application.
@@ -1062,6 +1064,7 @@ processRules:-
     deriveEntitySorts, % assert all inputEntity, outputEntity, event, simpleFluent, sDFluent declarations.
     %translateSDF2SF,
     %translateSF2SDF,
+    (optimise_sfs, translateSF2SDF, !; \+optimise_sfs),
     %findall(_InitRule, (clause(initiatedAt(F=V, T), Body), writeCompiledRule(initiatedAtTest, [F=V, T], Body)), _InitRules),
     %findall(_TermRule, (clause(terminatedAt(F=V, T), Body), writeCompiledRule(terminatedAtTest, [F=V, T], Body)), _TermRules),
     deriveIndices, % assert all index/2 declarations that have not been provided.
@@ -1862,7 +1865,7 @@ translateSF0([Disjunct|RestDisjuncts], CurrentCounter, CurrentIntervalLists, I, 
 translateDisjunct(Disjunct, CurrentCounter, IntervalList, DisjunctPredicates):-
     translateDisjunct0(Disjunct, 0, CurrentCounter, [], IntervalList, DisjunctPredicates).
 
-translateDisjunct0([], _InnerCounter, OuterCounter, FinalIntervalList, MyIntervalList, [intersect_all([FinalIntervalList], MyIntervalList)]):-
+translateDisjunct0([], _InnerCounter, OuterCounter, FinalIntervalList, MyIntervalList, [intersect_all(FinalIntervalList, MyIntervalList)]):-
     getListName(OuterCounter, MyIntervalList).
     %tab(5), write('intersect_all(['), writeList(FinalIntervalList), write('], '), write(MyIntervalList), write('),'), nl.
 translateDisjunct0([Literal|RestLiterals], InnerCounter, OuterCounter, CurrentIntervalLists, DisjunctIntervalList, DisjunctPredicates):-
