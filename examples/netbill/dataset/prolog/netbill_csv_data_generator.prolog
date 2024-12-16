@@ -15,6 +15,9 @@ Comment out agent assertions in the static generator file.
 :- use_module(library(random)).
 :- use_module(library(lists)).
 
+assert_n_agents(N):- N>0, N1 is N-1, N1=0, assertz(person(N1)).
+assert_n_agents(N):- N>0, N1 is N-1, assertz(person(N1)), assert_n_agents(N1).
+
 % compute a random subset of a list when Limit<1 and a superset otherwise
 % random_subset(+List, +ListLength, +ListSubsetLimit, [], -ListSubset)
 random_subset(_List, _Length, Limit, ListSubset, ListSubset) :-
@@ -28,7 +31,7 @@ random_subset(List, Length, Limit, InitialListSubset, ListSubset) :-
 createNarrative(Start, End, AgentNo, Seed):-
 	Start<End,
 	srandom(Seed),
-	consult('../negotiation-static_generator.prolog'),
+	consult('../auxiliary/netbill_static_generator.prolog'),
 	assert_n_agents(AgentNo),
 	openFile(AgentNo,Seed, WriteFileStream),
 	updateNarrative(Start, End, WriteFileStream),
@@ -46,7 +49,7 @@ updateSDE(Start, End, WriteFileStream) :-
 	% sanity check:
 	Start<End,
 	%%%%%%%%%%% count the agents occupying various roles %%%%%%%%%%%%%%%%%%
-	findall(Ag, (agent(Ag),\+role_of(Ag,consumer),\+role_of(Ag,merchant)), NoRoleList),
+	findall(Ag, (person(Ag),\+role_of(Ag,consumer),\+role_of(Ag,merchant)), NoRoleList),
 	length(NoRoleList, NoRoleNo), 
 	findall(C, role_of(C,consumer), ConsumersList),
 	length(ConsumersList, ConsumersNo), 
@@ -165,7 +168,7 @@ updateSDE(Start, End) :-
 	% sanity check:
 	Start<End,
 	%%%%%%%%%%% count the agents occupying various roles %%%%%%%%%%%%%%%%%%
-	findall(Ag, (agent(Ag),\+role_of(Ag,consumer),\+role_of(Ag,merchant)), NoRoleList),
+	findall(Ag, (person(Ag),\+role_of(Ag,consumer),\+role_of(Ag,merchant)), NoRoleList),
 	length(NoRoleList, NoRoleNo), 
 	findall(C, role_of(C,consumer), ConsumersList),
 	length(ConsumersList, ConsumersNo), 

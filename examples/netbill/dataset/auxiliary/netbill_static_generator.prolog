@@ -25,10 +25,10 @@ role(consumer).
 %TempM is M mod 10, TempM=0.
 
 role_of(C, consumer) :- 
-	%agent(C),
+	person(C),
 	TempC is C mod 3, TempC>0.
 role_of(M, merchant) :- 
-	%agent(M),
+	person(M),
 	TempM is M mod 2, TempM=0.
 
 %queryGoodsDescription(book1).
