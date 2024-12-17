@@ -27,7 +27,10 @@
 
 % Compile the rules of <ApplicationName> found in '../examples/<ApplicationName>/resources/patterns/rules.prolog'. 
 % This incarnation of compileED does not construct a dependency graph.
-compileED(EventDescription):-
+compileED(EventDescription, OptimisationFlag):-
+    % Check if the user has requested an optimisation of the event description, i.e.,
+    % a rewrite of the translatable simple fluent definitions into statically determined fluents.
+    (OptimisationFlag=withOptimisation, assertz(optimise_sfs), !; OptimisationFlag=withoutOptimisation),
 	% compile the event description specified with <ApplicationName>.
 	compileApplication(EventDescription),
 	% retract facts asserted by the compiler. 
@@ -39,7 +42,9 @@ compileED(EventDescription):-
 %	'withEvents' -> show the 0th level of the dependency graph.
 %	'withoutEvents'. -> do not show the 0th level of the dependency graph.
 compileED(EventDescription, DependencyGraphFile, EventsFlag, OptimisationFlag):-
-        (OptimisationFlag=withOptimisation, assertz(optimise_sfs), !; OptimisationFlag=withoutOptimisation),
+    % Check if the user has requested an optimisation of the event description, i.e.,
+    % a rewrite of the translatable simple fluent definitions into statically determined fluents.
+    (OptimisationFlag=withOptimisation, assertz(optimise_sfs), !; OptimisationFlag=withoutOptimisation),
 	% compile the event description specified with <ApplicationName>.
 	compileApplication(EventDescription),
 	% create dependency graph the event description.

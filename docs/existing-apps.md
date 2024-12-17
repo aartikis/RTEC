@@ -20,6 +20,7 @@
  dependency_graph_flag = true
  dependency_graph_directory = '../examples/toy/resources/graphs'
  include_input = false
+ definition_optimisation = false
 ```
 &emsp;&ensp; According to the key-value pairs of the above table, the event description of the toy application is in the file "../examples/toy/resources/patterns/rules.prolog", while the input stream is in "../examples/toy/dataset/csv/toy_data.csv" and the results of RTEC are written in the directory "../examples/toy/results". See the [manual](../RTEC_manual.pdf) for the grammar of an event description, the supported format for the input providers, and the complete documentation of the parameters in the above table.
 

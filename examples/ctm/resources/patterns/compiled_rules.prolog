@@ -1,371 +1,338 @@
 :- dynamic vehicle/2.
 
-initiatedAt(punctuality(_96,_98)=punctual, _108, -1, _116) :-
-     _108=< -1,
-     -1<_116.
-
-initiatedAt(passenger_density(_96,_98)=low, _108, -1, _116) :-
-     _108=< -1,
-     -1<_116.
-
-initiatedAt(noise_level(_96,_98)=low, _108, -1, _116) :-
-     _108=< -1,
-     -1<_116.
-
-initiatedAt(internal_temperature(_96,_98)=normal, _108, -1, _116) :-
-     _108=< -1,
-     -1<_116.
-
-initiatedAt(punctuality(_106,_108)=punctual, _130, _76, _136) :-
-     happensAtIE(stop_enter(_106,_108,_116,scheduled),_76),
-     _130=<_76,
-     _76<_136.
-
-initiatedAt(punctuality(_106,_108)=punctual, _130, _76, _136) :-
-     happensAtIE(stop_enter(_106,_108,_116,early),_76),
-     _130=<_76,
-     _76<_136.
-
-initiatedAt(passenger_density(_98,_100)=_84, _132, _78, _138) :-
-     happensAtIE(passenger_density_change(_98,_100,_84),_78),_132=<_78,_78<_138.
-
-initiatedAt(noise_level(_98,_100)=_84, _132, _78, _138) :-
-     happensAtIE(noise_level_change(_98,_100,_84),_78),_132=<_78,_78<_138.
-
-initiatedAt(internal_temperature(_98,_100)=_84, _132, _78, _138) :-
-     happensAtIE(internal_temperature_change(_98,_100,_84),_78),_132=<_78,_78<_138.
-
-terminatedAt(punctuality(_106,_108)=punctual, _130, _76, _136) :-
-     happensAtIE(stop_enter(_106,_108,_116,late),_76),
-     _130=<_76,
-     _76<_136.
-
-terminatedAt(punctuality(_106,_108)=punctual, _130, _76, _136) :-
-     happensAtIE(stop_leave(_106,_108,_116,early),_76),
-     _130=<_76,
-     _76<_136.
-
-holdsForSDFluent(punctuality(_106,_108)=non_punctual,_76) :-
-     holdsForProcessedSimpleFluent(_106,punctuality(_106,_108)=punctual,_126),
-     complement_all([_126],_76).
-
-holdsForSDFluent(driving_style(_106,_108)=unsafe,_76) :-
-     holdsForProcessedIE(_106,sharp_turn(_106,_108)=very_sharp,_126),
-     holdsForProcessedIE(_106,abrupt_acceleration(_106,_108)=very_abrupt,_144),
-     holdsForProcessedIE(_106,abrupt_deceleration(_106,_108)=very_abrupt,_162),
-     union_all([_126,_144,_162],_76).
-
-holdsForSDFluent(driving_style(_106,_108)=uncomfortable,_76) :-
-     holdsForProcessedIE(_106,sharp_turn(_106,_108)=sharp,_126),
-     holdsForProcessedIE(_106,abrupt_acceleration(_106,_108)=very_abrupt,_144),
-     holdsForProcessedIE(_106,abrupt_deceleration(_106,_108)=very_abrupt,_162),
-     relative_complement_all(_126,[_144,_162],_182),
-     holdsForProcessedIE(_106,abrupt_acceleration(_106,_108)=abrupt,_200),
-     holdsForProcessedIE(_106,abrupt_deceleration(_106,_108)=abrupt,_218),
-     union_all([_182,_200,_218],_76).
-
-holdsForSDFluent(driving_quality(_106,_108)=high,_76) :-
-     holdsForProcessedSimpleFluent(_106,punctuality(_106,_108)=punctual,_126),
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=unsafe,_144),
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=uncomfortable,_162),
-     relative_complement_all(_126,[_144,_162],_76).
-
-holdsForSDFluent(driving_quality(_106,_108)=medium,_76) :-
-     holdsForProcessedSimpleFluent(_106,punctuality(_106,_108)=punctual,_126),
-     \+_126=[],
-     !,
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=uncomfortable,_154),
-     intersect_all([_126,_154],_76).
+initiatedAt(punctuality(_112,_114)=punctual, _136, _82, _142) :-
+     happensAtIE(stop_enter(_112,_114,_122,scheduled),_82),
+     _136=<_82,
+     _82<_142.
+
+initiatedAt(punctuality(_112,_114)=punctual, _136, _82, _142) :-
+     happensAtIE(stop_enter(_112,_114,_122,early),_82),
+     _136=<_82,
+     _82<_142.
+
+initiatedAt(punctuality(_112,_114)=non_punctual, _136, _82, _142) :-
+     happensAtIE(stop_enter(_112,_114,_122,late),_82),
+     _136=<_82,
+     _82<_142.
+
+initiatedAt(punctuality(_112,_114)=non_punctual, _136, _82, _142) :-
+     happensAtIE(stop_leave(_112,_114,_122,early),_82),
+     _136=<_82,
+     _82<_142.
+
+initiatedAt(punctuality(_112,_114)=non_punctual, _136, _82, _142) :-
+     happensAtIE(stop_leave(_112,_114,_122,late),_82),
+     _136=<_82,
+     _82<_142.
+
+terminatedAt(punctuality(_112,_114)=punctual, _136, _82, _142) :-
+     happensAtIE(stop_enter(_112,_114,_122,late),_82),
+     _136=<_82,
+     _82<_142.
+
+terminatedAt(punctuality(_112,_114)=punctual, _136, _82, _142) :-
+     happensAtIE(stop_leave(_112,_114,_122,early),_82),
+     _136=<_82,
+     _82<_142.
+
+holdsForSDFluent(unsafe_driving_style(_112,_114)=true,_82) :-
+     holdsForProcessedIE(_112,sharp_turn(_112,_114)=very_sharp,I0x0),
+     intersect_all([I0x0],I0),
+     holdsForProcessedIE(_112,abrupt_acceleration(_112,_114)=very_abrupt,I1x0),
+     intersect_all([I1x0],I1),
+     holdsForProcessedIE(_112,abrupt_deceleration(_112,_114)=very_abrupt,I2x0),
+     intersect_all([I2x0],I2),
+     union_all([I2,I1,I0],_82).
+
+holdsForSDFluent(uncomfortable_driving_style(_112,_114)=true,_82) :-
+     holdsForProcessedIE(_112,sharp_turn(_112,_114)=sharp,I0x0),
+     holdsForProcessedIE(_112,abrupt_acceleration(_112,_114)=very_abrupt,I0x1c),
+     complement_all(I0x1c,I0x1),
+     holdsForProcessedIE(_112,abrupt_deceleration(_112,_114)=very_abrupt,I0x2c),
+     complement_all(I0x2c,I0x2),
+     intersect_all([I0x2,I0x1,I0x0],I0),
+     holdsForProcessedIE(_112,abrupt_acceleration(_112,_114)=abrupt,I1x0),
+     intersect_all([I1x0],I1),
+     holdsForProcessedIE(_112,abrupt_deceleration(_112,_114)=abrupt,I2x0),
+     intersect_all([I2x0],I2),
+     union_all([I2,I1,I0],_82).
+
+holdsForSDFluent(high_driving_quality(_112,_114)=true,_82) :-
+     holdsForProcessedSimpleFluent(_112,punctuality(_112,_114)=punctual,I0x0),
+     holdsForProcessedSDFluent(_112,unsafe_driving_style(_112,_114)=true,I0x1c),
+     complement_all(I0x1c,I0x1),
+     holdsForProcessedSDFluent(_112,uncomfortable_driving_style(_112,_114)=true,I0x2c),
+     complement_all(I0x2c,I0x2),
+     intersect_all([I0x2,I0x1,I0x0],I0),
+     union_all([I0],_82).
+
+holdsForSDFluent(medium_driving_quality(_112,_114)=true,_82) :-
+     holdsForProcessedSimpleFluent(_112,punctuality(_112,_114)=punctual,I0x0),
+     holdsForProcessedSDFluent(_112,uncomfortable_driving_style(_112,_114)=true,I0x1),
+     intersect_all([I0x1,I0x0],I0),
+     union_all([I0],_82).
+
+holdsForSDFluent(low_driving_quality(_112,_114)=true,_82) :-
+     holdsForProcessedSimpleFluent(_112,punctuality(_112,_114)=non_punctual,I0x0),
+     intersect_all([I0x0],I0),
+     holdsForProcessedSDFluent(_112,unsafe_driving_style(_112,_114)=true,I1x0),
+     intersect_all([I1x0],I1),
+     union_all([I1,I0],_82).
+
+holdsForSDFluent(passenger_comfort(_112,_114)=reducing,_82) :-
+     holdsForProcessedSDFluent(_112,uncomfortable_driving_style(_112,_114)=true,I0x0),
+     intersect_all([I0x0],I0),
+     holdsForProcessedSDFluent(_112,unsafe_driving_style(_112,_114)=true,I1x0),
+     intersect_all([I1x0],I1),
+     holdsForProcessedIE(_112,passenger_density(_112,_114)=high,I2x0),
+     intersect_all([I2x0],I2),
+     holdsForProcessedIE(_112,noise_level(_112,_114)=high,I3x0),
+     intersect_all([I3x0],I3),
+     holdsForProcessedIE(_112,internal_temperature(_112,_114)=very_warm,I4x0),
+     intersect_all([I4x0],I4),
+     holdsForProcessedIE(_112,internal_temperature(_112,_114)=very_cold,I5x0),
+     intersect_all([I5x0],I5),
+     union_all([I5,I4,I3,I2,I1,I0],_82).
+
+holdsForSDFluent(driver_comfort(_112,_114)=reducing,_82) :-
+     holdsForProcessedSDFluent(_112,uncomfortable_driving_style(_112,_114)=true,I0x0),
+     intersect_all([I0x0],I0),
+     holdsForProcessedSDFluent(_112,unsafe_driving_style(_112,_114)=true,I1x0),
+     intersect_all([I1x0],I1),
+     holdsForProcessedIE(_112,noise_level(_112,_114)=high,I2x0),
+     intersect_all([I2x0],I2),
+     holdsForProcessedIE(_112,internal_temperature(_112,_114)=very_warm,I3x0),
+     intersect_all([I3x0],I3),
+     holdsForProcessedIE(_112,internal_temperature(_112,_114)=very_cold,I4x0),
+     intersect_all([I4x0],I4),
+     union_all([I4,I3,I2,I1,I0],_82).
 
-holdsForSDFluent(driving_quality(_100,_102)=medium,[]).
+holdsForSDFluent(passenger_satisfaction(_112,_114)=reducing,_82) :-
+     holdsForProcessedSimpleFluent(_112,punctuality(_112,_114)=non_punctual,I0x0),
+     intersect_all([I0x0],I0),
+     holdsForProcessedSDFluent(_112,passenger_comfort(_112,_114)=reducing,I1x0),
+     intersect_all([I1x0],I1),
+     union_all([I1,I0],_82).
 
-holdsForSDFluent(driving_quality(_106,_108)=low,_76) :-
-     holdsForProcessedSDFluent(_106,punctuality(_106,_108)=non_punctual,_126),
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=unsafe,_144),
-     union_all([_126,_144],_76).
+collectIntervals2(_86, abrupt_acceleration(_86,_88)=abrupt) :-
+     vehicle(_86,_88).
 
-holdsForSDFluent(passenger_comfort(_106,_108)=reducing,_76) :-
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=uncomfortable,_126),
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=unsafe,_144),
-     holdsForProcessedSimpleFluent(_106,passenger_density(_106,_108)=high,_162),
-     holdsForProcessedSimpleFluent(_106,noise_level(_106,_108)=high,_180),
-     holdsForProcessedSimpleFluent(_106,internal_temperature(_106,_108)=very_warm,_198),
-     holdsForProcessedSimpleFluent(_106,internal_temperature(_106,_108)=very_cold,_216),
-     union_all([_126,_144,_162,_180,_198,_216],_76).
+collectIntervals2(_86, abrupt_acceleration(_86,_88)=very_abrupt) :-
+     vehicle(_86,_88).
 
-holdsForSDFluent(driver_comfort(_106,_108)=reducing,_76) :-
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=uncomfortable,_126),
-     holdsForProcessedSDFluent(_106,driving_style(_106,_108)=unsafe,_144),
-     holdsForProcessedSimpleFluent(_106,noise_level(_106,_108)=high,_162),
-     holdsForProcessedSimpleFluent(_106,internal_temperature(_106,_108)=very_warm,_180),
-     holdsForProcessedSimpleFluent(_106,internal_temperature(_106,_108)=very_cold,_198),
-     union_all([_126,_144,_162,_180,_198],_76).
+collectIntervals2(_86, abrupt_deceleration(_86,_88)=abrupt) :-
+     vehicle(_86,_88).
 
-holdsForSDFluent(passenger_satisfaction(_106,_108)=reducing,_76) :-
-     holdsForProcessedSDFluent(_106,punctuality(_106,_108)=non_punctual,_126),
-     holdsForProcessedSDFluent(_106,passenger_comfort(_106,_108)=reducing,_144),
-     union_all([_126,_144],_76).
+collectIntervals2(_86, abrupt_deceleration(_86,_88)=very_abrupt) :-
+     vehicle(_86,_88).
 
-happensAtEv(punctuality_change(_94,_96,punctual),_76) :-
-     happensAtProcessedSDFluent(_94,end(punctuality(_94,_96)=non_punctual),_76).
+collectIntervals2(_86, sharp_turn(_86,_88)=sharp) :-
+     vehicle(_86,_88).
 
-happensAtEv(punctuality_change(_94,_96,non_punctual),_76) :-
-     happensAtProcessedSimpleFluent(_94,end(punctuality(_94,_96)=punctual),_76).
+collectIntervals2(_86, sharp_turn(_86,_88)=very_sharp) :-
+     vehicle(_86,_88).
 
-collectIntervals2(_80, abrupt_acceleration(_80,_82)=abrupt) :-
-     vehicle(_80,_82).
+grounding(stop_enter(_392,_394,_396,_398)) :- 
+     vehicle(_392,_394).
 
-collectIntervals2(_80, abrupt_acceleration(_80,_82)=very_abrupt) :-
-     vehicle(_80,_82).
+grounding(stop_leave(_392,_394,_396,_398)) :- 
+     vehicle(_392,_394).
 
-collectIntervals2(_80, abrupt_deceleration(_80,_82)=abrupt) :-
-     vehicle(_80,_82).
+grounding(internal_temperature_change(_392,_394,_396)) :- 
+     vehicle(_392,_394).
 
-collectIntervals2(_80, abrupt_deceleration(_80,_82)=very_abrupt) :-
-     vehicle(_80,_82).
+grounding(noise_level_change(_392,_394,_396)) :- 
+     vehicle(_392,_394).
 
-collectIntervals2(_80, sharp_turn(_80,_82)=sharp) :-
-     vehicle(_80,_82).
+grounding(passenger_density_change(_392,_394,_396)) :- 
+     vehicle(_392,_394).
 
-collectIntervals2(_80, sharp_turn(_80,_82)=very_sharp) :-
-     vehicle(_80,_82).
+grounding(punctuality_change(_392,_394,punctual)) :- 
+     vehicle(_392,_394).
+
+grounding(punctuality_change(_392,_394,non_punctual)) :- 
+     vehicle(_392,_394).
+
+grounding(abrupt_acceleration(_398,_400)=abrupt) :- 
+     vehicle(_398,_400).
+
+grounding(abrupt_acceleration(_398,_400)=very_abrupt) :- 
+     vehicle(_398,_400).
 
-grounding(stop_enter(_458,_460,_462,_464)) :- 
-     vehicle(_458,_460).
-
-grounding(stop_leave(_458,_460,_462,_464)) :- 
-     vehicle(_458,_460).
-
-grounding(internal_temperature_change(_458,_460,_462)) :- 
-     vehicle(_458,_460).
-
-grounding(noise_level_change(_458,_460,_462)) :- 
-     vehicle(_458,_460).
-
-grounding(passenger_density_change(_458,_460,_462)) :- 
-     vehicle(_458,_460).
-
-grounding(punctuality_change(_458,_460,punctual)) :- 
-     vehicle(_458,_460).
-
-grounding(punctuality_change(_458,_460,non_punctual)) :- 
-     vehicle(_458,_460).
-
-grounding(abrupt_acceleration(_464,_466)=abrupt) :- 
-     vehicle(_464,_466).
-
-grounding(abrupt_acceleration(_464,_466)=very_abrupt) :- 
-     vehicle(_464,_466).
-
-grounding(abrupt_deceleration(_464,_466)=abrupt) :- 
-     vehicle(_464,_466).
-
-grounding(abrupt_deceleration(_464,_466)=very_abrupt) :- 
-     vehicle(_464,_466).
-
-grounding(sharp_turn(_464,_466)=sharp) :- 
-     vehicle(_464,_466).
-
-grounding(sharp_turn(_464,_466)=very_sharp) :- 
-     vehicle(_464,_466).
-
-grounding(punctuality(_464,_466)=punctual) :- 
-     vehicle(_464,_466).
-
-grounding(punctuality(_464,_466)=non_punctual) :- 
-     vehicle(_464,_466).
-
-grounding(passenger_density(_464,_466)=high) :- 
-     vehicle(_464,_466).
-
-grounding(noise_level(_464,_466)=high) :- 
-     vehicle(_464,_466).
-
-grounding(internal_temperature(_464,_466)=very_warm) :- 
-     vehicle(_464,_466).
-
-grounding(internal_temperature(_464,_466)=very_cold) :- 
-     vehicle(_464,_466).
-
-grounding(driving_style(_464,_466)=unsafe) :- 
-     vehicle(_464,_466).
-
-grounding(driving_style(_464,_466)=uncomfortable) :- 
-     vehicle(_464,_466).
-
-grounding(driving_quality(_464,_466)=high) :- 
-     vehicle(_464,_466).
-
-grounding(driving_quality(_464,_466)=medium) :- 
-     vehicle(_464,_466).
-
-grounding(driving_quality(_464,_466)=low) :- 
-     vehicle(_464,_466).
-
-grounding(passenger_comfort(_464,_466)=reducing) :- 
-     vehicle(_464,_466).
-
-grounding(driver_comfort(_464,_466)=reducing) :- 
-     vehicle(_464,_466).
-
-grounding(passenger_satisfaction(_464,_466)=reducing) :- 
-     vehicle(_464,_466).
-
-inputEntity(stop_enter(_130,_132,_134,_136)).
-inputEntity(stop_leave(_130,_132,_134,_136)).
-inputEntity(sharp_turn(_136,_138)=very_sharp).
-inputEntity(abrupt_acceleration(_136,_138)=very_abrupt).
-inputEntity(abrupt_deceleration(_136,_138)=very_abrupt).
-inputEntity(sharp_turn(_136,_138)=sharp).
-inputEntity(abrupt_acceleration(_136,_138)=abrupt).
-inputEntity(abrupt_deceleration(_136,_138)=abrupt).
-inputEntity(internal_temperature_change(_130,_132,_134)).
-inputEntity(noise_level_change(_130,_132,_134)).
-inputEntity(passenger_density_change(_130,_132,_134)).
-
-outputEntity(punctuality(_258,_260)=punctual).
-outputEntity(passenger_density(_258,_260)=high).
-outputEntity(noise_level(_258,_260)=high).
-outputEntity(internal_temperature(_258,_260)=very_warm).
-outputEntity(internal_temperature(_258,_260)=very_cold).
-outputEntity(passenger_density(_258,_260)=low).
-outputEntity(noise_level(_258,_260)=low).
-outputEntity(internal_temperature(_258,_260)=normal).
-outputEntity(punctuality(_258,_260)=non_punctual).
-outputEntity(driving_style(_258,_260)=unsafe).
-outputEntity(driving_style(_258,_260)=uncomfortable).
-outputEntity(driving_quality(_258,_260)=high).
-outputEntity(driving_quality(_258,_260)=medium).
-outputEntity(driving_quality(_258,_260)=low).
-outputEntity(passenger_comfort(_258,_260)=reducing).
-outputEntity(driver_comfort(_258,_260)=reducing).
-outputEntity(passenger_satisfaction(_258,_260)=reducing).
-outputEntity(punctuality_change(_252,_254,_256)).
-
-event(punctuality_change(_416,_418,_420)).
-event(stop_enter(_416,_418,_420,_422)).
-event(stop_leave(_416,_418,_420,_422)).
-event(internal_temperature_change(_416,_418,_420)).
-event(noise_level_change(_416,_418,_420)).
-event(passenger_density_change(_416,_418,_420)).
-
-simpleFluent(punctuality(_514,_516)=punctual).
-simpleFluent(passenger_density(_514,_516)=high).
-simpleFluent(noise_level(_514,_516)=high).
-simpleFluent(internal_temperature(_514,_516)=very_warm).
-simpleFluent(internal_temperature(_514,_516)=very_cold).
-simpleFluent(passenger_density(_514,_516)=low).
-simpleFluent(noise_level(_514,_516)=low).
-simpleFluent(internal_temperature(_514,_516)=normal).
-
-
-sDFluent(punctuality(_674,_676)=non_punctual).
-sDFluent(driving_style(_674,_676)=unsafe).
-sDFluent(driving_style(_674,_676)=uncomfortable).
-sDFluent(driving_quality(_674,_676)=high).
-sDFluent(driving_quality(_674,_676)=medium).
-sDFluent(driving_quality(_674,_676)=low).
-sDFluent(passenger_comfort(_674,_676)=reducing).
-sDFluent(driver_comfort(_674,_676)=reducing).
-sDFluent(passenger_satisfaction(_674,_676)=reducing).
-sDFluent(sharp_turn(_674,_676)=very_sharp).
-sDFluent(abrupt_acceleration(_674,_676)=very_abrupt).
-sDFluent(abrupt_deceleration(_674,_676)=very_abrupt).
-sDFluent(sharp_turn(_674,_676)=sharp).
-sDFluent(abrupt_acceleration(_674,_676)=abrupt).
-sDFluent(abrupt_deceleration(_674,_676)=abrupt).
-
-index(punctuality_change(_766,_820,_822),_766).
-index(stop_enter(_766,_820,_822,_824),_766).
-index(stop_leave(_766,_820,_822,_824),_766).
-index(internal_temperature_change(_766,_820,_822),_766).
-index(noise_level_change(_766,_820,_822),_766).
-index(passenger_density_change(_766,_820,_822),_766).
-index(punctuality(_766,_826)=punctual,_766).
-index(passenger_density(_766,_826)=high,_766).
-index(noise_level(_766,_826)=high,_766).
-index(internal_temperature(_766,_826)=very_warm,_766).
-index(internal_temperature(_766,_826)=very_cold,_766).
-index(passenger_density(_766,_826)=low,_766).
-index(noise_level(_766,_826)=low,_766).
-index(internal_temperature(_766,_826)=normal,_766).
-index(punctuality(_766,_826)=non_punctual,_766).
-index(driving_style(_766,_826)=unsafe,_766).
-index(driving_style(_766,_826)=uncomfortable,_766).
-index(driving_quality(_766,_826)=high,_766).
-index(driving_quality(_766,_826)=medium,_766).
-index(driving_quality(_766,_826)=low,_766).
-index(passenger_comfort(_766,_826)=reducing,_766).
-index(driver_comfort(_766,_826)=reducing,_766).
-index(passenger_satisfaction(_766,_826)=reducing,_766).
-index(sharp_turn(_766,_826)=very_sharp,_766).
-index(abrupt_acceleration(_766,_826)=very_abrupt,_766).
-index(abrupt_deceleration(_766,_826)=very_abrupt,_766).
-index(sharp_turn(_766,_826)=sharp,_766).
-index(abrupt_acceleration(_766,_826)=abrupt,_766).
-index(abrupt_deceleration(_766,_826)=abrupt,_766).
-
-
-cachingOrder2(_1360, punctuality(_1360,_1362)=punctual) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1360,_1362).
-
-cachingOrder2(_1378, punctuality(_1378,_1380)=non_punctual) :- % level in dependency graph: 1, processing order in component: 2
-     vehicle(_1378,_1380).
-
-cachingOrder2(_1336, passenger_density(_1336,_1338)=high) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1336,_1338).
-
-cachingOrder2(_1294, noise_level(_1294,_1296)=high) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1294,_1296).
-
-cachingOrder2(_1234, internal_temperature(_1234,_1236)=very_cold) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1234,_1236).
-
-cachingOrder2(_1252, internal_temperature(_1252,_1254)=very_warm) :- % level in dependency graph: 1, processing order in component: 2
-     vehicle(_1252,_1254).
-
-cachingOrder2(_1174, driving_style(_1174,_1176)=uncomfortable) :- % level in dependency graph: 1, processing order in component: 1
-     vehicle(_1174,_1176).
-
-cachingOrder2(_1192, driving_style(_1192,_1194)=unsafe) :- % level in dependency graph: 1, processing order in component: 2
-     vehicle(_1192,_1194).
-
-cachingOrder2(_2222, driving_quality(_2222,_2224)=low) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2222,_2224).
-
-cachingOrder2(_2240, driving_quality(_2240,_2242)=medium) :- % level in dependency graph: 2, processing order in component: 2
-     vehicle(_2240,_2242).
-
-cachingOrder2(_2258, driving_quality(_2258,_2260)=high) :- % level in dependency graph: 2, processing order in component: 3
-     vehicle(_2258,_2260).
-
-cachingOrder2(_2198, passenger_comfort(_2198,_2200)=reducing) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2198,_2200).
-
-cachingOrder2(_2174, driver_comfort(_2174,_2176)=reducing) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2174,_2176).
-
-cachingOrder2(_2148, punctuality_change(_2148,_2150,_2782)) :- % level in dependency graph: 2, processing order in component: 1
-     vehicle(_2148,_2150).
-
-cachingOrder2(_2862, passenger_satisfaction(_2862,_2864)=reducing) :- % level in dependency graph: 3, processing order in component: 1
-     vehicle(_2862,_2864).
-
-collectGrounds([stop_enter(_618,_620,_636,_638), stop_leave(_618,_620,_636,_638), sharp_turn(_618,_620)=very_sharp, abrupt_acceleration(_618,_620)=very_abrupt, abrupt_deceleration(_618,_620)=very_abrupt, sharp_turn(_618,_620)=sharp, abrupt_acceleration(_618,_620)=abrupt, abrupt_deceleration(_618,_620)=abrupt, internal_temperature_change(_618,_620,_636), noise_level_change(_618,_620,_636), passenger_density_change(_618,_620,_636)],vehicle(_618,_620)).
-
-dgrounded(punctuality(_1242,_1244)=punctual, vehicle(_1242,_1244)).
-dgrounded(passenger_density(_1206,_1208)=high, vehicle(_1206,_1208)).
-dgrounded(noise_level(_1170,_1172)=high, vehicle(_1170,_1172)).
-dgrounded(internal_temperature(_1134,_1136)=very_warm, vehicle(_1134,_1136)).
-dgrounded(internal_temperature(_1098,_1100)=very_cold, vehicle(_1098,_1100)).
-dgrounded(punctuality(_1062,_1064)=non_punctual, vehicle(_1062,_1064)).
-dgrounded(driving_style(_1026,_1028)=unsafe, vehicle(_1026,_1028)).
-dgrounded(driving_style(_990,_992)=uncomfortable, vehicle(_990,_992)).
-dgrounded(driving_quality(_954,_956)=high, vehicle(_954,_956)).
-dgrounded(driving_quality(_918,_920)=medium, vehicle(_918,_920)).
-dgrounded(driving_quality(_882,_884)=low, vehicle(_882,_884)).
-dgrounded(passenger_comfort(_846,_848)=reducing, vehicle(_846,_848)).
-dgrounded(driver_comfort(_810,_812)=reducing, vehicle(_810,_812)).
-dgrounded(passenger_satisfaction(_774,_776)=reducing, vehicle(_774,_776)).
-dgrounded(punctuality_change(_736,_738,punctual), vehicle(_736,_738)).
-dgrounded(punctuality_change(_704,_706,non_punctual), vehicle(_704,_706)).
+grounding(abrupt_deceleration(_398,_400)=abrupt) :- 
+     vehicle(_398,_400).
+
+grounding(abrupt_deceleration(_398,_400)=very_abrupt) :- 
+     vehicle(_398,_400).
+
+grounding(sharp_turn(_398,_400)=sharp) :- 
+     vehicle(_398,_400).
+
+grounding(sharp_turn(_398,_400)=very_sharp) :- 
+     vehicle(_398,_400).
+
+grounding(punctuality(_398,_400)=punctual) :- 
+     vehicle(_398,_400).
+
+grounding(punctuality(_398,_400)=non_punctual) :- 
+     vehicle(_398,_400).
+
+grounding(passenger_density(_398,_400)=high) :- 
+     vehicle(_398,_400).
+
+grounding(noise_level(_398,_400)=high) :- 
+     vehicle(_398,_400).
+
+grounding(internal_temperature(_398,_400)=very_warm) :- 
+     vehicle(_398,_400).
+
+grounding(internal_temperature(_398,_400)=very_cold) :- 
+     vehicle(_398,_400).
+
+grounding(driving_style(_398,_400)=unsafe) :- 
+     vehicle(_398,_400).
+
+grounding(driving_style(_398,_400)=uncomfortable) :- 
+     vehicle(_398,_400).
+
+grounding(driving_quality(_398,_400)=high) :- 
+     vehicle(_398,_400).
+
+grounding(driving_quality(_398,_400)=medium) :- 
+     vehicle(_398,_400).
+
+grounding(driving_quality(_398,_400)=low) :- 
+     vehicle(_398,_400).
+
+grounding(passenger_comfort(_398,_400)=reducing) :- 
+     vehicle(_398,_400).
+
+grounding(driver_comfort(_398,_400)=reducing) :- 
+     vehicle(_398,_400).
+
+grounding(passenger_satisfaction(_398,_400)=reducing) :- 
+     vehicle(_398,_400).
+
+inputEntity(stop_enter(_136,_138,_140,_142)).
+inputEntity(stop_leave(_136,_138,_140,_142)).
+inputEntity(sharp_turn(_142,_144)=very_sharp).
+inputEntity(abrupt_acceleration(_142,_144)=very_abrupt).
+inputEntity(abrupt_deceleration(_142,_144)=very_abrupt).
+inputEntity(sharp_turn(_142,_144)=sharp).
+inputEntity(abrupt_acceleration(_142,_144)=abrupt).
+inputEntity(abrupt_deceleration(_142,_144)=abrupt).
+inputEntity(passenger_density(_142,_144)=high).
+inputEntity(noise_level(_142,_144)=high).
+inputEntity(internal_temperature(_142,_144)=very_warm).
+inputEntity(internal_temperature(_142,_144)=very_cold).
+inputEntity(internal_temperature_change(_136,_138,_140)).
+inputEntity(noise_level_change(_136,_138,_140)).
+inputEntity(passenger_density_change(_136,_138,_140)).
+inputEntity(punctuality_change(_136,_138,_140)).
+inputEntity(driving_style(_142,_144)=unsafe).
+inputEntity(driving_style(_142,_144)=uncomfortable).
+inputEntity(driving_quality(_142,_144)=high).
+inputEntity(driving_quality(_142,_144)=medium).
+inputEntity(driving_quality(_142,_144)=low).
+
+outputEntity(punctuality(_324,_326)=punctual).
+outputEntity(punctuality(_324,_326)=non_punctual).
+outputEntity(unsafe_driving_style(_324,_326)=true).
+outputEntity(uncomfortable_driving_style(_324,_326)=true).
+outputEntity(high_driving_quality(_324,_326)=true).
+outputEntity(medium_driving_quality(_324,_326)=true).
+outputEntity(low_driving_quality(_324,_326)=true).
+outputEntity(passenger_comfort(_324,_326)=reducing).
+outputEntity(driver_comfort(_324,_326)=reducing).
+outputEntity(passenger_satisfaction(_324,_326)=reducing).
+
+event(stop_enter(_434,_436,_438,_440)).
+event(stop_leave(_434,_436,_438,_440)).
+event(internal_temperature_change(_434,_436,_438)).
+event(noise_level_change(_434,_436,_438)).
+event(passenger_density_change(_434,_436,_438)).
+event(punctuality_change(_434,_436,_438)).
+
+simpleFluent(punctuality(_532,_534)=punctual).
+simpleFluent(punctuality(_532,_534)=non_punctual).
+
+
+sDFluent(sharp_turn(_656,_658)=very_sharp).
+sDFluent(abrupt_acceleration(_656,_658)=very_abrupt).
+sDFluent(abrupt_deceleration(_656,_658)=very_abrupt).
+sDFluent(sharp_turn(_656,_658)=sharp).
+sDFluent(abrupt_acceleration(_656,_658)=abrupt).
+sDFluent(abrupt_deceleration(_656,_658)=abrupt).
+sDFluent(passenger_density(_656,_658)=high).
+sDFluent(noise_level(_656,_658)=high).
+sDFluent(internal_temperature(_656,_658)=very_warm).
+sDFluent(internal_temperature(_656,_658)=very_cold).
+sDFluent(driving_style(_656,_658)=unsafe).
+sDFluent(driving_style(_656,_658)=uncomfortable).
+sDFluent(driving_quality(_656,_658)=high).
+sDFluent(driving_quality(_656,_658)=medium).
+sDFluent(driving_quality(_656,_658)=low).
+sDFluent(unsafe_driving_style(_656,_658)=true).
+sDFluent(uncomfortable_driving_style(_656,_658)=true).
+sDFluent(high_driving_quality(_656,_658)=true).
+sDFluent(medium_driving_quality(_656,_658)=true).
+sDFluent(low_driving_quality(_656,_658)=true).
+sDFluent(passenger_comfort(_656,_658)=reducing).
+sDFluent(driver_comfort(_656,_658)=reducing).
+sDFluent(passenger_satisfaction(_656,_658)=reducing).
+
+index(stop_enter(_796,_850,_852,_854),_796).
+index(stop_leave(_796,_850,_852,_854),_796).
+index(internal_temperature_change(_796,_850,_852),_796).
+index(noise_level_change(_796,_850,_852),_796).
+index(passenger_density_change(_796,_850,_852),_796).
+index(punctuality_change(_796,_850,_852),_796).
+index(punctuality(_796,_856)=punctual,_796).
+index(punctuality(_796,_856)=non_punctual,_796).
+index(sharp_turn(_796,_856)=very_sharp,_796).
+index(abrupt_acceleration(_796,_856)=very_abrupt,_796).
+index(abrupt_deceleration(_796,_856)=very_abrupt,_796).
+index(sharp_turn(_796,_856)=sharp,_796).
+index(abrupt_acceleration(_796,_856)=abrupt,_796).
+index(abrupt_deceleration(_796,_856)=abrupt,_796).
+index(passenger_density(_796,_856)=high,_796).
+index(noise_level(_796,_856)=high,_796).
+index(internal_temperature(_796,_856)=very_warm,_796).
+index(internal_temperature(_796,_856)=very_cold,_796).
+index(driving_style(_796,_856)=unsafe,_796).
+index(driving_style(_796,_856)=uncomfortable,_796).
+index(driving_quality(_796,_856)=high,_796).
+index(driving_quality(_796,_856)=medium,_796).
+index(driving_quality(_796,_856)=low,_796).
+index(unsafe_driving_style(_796,_856)=true,_796).
+index(uncomfortable_driving_style(_796,_856)=true,_796).
+index(high_driving_quality(_796,_856)=true,_796).
+index(medium_driving_quality(_796,_856)=true,_796).
+index(low_driving_quality(_796,_856)=true,_796).
+index(passenger_comfort(_796,_856)=reducing,_796).
+index(driver_comfort(_796,_856)=reducing,_796).
+index(passenger_satisfaction(_796,_856)=reducing,_796).
+
+
+cachingOrder2(_1264, punctuality(_1264,_1266)=non_punctual) :- % level in dependency graph: 1, processing order in component: 1
+     vehicle(_1264,_1266).
+
+cachingOrder2(_1282, punctuality(_1282,_1284)=punctual) :- % level in dependency graph: 1, processing order in component: 2
+     vehicle(_1282,_1284).
+
+cachingOrder2(_1554, passenger_comfort(_1554,_1556)=reducing) :- % level in dependency graph: 2, processing order in component: 1
+     vehicle(_1554,_1556).
+
+cachingOrder2(_1530, driver_comfort(_1530,_1532)=reducing) :- % level in dependency graph: 2, processing order in component: 1
+     vehicle(_1530,_1532).
+
+cachingOrder2(_1874, passenger_satisfaction(_1874,_1876)=reducing) :- % level in dependency graph: 3, processing order in component: 1
+     vehicle(_1874,_1876).
+
+collectGrounds([stop_enter(_1078,_1080,_1096,_1098), stop_leave(_1078,_1080,_1096,_1098), sharp_turn(_1078,_1080)=very_sharp, abrupt_acceleration(_1078,_1080)=very_abrupt, abrupt_deceleration(_1078,_1080)=very_abrupt, sharp_turn(_1078,_1080)=sharp, abrupt_acceleration(_1078,_1080)=abrupt, abrupt_deceleration(_1078,_1080)=abrupt, passenger_density(_1078,_1080)=high, noise_level(_1078,_1080)=high, internal_temperature(_1078,_1080)=very_warm, internal_temperature(_1078,_1080)=very_cold, internal_temperature_change(_1078,_1080,_1096), noise_level_change(_1078,_1080,_1096), passenger_density_change(_1078,_1080,_1096), punctuality_change(_1078,_1080,punctual), punctuality_change(_1078,_1080,non_punctual), driving_style(_1078,_1080)=unsafe, driving_style(_1078,_1080)=uncomfortable, driving_quality(_1078,_1080)=high, driving_quality(_1078,_1080)=medium, driving_quality(_1078,_1080)=low],vehicle(_1078,_1080)).
+
+dgrounded(punctuality(_1314,_1316)=punctual, vehicle(_1314,_1316)).
+dgrounded(punctuality(_1278,_1280)=non_punctual, vehicle(_1278,_1280)).
+dgrounded(passenger_comfort(_1242,_1244)=reducing, vehicle(_1242,_1244)).
+dgrounded(driver_comfort(_1206,_1208)=reducing, vehicle(_1206,_1208)).
+dgrounded(passenger_satisfaction(_1170,_1172)=reducing, vehicle(_1170,_1172)).

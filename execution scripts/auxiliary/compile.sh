@@ -52,7 +52,7 @@ Compiler=..${sep}src${sep}compiler.prolog
 
 if [ -z $dependency_graph ]
 then
-	swipl -l ${Compiler} -g "compileED('${event_description}'),halt." # && echo "Compiled event description: ${event_description}."
+	swipl -l ${Compiler} -g "compileED('${event_description}',$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
 else 
 	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',$events_flag,$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
 	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file # && echo "Dependency graph: ${dependency_graph_png_file}."

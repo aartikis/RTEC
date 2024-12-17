@@ -52,7 +52,7 @@ echo "Definition optimisation: $definition_optimisation"
 compile_command="./auxiliary/compile.sh --event-description=${event_description} "
 [ ! -z $dependency_graph ] && compile_command+="--dependency-graph "
 [ ! -z $dependency_graph_directory ] && compile_command+="--dependency-graph-directory=${dependency_graph_directory} "
-[ -z $include_input ] && compile_command+="--no-events"
+[ -z $include_input ] && compile_command+="--no-events "
 [ ! -z $definition_optimisation ] && compile_command+="--definition-optimisation"
 echo "Executing: $compile_command"
 $compile_command
