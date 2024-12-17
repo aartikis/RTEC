@@ -1,9 +1,9 @@
 #!/bin/bash
 
-Agent_List='1000' #'1000 2000 4000 8000'
+Agent_List='300' #'1000 2000 4000 8000'
 Seed_List='1' #'1 2 3 4 5'
 Start=0
-End=100
+End=10000
 
 
 for Agent in $Agent_List; do

@@ -28,8 +28,14 @@ for arg in $@ ; do
     --no-events)
       no_events="true"
       ;;
+    --definition-optimisation)
+      definition_optimisation="true"
+      ;;
   esac
 done
+
+[ -z $no_events ] && events_flag="withEvents" || events_flag="withoutEvents" 
+[ -z $definition_optimisation ] && optimisation_flag="withoutOptimisation" || optimisation_flag="withOptimisation" 
 
 [ -z $event_description ] && exit_func "noEventDescriptionCompiler"
 #AppPath=../examples/${Application}
@@ -47,12 +53,8 @@ Compiler=..${sep}src${sep}compiler.prolog
 if [ -z $dependency_graph ]
 then
 	swipl -l ${Compiler} -g "compileED('${event_description}'),halt." # && echo "Compiled event description: ${event_description}."
-elif [ -z ${no_events} ]
-then
-	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',withEvents),halt." # && echo "Compiled event description: ${event_description}."
+else 
+	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',$events_flag,$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
 	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file # && echo "Dependency graph: ${dependency_graph_png_file}."
-else
-	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',withoutEvents),halt." # && echo "Compiled event description: ${event_description}."
-	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file # && echo "Dependency graph without input entities: ${dependency_graph_png_file}."
-fi 
+fi
 

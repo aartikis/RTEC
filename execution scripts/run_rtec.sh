@@ -47,11 +47,13 @@ echo "Results directory: $results_directory"
 #printf "Will a dependency graph be produced?: " && [ ! -z $dependency_graph ] && echo "yes" || echo "no" 
 #echo "Dependency graph directory: $dependency_graph_directory"
 #printf "Will the dependency graph include input entities?: " && [ ! -z $include_input ] && echo "yes" || echo "no"
+echo "Definition optimisation: $definition_optimisation"
 
 compile_command="./auxiliary/compile.sh --event-description=${event_description} "
 [ ! -z $dependency_graph ] && compile_command+="--dependency-graph "
 [ ! -z $dependency_graph_directory ] && compile_command+="--dependency-graph-directory=${dependency_graph_directory} "
 [ -z $include_input ] && compile_command+="--no-events"
+[ ! -z $definition_optimisation ] && compile_command+="--definition-optimisation"
 echo "Executing: $compile_command"
 $compile_command
 case $? in 
@@ -64,6 +66,7 @@ case $? in
 	exit_func $?
 	;;
 esac
+
 # if the input mode is fifo and the input providers are not named pipes, 
 # then we write the records of each input provider incrementally, by interpretting each time-stamp as a number of seconds, in a seperate new fifo. 
 [ $input_mode == "fifo" ] && [ ! -p $input_providers ] && start_fifos

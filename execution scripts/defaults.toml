@@ -48,6 +48,7 @@ results_directory = "../examples/toy/results"
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/toy/resources/graphs'
 include_input = false
+definition_optimisation = false
 
 [maritime]
 # Execution Parameters 
@@ -70,6 +71,7 @@ results_directory = "../examples/maritime/results"
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
+definition_optimisation = false
 
 [maritime_allen]
 # Execution Parameters 
@@ -92,6 +94,7 @@ results_directory = "../examples/maritime/results"
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
+definition_optimisation = false
 
 [voting]
 # Execution Parameters 
@@ -114,6 +117,7 @@ results_directory = "../examples/voting/results"
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/voting/resources/graphs'
 include_input = false
+definition_optimisation = false
 
 [netbill]
 # Execution Parameters 
@@ -136,6 +140,7 @@ results_directory = "../examples/netbill/results"
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/netbill/resources/graphs'
 include_input = false
+definition_optimisation = false
 
 [caviar]
 # Execution Parameters 
@@ -158,6 +163,7 @@ results_directory = "../examples/caviar/results"
 dependency_graph_flag = true
 dependency_graph_directory = '../examples/caviar/resources/graphs'
 include_input = true
+definition_optimisation = false
 
 [ctm]
 # Execution Parameters 
@@ -180,4 +186,5 @@ results_directory = "../examples/ctm/results"
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/ctm/resources/graphs'
 include_input = false
+definition_optimisation = false
 

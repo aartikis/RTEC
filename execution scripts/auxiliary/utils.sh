@@ -24,6 +24,7 @@ function get_all_defaults (){
 	[ -z $dependency_graph ] &&  [ `get_default_param $application dependency_graph_flag` == "true" ] && dependency_graph="true" 
 	[ -z $dependency_graph_directory ] && dependency_graph_directory=`get_default_param $application dependency_graph_directory`
 	[ -z $include_input ] &&  [ `get_default_param $application include_input` == "true" ] && include_input="true" 
+	[ -z $definition_optimisation ] &&  [ `get_default_param $application definition_optimisation` == "true" ] && definition_optimisation="true" 
 }
 
 function input_parser (){
@@ -94,6 +95,9 @@ function input_parser (){
             --include-input)
               include_input="true"
               ;;
+            --definition-optimisation)
+              definition_optimisation="true"
+              ;;
             # Utilities
 	    --help)
 	        help
@@ -112,6 +116,7 @@ function set_prolog_command() {
 	# This function is called after compilation. So, the compiled event description is available in the following file:
 	compiled_event_description=${event_description%${sep}*}${sep}compiled_rules.prolog # "%/*" fetches all characters of string until the last occurrence of "/"
 	background_knowledge+=("${compiled_event_description}")
+	# background_knowledge+=("${event_description}")
 	# Construct an RTEC query corresponding to the provided parameters
 	printf -v event_description_files "'%s'," "${background_knowledge[@]}"
 	second_argument="[event_description_files=[${event_description_files%,}]"
