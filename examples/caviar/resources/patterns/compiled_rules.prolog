@@ -1,1142 +1,453 @@
 :- dynamic id/1.
 
-initiatedAt(person(_116)=true, _162, _86, _168) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_162=<_86,_86<_168,
-     \+happensAtIE(disappear(_116),_86).
-
-initiatedAt(person(_116)=true, _162, _86, _168) :-
-     happensAtProcessedIE(_116,start(running(_116)=true),_86),_162=<_86,_86<_168,
-     \+happensAtIE(disappear(_116),_86).
-
-initiatedAt(person(_116)=true, _162, _86, _168) :-
-     happensAtProcessedIE(_116,start(active(_116)=true),_86),_162=<_86,_86<_168,
-     \+happensAtIE(disappear(_116),_86).
-
-initiatedAt(person(_116)=true, _162, _86, _168) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_162=<_86,_86<_168,
-     \+happensAtIE(disappear(_116),_86).
-
-initiatedAt(person(_116)=false, _132, _86, _138) :-
-     happensAtIE(disappear(_116),_86),
-     _132=<_86,
-     _86<_138.
-
-initiatedAt(leaving_object(_116,_118)=true, _202, _86, _208) :-
-     happensAtIE(appear(_118),_86),_202=<_86,_86<_208,
-     holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     holdsAtProcessedSimpleFluent(_116,person(_116)=true,_86),
-     holdsAtProcessedSimpleFluent(_116,closeSymmetric30(_116,_118)=true,_86).
-
-initiatedAt(leaving_object(_116,_118)=false, _134, _86, _140) :-
-     happensAtIE(disappear(_118),_86),
-     _134=<_86,
-     _86<_140.
-
-initiatedAt(close24(_116,_118)=true, _148, _86, _154) :-
-     happensAtProcessedIE(_116,start(distance(_116,_118,24)=true),_86),
-     _148=<_86,
-     _86<_154.
-
-initiatedAt(close25(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-initiatedAt(close25(_116,_118)=true, _148, _86, _154) :-
-     happensAtProcessedIE(_116,start(distance(_116,_118,25)=true),_86),
-     _148=<_86,
-     _86<_154.
-
-initiatedAt(close30(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-initiatedAt(close30(_116,_118)=true, _148, _86, _154) :-
-     happensAtProcessedIE(_116,start(distance(_116,_118,30)=true),_86),
-     _148=<_86,
-     _86<_154.
-
-initiatedAt(close34(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,start(close30(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-initiatedAt(close34(_116,_118)=true, _148, _86, _154) :-
-     happensAtProcessedIE(_116,start(distance(_116,_118,34)=true),_86),
-     _148=<_86,
-     _86<_154.
-
-initiatedAt(closeSymmetric30(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,start(close30(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-initiatedAt(closeSymmetric30(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_118,start(close30(_118,_116)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-initiatedAt(activeOrInactivePerson(_116)=true, _142, _86, _148) :-
-     happensAtProcessedIE(_116,start(active(_116)=true),_86),
-     _142=<_86,
-     _86<_148.
-
-initiatedAt(activeOrInactivePerson(_116)=true, _168, _86, _174) :-
-     happensAtProcessedIE(_116,start(inactive(_116)=true),_86),_168=<_86,_86<_174,
-     happensAtProcessedSimpleFluent(_116,start(person(_116)=true),_86).
-
-initiatedAt(activeOrInactivePerson(_116)=true, _194, _86, _200) :-
-     happensAtProcessedIE(_116,start(inactive(_116)=true),_86),_194=<_86,_86<_200,
-     holdsAtProcessedSimpleFluent(_116,person(_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(person(_116)=true),_86).
-
-initiatedAt(activeOrInactivePerson(_116)=true, _194, _86, _200) :-
-     happensAtProcessedSimpleFluent(_116,start(person(_116)=true),_86),_194=<_86,_86<_200,
-     \+happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     holdsAtProcessedIE(_116,inactive(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _250, _86, _256) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_250=<_86,_86<_256,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _280, _86, _286) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_280=<_86,_86<_286,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _280, _86, _286) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_280=<_86,_86<_286,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _310, _86, _316) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_310=<_86,_86<_316,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _276, _86, _282) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_276=<_86,_86<_282,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _306, _86, _312) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_306=<_86,_86<_312,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _306, _86, _312) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_306=<_86,_86<_312,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _336, _86, _342) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_336=<_86,_86<_342,
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _278, _86, _284) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_278=<_86,_86<_284,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _308, _86, _314) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_308=<_86,_86<_314,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _308, _86, _314) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_308=<_86,_86<_314,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _338, _86, _344) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_338=<_86,_86<_344,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _304, _86, _310) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_304=<_86,_86<_310,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _334, _86, _340) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_334=<_86,_86<_340,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _334, _86, _340) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_334=<_86,_86<_340,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _364, _86, _370) :-
-     happensAtProcessedSimpleFluent(_116,start(activeOrInactivePerson(_116)=true),_86),_364=<_86,_86<_370,
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-initiatedAt(greeting1(_116,_118)=true, _276, _86, _282) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_276=<_86,_86<_282,
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _306, _86, _312) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_306=<_86,_86<_312,
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _306, _86, _312) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_306=<_86,_86<_312,
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _336, _86, _342) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_336=<_86,_86<_342,
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _302, _86, _308) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_302=<_86,_86<_308,
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _332, _86, _338) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_332=<_86,_86<_338,
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _332, _86, _338) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_332=<_86,_86<_338,
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _362, _86, _368) :-
-     happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),_362=<_86,_86<_368,
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _304, _86, _310) :-
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),_304=<_86,_86<_310,
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _334, _86, _340) :-
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),_334=<_86,_86<_340,
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _334, _86, _340) :-
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),_334=<_86,_86<_340,
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _364, _86, _370) :-
-     happensAtProcessedSimpleFluent(_118,start(person(_118)=true),_86),_364=<_86,_86<_370,
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _330, _86, _336) :-
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),_330=<_86,_86<_336,
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _360, _86, _366) :-
-     happensAtProcessedIE(_118,end(running(_118)=true),_86),_360=<_86,_86<_366,
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting1(_116,_118)=true, _360, _86, _366) :-
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),_360=<_86,_86<_366,
-     \+happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     \+holdsAtProcessedIE(_118,running(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,person(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,activeOrInactivePerson(_116)=true,_86).
-
-initiatedAt(greeting2(_116,_118)=true, _198, _86, _204) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_198=<_86,_86<_204,
-     happensAtProcessedSimpleFluent(_118,start(activeOrInactivePerson(_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(close25(_118,_116)=true),_86).
-
-initiatedAt(greeting2(_116,_118)=true, _226, _86, _232) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_226=<_86,_86<_232,
-     happensAtProcessedSimpleFluent(_118,start(activeOrInactivePerson(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,close25(_118,_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(close25(_118,_116)=true),_86).
-
-initiatedAt(greeting2(_116,_118)=true, _224, _86, _230) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_224=<_86,_86<_230,
-     holdsAtProcessedSimpleFluent(_118,activeOrInactivePerson(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(activeOrInactivePerson(_118)=true),_86),
-     happensAtProcessedSimpleFluent(_118,start(close25(_118,_116)=true),_86).
-
-initiatedAt(greeting2(_116,_118)=true, _252, _86, _258) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_252=<_86,_86<_258,
-     holdsAtProcessedSimpleFluent(_118,activeOrInactivePerson(_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(activeOrInactivePerson(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,close25(_118,_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(close25(_118,_116)=true),_86).
-
-initiatedAt(greeting2(_116,_118)=true, _224, _86, _230) :-
-     happensAtProcessedSimpleFluent(_118,start(activeOrInactivePerson(_118)=true),_86),_224=<_86,_86<_230,
-     happensAtProcessedSimpleFluent(_118,start(close25(_118,_116)=true),_86),
-     \+happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     holdsAtProcessedIE(_116,walking(_116)=true,_86).
-
-initiatedAt(greeting2(_116,_118)=true, _252, _86, _258) :-
-     happensAtProcessedSimpleFluent(_118,start(activeOrInactivePerson(_118)=true),_86),_252=<_86,_86<_258,
-     holdsAtProcessedSimpleFluent(_118,close25(_118,_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,end(close25(_118,_116)=true),_86),
-     \+happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     holdsAtProcessedIE(_116,walking(_116)=true,_86).
-
-initiatedAt(greeting2(_116,_118)=true, _250, _86, _256) :-
-     happensAtProcessedSimpleFluent(_118,start(close25(_118,_116)=true),_86),_250=<_86,_86<_256,
-     \+happensAtProcessedSimpleFluent(_118,end(activeOrInactivePerson(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_118,activeOrInactivePerson(_118)=true,_86),
-     \+happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     holdsAtProcessedIE(_116,walking(_116)=true,_86).
-
-initiatedAt(moving(_116,_118)=true, _198, _86, _204) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_198=<_86,_86<_204,
-     happensAtProcessedIE(_118,start(walking(_118)=true),_86),
-     happensAtProcessedSimpleFluent(_116,start(close34(_116,_118)=true),_86).
-
-initiatedAt(moving(_116,_118)=true, _226, _86, _232) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_226=<_86,_86<_232,
-     happensAtProcessedIE(_118,start(walking(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close34(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close34(_116,_118)=true),_86).
-
-initiatedAt(moving(_116,_118)=true, _224, _86, _230) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_224=<_86,_86<_230,
-     holdsAtProcessedIE(_118,walking(_118)=true,_86),
-     \+happensAtProcessedIE(_118,end(walking(_118)=true),_86),
-     happensAtProcessedSimpleFluent(_116,start(close34(_116,_118)=true),_86).
-
-initiatedAt(moving(_116,_118)=true, _252, _86, _258) :-
-     happensAtProcessedIE(_116,start(walking(_116)=true),_86),_252=<_86,_86<_258,
-     holdsAtProcessedIE(_118,walking(_118)=true,_86),
-     \+happensAtProcessedIE(_118,end(walking(_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close34(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close34(_116,_118)=true),_86).
-
-initiatedAt(moving(_116,_118)=true, _224, _86, _230) :-
-     happensAtProcessedIE(_118,start(walking(_118)=true),_86),_224=<_86,_86<_230,
-     happensAtProcessedSimpleFluent(_116,start(close34(_116,_118)=true),_86),
-     \+happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     holdsAtProcessedIE(_116,walking(_116)=true,_86).
-
-initiatedAt(moving(_116,_118)=true, _252, _86, _258) :-
-     happensAtProcessedIE(_118,start(walking(_118)=true),_86),_252=<_86,_86<_258,
-     holdsAtProcessedSimpleFluent(_116,close34(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close34(_116,_118)=true),_86),
-     \+happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     holdsAtProcessedIE(_116,walking(_116)=true,_86).
-
-initiatedAt(moving(_116,_118)=true, _250, _86, _256) :-
-     happensAtProcessedSimpleFluent(_116,start(close34(_116,_118)=true),_86),_250=<_86,_86<_256,
-     \+happensAtProcessedIE(_118,end(walking(_118)=true),_86),
-     holdsAtProcessedIE(_118,walking(_118)=true,_86),
-     \+happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     holdsAtProcessedIE(_116,walking(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _224, _86, _230) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_224=<_86,_86<_230,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _254, _86, _260) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_254=<_86,_86<_260,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _254, _86, _260) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_254=<_86,_86<_260,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _284, _86, _290) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_284=<_86,_86<_290,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _252, _86, _258) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_252=<_86,_86<_258,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _282, _86, _288) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_282=<_86,_86<_288,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _282, _86, _288) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_282=<_86,_86<_288,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _312, _86, _318) :-
-     happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),_312=<_86,_86<_318,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _250, _86, _256) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_250=<_86,_86<_256,
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _280, _86, _286) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_280=<_86,_86<_286,
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _280, _86, _286) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_280=<_86,_86<_286,
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _310, _86, _316) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_310=<_86,_86<_316,
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _278, _86, _284) :-
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),_278=<_86,_86<_284,
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _308, _86, _314) :-
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),_308=<_86,_86<_314,
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _308, _86, _314) :-
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),_308=<_86,_86<_314,
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),
-     holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _224, _86, _230) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_224=<_86,_86<_230,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _254, _86, _260) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_254=<_86,_86<_260,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _254, _86, _260) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_254=<_86,_86<_260,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _284, _86, _290) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_284=<_86,_86<_290,
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _252, _86, _258) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_252=<_86,_86<_258,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _282, _86, _288) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_282=<_86,_86<_288,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _282, _86, _288) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_282=<_86,_86<_288,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _312, _86, _318) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),_312=<_86,_86<_318,
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86).
-
-initiatedAt(fighting(_116,_118)=true, _250, _86, _256) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_250=<_86,_86<_256,
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _280, _86, _286) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_280=<_86,_86<_286,
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _280, _86, _286) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_280=<_86,_86<_286,
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _310, _86, _316) :-
-     happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),_310=<_86,_86<_316,
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _278, _86, _284) :-
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),_278=<_86,_86<_284,
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _308, _86, _314) :-
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),_308=<_86,_86<_314,
-     \+holdsAtProcessedIE(_118,inactive(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-initiatedAt(fighting(_116,_118)=true, _308, _86, _314) :-
-     happensAtProcessedIE(_118,end(inactive(_118)=true),_86),_308=<_86,_86<_314,
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86),
-     \+happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),
-     holdsAtProcessedIE(_118,abrupt(_118)=true,_86).
-
-terminatedAt(close24(_116,_118)=true, _148, _86, _154) :-
-     happensAtProcessedIE(_116,end(distance(_116,_118,24)=true),_86),
-     _148=<_86,
-     _86<_154.
-
-terminatedAt(close25(_116,_118)=true, _176, _86, _182) :-
-     happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),_176=<_86,_86<_182,
-     happensAtProcessedIE(_116,end(distance(_116,_118,25)=true),_86).
-
-terminatedAt(close25(_116,_118)=true, _210, _86, _216) :-
-     happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),_210=<_86,_86<_216,
-     \+holdsAtProcessedIE(_116,distance(_116,_118,25)=true,_86),
-     \+happensAtProcessedIE(_116,start(distance(_116,_118,25)=true),_86).
-
-terminatedAt(close25(_116,_118)=true, _208, _86, _214) :-
-     happensAtProcessedIE(_116,end(distance(_116,_118,25)=true),_86),_208=<_86,_86<_214,
-     \+happensAtProcessedSimpleFluent(_116,start(close24(_116,_118)=true),_86),
-     \+holdsAtProcessedSimpleFluent(_116,close24(_116,_118)=true,_86).
-
-terminatedAt(close30(_116,_118)=true, _176, _86, _182) :-
-     happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),_176=<_86,_86<_182,
-     happensAtProcessedIE(_116,end(distance(_116,_118,30)=true),_86).
-
-terminatedAt(close30(_116,_118)=true, _210, _86, _216) :-
-     happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),_210=<_86,_86<_216,
-     \+holdsAtProcessedIE(_116,distance(_116,_118,30)=true,_86),
-     \+happensAtProcessedIE(_116,start(distance(_116,_118,30)=true),_86).
-
-terminatedAt(close30(_116,_118)=true, _208, _86, _214) :-
-     happensAtProcessedIE(_116,end(distance(_116,_118,30)=true),_86),_208=<_86,_86<_214,
-     \+happensAtProcessedSimpleFluent(_116,start(close25(_116,_118)=true),_86),
-     \+holdsAtProcessedSimpleFluent(_116,close25(_116,_118)=true,_86).
-
-terminatedAt(close34(_116,_118)=true, _176, _86, _182) :-
-     happensAtProcessedSimpleFluent(_116,end(close30(_116,_118)=true),_86),_176=<_86,_86<_182,
-     happensAtProcessedIE(_116,end(distance(_116,_118,34)=true),_86).
-
-terminatedAt(close34(_116,_118)=true, _210, _86, _216) :-
-     happensAtProcessedSimpleFluent(_116,end(close30(_116,_118)=true),_86),_210=<_86,_86<_216,
-     \+holdsAtProcessedIE(_116,distance(_116,_118,34)=true,_86),
-     \+happensAtProcessedIE(_116,start(distance(_116,_118,34)=true),_86).
-
-terminatedAt(close34(_116,_118)=true, _208, _86, _214) :-
-     happensAtProcessedIE(_116,end(distance(_116,_118,34)=true),_86),_208=<_86,_86<_214,
-     \+happensAtProcessedSimpleFluent(_116,start(close30(_116,_118)=true),_86),
-     \+holdsAtProcessedSimpleFluent(_116,close30(_116,_118)=true,_86).
-
-terminatedAt(closeSymmetric30(_116,_118)=true, _174, _86, _180) :-
-     happensAtProcessedSimpleFluent(_116,end(close30(_116,_118)=true),_86),_174=<_86,_86<_180,
-     happensAtProcessedSimpleFluent(_118,end(close30(_118,_116)=true),_86).
-
-terminatedAt(closeSymmetric30(_116,_118)=true, _206, _86, _212) :-
-     happensAtProcessedSimpleFluent(_116,end(close30(_116,_118)=true),_86),_206=<_86,_86<_212,
-     \+holdsAtProcessedSimpleFluent(_118,close30(_118,_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_118,start(close30(_118,_116)=true),_86).
-
-terminatedAt(closeSymmetric30(_116,_118)=true, _206, _86, _212) :-
-     happensAtProcessedSimpleFluent(_118,end(close30(_118,_116)=true),_86),_206=<_86,_86<_212,
-     \+happensAtProcessedSimpleFluent(_116,start(close30(_116,_118)=true),_86),
-     \+holdsAtProcessedSimpleFluent(_116,close30(_116,_118)=true,_86).
-
-terminatedAt(activeOrInactivePerson(_116)=true, _168, _86, _174) :-
-     happensAtProcessedIE(_116,end(active(_116)=true),_86),_168=<_86,_86<_174,
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86).
-
-terminatedAt(activeOrInactivePerson(_116)=true, _198, _86, _204) :-
-     happensAtProcessedIE(_116,end(active(_116)=true),_86),_198=<_86,_86<_204,
-     \+holdsAtProcessedIE(_116,inactive(_116)=true,_86),
-     \+happensAtProcessedIE(_116,start(inactive(_116)=true),_86).
-
-terminatedAt(activeOrInactivePerson(_116)=true, _198, _86, _204) :-
-     happensAtProcessedIE(_116,end(inactive(_116)=true),_86),_198=<_86,_86<_204,
-     \+happensAtProcessedIE(_116,start(active(_116)=true),_86),
-     \+holdsAtProcessedIE(_116,active(_116)=true,_86).
-
-terminatedAt(activeOrInactivePerson(_116)=true, _168, _86, _174) :-
-     happensAtProcessedIE(_116,end(active(_116)=true),_86),_168=<_86,_86<_174,
-     happensAtProcessedSimpleFluent(_116,end(person(_116)=true),_86).
-
-terminatedAt(activeOrInactivePerson(_116)=true, _198, _86, _204) :-
-     happensAtProcessedIE(_116,end(active(_116)=true),_86),_198=<_86,_86<_204,
-     \+holdsAtProcessedSimpleFluent(_116,person(_116)=true,_86),
-     \+happensAtProcessedSimpleFluent(_116,start(person(_116)=true),_86).
-
-terminatedAt(activeOrInactivePerson(_116)=true, _198, _86, _204) :-
-     happensAtProcessedSimpleFluent(_116,end(person(_116)=true),_86),_198=<_86,_86<_204,
-     \+happensAtProcessedIE(_116,start(active(_116)=true),_86),
-     \+holdsAtProcessedIE(_116,active(_116)=true,_86).
-
-terminatedAt(greeting1(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedSimpleFluent(_116,end(activeOrInactivePerson(_116)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(greeting1(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedSimpleFluent(_118,end(person(_118)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(greeting1(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,end(close25(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-terminatedAt(greeting1(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_118,start(running(_118)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(greeting1(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_118,start(abrupt(_118)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(greeting2(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(greeting2(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedSimpleFluent(_118,end(activeOrInactivePerson(_118)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(greeting2(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_118,end(close25(_118,_116)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-terminatedAt(moving(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_116,end(walking(_116)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(moving(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_118,end(walking(_118)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(moving(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,end(close34(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-terminatedAt(fighting(_116,_118)=true, _170, _86, _176) :-
-     happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),_170=<_86,_86<_176,
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86).
-
-terminatedAt(fighting(_116,_118)=true, _200, _86, _206) :-
-     happensAtProcessedIE(_116,end(abrupt(_116)=true),_86),_200=<_86,_86<_206,
-     \+holdsAtProcessedIE(_118,abrupt(_118)=true,_86),
-     \+happensAtProcessedIE(_118,start(abrupt(_118)=true),_86).
-
-terminatedAt(fighting(_116,_118)=true, _200, _86, _206) :-
-     happensAtProcessedIE(_118,end(abrupt(_118)=true),_86),_200=<_86,_86<_206,
-     \+happensAtProcessedIE(_116,start(abrupt(_116)=true),_86),
-     \+holdsAtProcessedIE(_116,abrupt(_116)=true,_86).
-
-terminatedAt(fighting(_116,_118)=true, _146, _86, _152) :-
-     happensAtProcessedSimpleFluent(_116,end(close24(_116,_118)=true),_86),
-     _146=<_86,
-     _86<_152.
-
-terminatedAt(fighting(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_116,start(inactive(_116)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-terminatedAt(fighting(_116,_118)=true, _144, _86, _150) :-
-     happensAtProcessedIE(_118,start(inactive(_118)=true),_86),
-     _144=<_86,
-     _86<_150.
-
-buildFromPoints2(_90, walking(_90)=true) :-
-     id(_90).
-
-buildFromPoints2(_90, active(_90)=true) :-
-     id(_90).
-
-buildFromPoints2(_90, inactive(_90)=true) :-
-     id(_90).
-
-buildFromPoints2(_90, running(_90)=true) :-
-     id(_90).
-
-buildFromPoints2(_90, abrupt(_90)=true) :-
-     id(_90).
-
-points(orientation(_412)=_408).
-
-points(appearance(_412)=_408).
-
-points(coord(_412,_414,_416)=true).
-
-points(walking(_412)=true).
-
-points(active(_412)=true).
-
-points(inactive(_412)=true).
-
-points(running(_412)=true).
-
-points(abrupt(_412)=true).
-
-grounding(appear(_412)) :- 
-     id(_412).
-
-grounding(disappear(_412)) :- 
-     id(_412).
-
-grounding(orientation(_418)=_414) :- 
-     id(_418).
-
-grounding(appearance(_418)=_414) :- 
-     id(_418).
-
-grounding(coord(_418,_420,_422)=_414) :- 
-     id(_418).
-
-grounding(walking(_418)=_414) :- 
-     id(_418).
-
-grounding(active(_418)=_414) :- 
-     id(_418).
-
-grounding(inactive(_418)=_414) :- 
-     id(_418).
-
-grounding(running(_418)=_414) :- 
-     id(_418).
-
-grounding(abrupt(_418)=_414) :- 
-     id(_418).
-
-grounding(close24(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(close25(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(close30(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(close34(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(closeSymmetric30(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(walking(_418)=true) :- 
-     id(_418).
-
-grounding(active(_418)=true) :- 
-     id(_418).
-
-grounding(inactive(_418)=true) :- 
-     id(_418).
-
-grounding(abrupt(_418)=true) :- 
-     id(_418).
-
-grounding(running(_418)=true) :- 
-     id(_418).
-
-grounding(person(_418)=true) :- 
-     id(_418).
-
-grounding(activeOrInactivePerson(_418)=true) :- 
-     id(_418).
-
-grounding(greeting1(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(greeting2(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(leaving_object(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(moving(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-grounding(fighting(_418,_420)=true) :- 
-     id(_418),id(_420),_418@<_420.
-
-inputEntity(walking(_146)=true).
-inputEntity(disappear(_140)).
-inputEntity(running(_146)=true).
-inputEntity(active(_146)=true).
-inputEntity(abrupt(_146)=true).
-inputEntity(appear(_140)).
-inputEntity(inactive(_146)=true).
-inputEntity(distance(_146,_148,_150)=true).
-inputEntity(orientation(_146)=_142).
-inputEntity(appearance(_146)=_142).
-inputEntity(coord(_146,_148,_150)=_142).
-
-outputEntity(person(_268)=true).
-outputEntity(person(_268)=false).
-outputEntity(leaving_object(_268,_270)=true).
-outputEntity(leaving_object(_268,_270)=false).
-outputEntity(close24(_268,_270)=true).
-outputEntity(close25(_268,_270)=true).
-outputEntity(close30(_268,_270)=true).
-outputEntity(close34(_268,_270)=true).
-outputEntity(closeSymmetric30(_268,_270)=true).
-outputEntity(activeOrInactivePerson(_268)=true).
-outputEntity(greeting1(_268,_270)=true).
-outputEntity(greeting2(_268,_270)=true).
-outputEntity(moving(_268,_270)=true).
-outputEntity(fighting(_268,_270)=true).
-
-event(disappear(_402)).
-event(appear(_402)).
-
-simpleFluent(person(_476)=true).
-simpleFluent(person(_476)=false).
-simpleFluent(leaving_object(_476,_478)=true).
-simpleFluent(leaving_object(_476,_478)=false).
-simpleFluent(close24(_476,_478)=true).
-simpleFluent(close25(_476,_478)=true).
-simpleFluent(close30(_476,_478)=true).
-simpleFluent(close34(_476,_478)=true).
-simpleFluent(closeSymmetric30(_476,_478)=true).
-simpleFluent(activeOrInactivePerson(_476)=true).
-simpleFluent(greeting1(_476,_478)=true).
-simpleFluent(greeting2(_476,_478)=true).
-simpleFluent(moving(_476,_478)=true).
-simpleFluent(fighting(_476,_478)=true).
-
-
-sDFluent(walking(_672)=true).
-sDFluent(running(_672)=true).
-sDFluent(active(_672)=true).
-sDFluent(abrupt(_672)=true).
-sDFluent(inactive(_672)=true).
-sDFluent(distance(_672,_674,_676)=true).
-sDFluent(orientation(_672)=_668).
-sDFluent(appearance(_672)=_668).
-sDFluent(coord(_672,_674,_676)=_668).
-
-index(disappear(_728),_728).
-index(appear(_728),_728).
-index(person(_728)=true,_728).
-index(person(_728)=false,_728).
-index(leaving_object(_728,_788)=true,_728).
-index(leaving_object(_728,_788)=false,_728).
-index(close24(_728,_788)=true,_728).
-index(close25(_728,_788)=true,_728).
-index(close30(_728,_788)=true,_728).
-index(close34(_728,_788)=true,_728).
-index(closeSymmetric30(_728,_788)=true,_728).
-index(activeOrInactivePerson(_728)=true,_728).
-index(greeting1(_728,_788)=true,_728).
-index(greeting2(_728,_788)=true,_728).
-index(moving(_728,_788)=true,_728).
-index(fighting(_728,_788)=true,_728).
-index(walking(_728)=true,_728).
-index(running(_728)=true,_728).
-index(active(_728)=true,_728).
-index(abrupt(_728)=true,_728).
-index(inactive(_728)=true,_728).
-index(distance(_728,_788,_790)=true,_728).
-index(orientation(_728)=_782,_728).
-index(appearance(_728)=_782,_728).
-index(coord(_728,_788,_790)=_782,_728).
-
-
-cachingOrder2(_1152, person(_1152)=true) :- % level in dependency graph: 1, processing order in component: 1
-     id(_1152).
-
-cachingOrder2(_1112, close24(_1112,_1114)=true) :- % level in dependency graph: 1, processing order in component: 1
-     id(_1112),id(_1114),_1112@<_1114.
-
-cachingOrder2(_1446, close25(_1446,_1448)=true) :- % level in dependency graph: 2, processing order in component: 1
-     id(_1446),id(_1448),_1446@<_1448.
-
-cachingOrder2(_1424, activeOrInactivePerson(_1424)=true) :- % level in dependency graph: 2, processing order in component: 1
-     id(_1424).
-
-cachingOrder2(_1400, fighting(_1400,_1402)=true) :- % level in dependency graph: 2, processing order in component: 1
-     id(_1400),id(_1402),_1400@<_1402.
-
-cachingOrder2(_1852, close30(_1852,_1854)=true) :- % level in dependency graph: 3, processing order in component: 1
-     id(_1852),id(_1854),_1852@<_1854.
-
-cachingOrder2(_1828, greeting1(_1828,_1830)=true) :- % level in dependency graph: 3, processing order in component: 1
-     id(_1828),id(_1830),_1828@<_1830.
-
-cachingOrder2(_1804, greeting2(_1804,_1806)=true) :- % level in dependency graph: 3, processing order in component: 1
-     id(_1804),id(_1806),_1804@<_1806.
-
-cachingOrder2(_2272, close34(_2272,_2274)=true) :- % level in dependency graph: 4, processing order in component: 1
-     id(_2272),id(_2274),_2272@<_2274.
-
-cachingOrder2(_2248, closeSymmetric30(_2248,_2250)=true) :- % level in dependency graph: 4, processing order in component: 1
-     id(_2248),id(_2250),_2248@<_2250.
-
-cachingOrder2(_2602, leaving_object(_2602,_2604)=true) :- % level in dependency graph: 5, processing order in component: 1
-     id(_2602),id(_2604),_2602@<_2604.
-
-cachingOrder2(_2560, moving(_2560,_2562)=true) :- % level in dependency graph: 5, processing order in component: 1
-     id(_2560),id(_2562),_2560@<_2562.
-
-collectGrounds([walking(_744)=true, walking(_744)=true, disappear(_744), running(_744)=true, running(_744)=true, active(_744)=true, active(_744)=true, abrupt(_744)=true, abrupt(_744)=true, appear(_744), inactive(_744)=true, inactive(_744)=true, orientation(_744)=_758, appearance(_744)=_758, coord(_744,_764,_766)=_758],id(_744)).
-
-dgrounded(person(_1426)=true, id(_1426)).
-dgrounded(leaving_object(_1370,_1372)=true, id(_1370)).
-dgrounded(leaving_object(_1370,_1372)=true, id(_1372)).
-dgrounded(close24(_1314,_1316)=true, id(_1314)).
-dgrounded(close24(_1314,_1316)=true, id(_1316)).
-dgrounded(close25(_1258,_1260)=true, id(_1258)).
-dgrounded(close25(_1258,_1260)=true, id(_1260)).
-dgrounded(close30(_1202,_1204)=true, id(_1202)).
-dgrounded(close30(_1202,_1204)=true, id(_1204)).
-dgrounded(close34(_1146,_1148)=true, id(_1146)).
-dgrounded(close34(_1146,_1148)=true, id(_1148)).
-dgrounded(closeSymmetric30(_1090,_1092)=true, id(_1090)).
-dgrounded(closeSymmetric30(_1090,_1092)=true, id(_1092)).
-dgrounded(activeOrInactivePerson(_1058)=true, id(_1058)).
-dgrounded(greeting1(_1002,_1004)=true, id(_1002)).
-dgrounded(greeting1(_1002,_1004)=true, id(_1004)).
-dgrounded(greeting2(_946,_948)=true, id(_946)).
-dgrounded(greeting2(_946,_948)=true, id(_948)).
-dgrounded(moving(_890,_892)=true, id(_890)).
-dgrounded(moving(_890,_892)=true, id(_892)).
-dgrounded(fighting(_834,_836)=true, id(_834)).
-dgrounded(fighting(_834,_836)=true, id(_836)).
+initiatedAt(person(_112)=true, _158, _82, _164) :-
+     happensAtProcessedIE(_112,start(walking(_112)=true),_82),_158=<_82,_82<_164,
+     \+happensAtIE(disappear(_112),_82).
+
+initiatedAt(person(_112)=true, _158, _82, _164) :-
+     happensAtProcessedIE(_112,start(running(_112)=true),_82),_158=<_82,_82<_164,
+     \+happensAtIE(disappear(_112),_82).
+
+initiatedAt(person(_112)=true, _158, _82, _164) :-
+     happensAtProcessedIE(_112,start(active(_112)=true),_82),_158=<_82,_82<_164,
+     \+happensAtIE(disappear(_112),_82).
+
+initiatedAt(person(_112)=true, _158, _82, _164) :-
+     happensAtProcessedIE(_112,start(abrupt(_112)=true),_82),_158=<_82,_82<_164,
+     \+happensAtIE(disappear(_112),_82).
+
+initiatedAt(person(_112)=false, _128, _82, _134) :-
+     happensAtIE(disappear(_112),_82),
+     _128=<_82,
+     _82<_134.
+
+initiatedAt(leaving_object(_112,_114)=true, _198, _82, _204) :-
+     happensAtIE(appear(_114),_82),_198=<_82,_82<_204,
+     holdsAtProcessedIE(_114,inactive(_114)=true,_82),
+     holdsAtProcessedSimpleFluent(_112,person(_112)=true,_82),
+     holdsAtProcessedSDFluent(_112,closeSymmetric_30(_112,_114)=true,_82).
+
+initiatedAt(leaving_object(_112,_114)=false, _130, _82, _136) :-
+     happensAtIE(disappear(_114),_82),
+     _130=<_82,
+     _82<_136.
+
+initiatedAt(meeting(_112,_114)=true, _182, _82, _188) :-
+     happensAtProcessedSDFluent(_112,start(greeting1(_112,_114)=true),_82),_182=<_82,_82<_188,
+     \+happensAtIE(disappear(_112),_82),
+     \+happensAtIE(disappear(_114),_82).
+
+initiatedAt(meeting(_112,_114)=true, _182, _82, _188) :-
+     happensAtProcessedSDFluent(_112,start(greeting2(_112,_114)=true),_82),_182=<_82,_82<_188,
+     \+happensAtIE(disappear(_112),_82),
+     \+happensAtIE(disappear(_114),_82).
+
+initiatedAt(meeting(_112,_114)=false, _140, _82, _146) :-
+     happensAtProcessedIE(_112,start(running(_112)=true),_82),
+     _140=<_82,
+     _82<_146.
+
+initiatedAt(meeting(_112,_114)=false, _140, _82, _146) :-
+     happensAtProcessedIE(_114,start(running(_114)=true),_82),
+     _140=<_82,
+     _82<_146.
+
+initiatedAt(meeting(_112,_114)=false, _140, _82, _146) :-
+     happensAtProcessedIE(_112,start(abrupt(_112)=true),_82),
+     _140=<_82,
+     _82<_146.
+
+initiatedAt(meeting(_112,_114)=false, _140, _82, _146) :-
+     happensAtProcessedIE(_114,start(abrupt(_114)=true),_82),
+     _140=<_82,
+     _82<_146.
+
+initiatedAt(meeting(_112,_114)=false, _142, _82, _148) :-
+     happensAtProcessedSDFluent(_112,start(close_34(_112,_114)=false),_82),
+     _142=<_82,
+     _82<_148.
+
+initiatedAt(meeting(_112,_114)=false, _130, _82, _136) :-
+     happensAtIE(disappear(_112),_82),
+     _130=<_82,
+     _82<_136.
+
+initiatedAt(meeting(_112,_114)=false, _130, _82, _136) :-
+     happensAtIE(disappear(_114),_82),
+     _130=<_82,
+     _82<_136.
+
+holdsForSDFluent(close_24(_112,_114)=true,_82) :-
+     holdsForProcessedIE(_112,distance(_112,_114)=true,_82).
+
+holdsForSDFluent(close_25(_112,_114)=true,_82) :-
+     holdsForProcessedSDFluent(_112,close_24(_112,_114)=true,_132),
+     holdsForProcessedIE(_112,distance(_112,_114,25)=true,_152),
+     union_all([_132,_152],_82).
+
+holdsForSDFluent(close_30(_112,_114)=true,_82) :-
+     holdsForProcessedSDFluent(_112,close_25(_112,_114)=true,_132),
+     holdsForProcessedIE(_112,distance(_112,_114,30)=true,_152),
+     union_all([_132,_152],_82).
+
+holdsForSDFluent(close_34(_112,_114)=true,_82) :-
+     holdsForProcessedSDFluent(_112,close_30(_112,_114)=true,_132),
+     holdsForProcessedIE(_112,distance(_112,_114,34)=true,_152),
+     union_all([_132,_152],_82).
+
+holdsForSDFluent(close_34(_112,_114)=false,_82) :-
+     holdsForProcessedSDFluent(_112,close_34(_112,_114)=true,_132),
+     complement_all([_132],_82).
+
+holdsForSDFluent(closeSymmetric_30(_112,_114)=true,_82) :-
+     holdsForProcessedSDFluent(_112,close_30(_112,_114)=true,_132),
+     holdsForProcessedSDFluent(_114,close_30(_114,_112)=true,_150),
+     union_all([_132,_150],_82).
+
+holdsForSDFluent(greeting1(_112,_114)=true,_82) :-
+     holdsForProcessedSDFluent(_112,activeOrInactivePerson(_112)=true,_130),
+     \+_130=[],
+     holdsForProcessedSimpleFluent(_114,person(_114)=true,_156),
+     \+_156=[],
+     holdsForProcessedSDFluent(_112,close_25(_112,_114)=true,_184),
+     \+_184=[],
+     intersect_all([_130,_184,_156],_218),
+     \+_218=[],
+     !,
+     holdsForProcessedIE(_114,running(_114)=true,_244),
+     holdsForProcessedIE(_114,abrupt(_114)=true,_260),
+     relative_complement_all(_218,[_244,_260],_82).
+
+holdsForSDFluent(greeting1(_106,_108)=true,[]).
+
+holdsForSDFluent(greeting2(_112,_114)=true,_82) :-
+     holdsForProcessedIE(_112,walking(_112)=true,_130),
+     \+_130=[],
+     holdsForProcessedSDFluent(_114,activeOrInactivePerson(_114)=true,_156),
+     \+_156=[],
+     holdsForProcessedSDFluent(_114,close_25(_114,_112)=true,_184),
+     \+_184=[],
+     !,
+     intersect_all([_130,_156,_184],_82).
+
+holdsForSDFluent(greeting2(_106,_108)=true,[]).
+
+holdsForSDFluent(activeOrInactivePerson(_112)=true,_82) :-
+     holdsForProcessedIE(_112,active(_112)=true,_128),
+     holdsForProcessedIE(_112,inactive(_112)=true,_144),
+     holdsForProcessedSimpleFluent(_112,person(_112)=true,_160),
+     intersect_all([_144,_160],_178),
+     union_all([_128,_178],_82).
+
+holdsForSDFluent(moving(_112,_114)=true,_82) :-
+     holdsForProcessedIE(_112,walking(_112)=true,_130),
+     holdsForProcessedIE(_114,walking(_114)=true,_146),
+     intersect_all([_130,_146],_164),
+     \+_164=[],
+     holdsForProcessedSDFluent(_112,close_34(_112,_114)=true,_192),
+     \+_192=[],
+     !,
+     intersect_all([_164,_192],_82).
+
+holdsForSDFluent(moving(_106,_108)=true,[]).
+
+holdsForSDFluent(fighting(_112,_114)=true,_82) :-
+     holdsForProcessedIE(_112,abrupt(_112)=true,_130),
+     holdsForProcessedIE(_114,abrupt(_114)=true,_146),
+     union_all([_130,_146],_164),
+     \+_164=[],
+     holdsForProcessedSDFluent(_112,close_34(_112,_114)=true,_192),
+     \+_192=[],
+     intersect_all([_164,_192],_220),
+     \+_220=[],
+     !,
+     holdsForProcessedIE(_112,inactive(_112)=true,_246),
+     holdsForProcessedIE(_114,inactive(_114)=true,_262),
+     union_all([_246,_262],_280),
+     relative_complement_all(_220,[_280],_82).
+
+holdsForSDFluent(fighting(_106,_108)=true,[]).
+
+buildFromPoints2(_86, walking(_86)=true) :-
+     id(_86).
+
+buildFromPoints2(_86, active(_86)=true) :-
+     id(_86).
+
+buildFromPoints2(_86, inactive(_86)=true) :-
+     id(_86).
+
+buildFromPoints2(_86, running(_86)=true) :-
+     id(_86).
+
+buildFromPoints2(_86, abrupt(_86)=true) :-
+     id(_86).
+
+points(orientation(_380)=_376).
+
+points(appearance(_380)=_376).
+
+points(coord(_380,_382,_384)=true).
+
+points(walking(_380)=true).
+
+points(active(_380)=true).
+
+points(inactive(_380)=true).
+
+points(running(_380)=true).
+
+points(abrupt(_380)=true).
+
+grounding(appear(_380)) :- 
+     id(_380).
+
+grounding(disappear(_380)) :- 
+     id(_380).
+
+grounding(orientation(_386)=_382) :- 
+     id(_386).
+
+grounding(appearance(_386)=_382) :- 
+     id(_386).
+
+grounding(coord(_386,_388,_390)=_382) :- 
+     id(_386).
+
+grounding(walking(_386)=_382) :- 
+     id(_386).
+
+grounding(active(_386)=_382) :- 
+     id(_386).
+
+grounding(inactive(_386)=_382) :- 
+     id(_386).
+
+grounding(running(_386)=_382) :- 
+     id(_386).
+
+grounding(abrupt(_386)=_382) :- 
+     id(_386).
+
+grounding(close_24(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(close_25(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(close_30(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(close_34(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(close_34(_386,_388)=false) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(closeSymmetric_30(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(walking(_386)=true) :- 
+     id(_386).
+
+grounding(active(_386)=true) :- 
+     id(_386).
+
+grounding(inactive(_386)=true) :- 
+     id(_386).
+
+grounding(abrupt(_386)=true) :- 
+     id(_386).
+
+grounding(running(_386)=true) :- 
+     id(_386).
+
+grounding(person(_386)=true) :- 
+     id(_386).
+
+grounding(activeOrInactivePerson(_386)=true) :- 
+     id(_386).
+
+grounding(greeting1(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(greeting2(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(leaving_object(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(meeting(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(moving(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+grounding(fighting(_386,_388)=true) :- 
+     id(_386),id(_388),_386@<_388.
+
+inputEntity(walking(_148)=true).
+inputEntity(disappear(_142)).
+inputEntity(running(_148)=true).
+inputEntity(active(_148)=true).
+inputEntity(abrupt(_148)=true).
+inputEntity(appear(_142)).
+inputEntity(inactive(_148)=true).
+inputEntity(distance(_148,_150)=true).
+inputEntity(distance(_148,_150,_152)=true).
+inputEntity(orientation(_148)=_144).
+inputEntity(appearance(_148)=_144).
+inputEntity(coord(_148,_150,_152)=_144).
+
+outputEntity(person(_282)=true).
+outputEntity(person(_282)=false).
+outputEntity(leaving_object(_282,_284)=true).
+outputEntity(leaving_object(_282,_284)=false).
+outputEntity(meeting(_282,_284)=true).
+outputEntity(meeting(_282,_284)=false).
+outputEntity(close_24(_282,_284)=true).
+outputEntity(close_25(_282,_284)=true).
+outputEntity(close_30(_282,_284)=true).
+outputEntity(close_34(_282,_284)=true).
+outputEntity(close_34(_282,_284)=false).
+outputEntity(closeSymmetric_30(_282,_284)=true).
+outputEntity(greeting1(_282,_284)=true).
+outputEntity(greeting2(_282,_284)=true).
+outputEntity(activeOrInactivePerson(_282)=true).
+outputEntity(moving(_282,_284)=true).
+outputEntity(fighting(_282,_284)=true).
+
+event(disappear(_440)).
+event(appear(_440)).
+
+simpleFluent(person(_520)=true).
+simpleFluent(person(_520)=false).
+simpleFluent(leaving_object(_520,_522)=true).
+simpleFluent(leaving_object(_520,_522)=false).
+simpleFluent(meeting(_520,_522)=true).
+simpleFluent(meeting(_520,_522)=false).
+
+
+sDFluent(close_24(_680,_682)=true).
+sDFluent(close_25(_680,_682)=true).
+sDFluent(close_30(_680,_682)=true).
+sDFluent(close_34(_680,_682)=true).
+sDFluent(close_34(_680,_682)=false).
+sDFluent(closeSymmetric_30(_680,_682)=true).
+sDFluent(greeting1(_680,_682)=true).
+sDFluent(greeting2(_680,_682)=true).
+sDFluent(activeOrInactivePerson(_680)=true).
+sDFluent(moving(_680,_682)=true).
+sDFluent(fighting(_680,_682)=true).
+sDFluent(walking(_680)=true).
+sDFluent(running(_680)=true).
+sDFluent(active(_680)=true).
+sDFluent(abrupt(_680)=true).
+sDFluent(inactive(_680)=true).
+sDFluent(distance(_680,_682)=true).
+sDFluent(distance(_680,_682,_684)=true).
+sDFluent(orientation(_680)=_676).
+sDFluent(appearance(_680)=_676).
+sDFluent(coord(_680,_682,_684)=_676).
+
+index(disappear(_808),_808).
+index(appear(_808),_808).
+index(person(_808)=true,_808).
+index(person(_808)=false,_808).
+index(leaving_object(_808,_874)=true,_808).
+index(leaving_object(_808,_874)=false,_808).
+index(meeting(_808,_874)=true,_808).
+index(meeting(_808,_874)=false,_808).
+index(close_24(_808,_874)=true,_808).
+index(close_25(_808,_874)=true,_808).
+index(close_30(_808,_874)=true,_808).
+index(close_34(_808,_874)=true,_808).
+index(close_34(_808,_874)=false,_808).
+index(closeSymmetric_30(_808,_874)=true,_808).
+index(greeting1(_808,_874)=true,_808).
+index(greeting2(_808,_874)=true,_808).
+index(activeOrInactivePerson(_808)=true,_808).
+index(moving(_808,_874)=true,_808).
+index(fighting(_808,_874)=true,_808).
+index(walking(_808)=true,_808).
+index(running(_808)=true,_808).
+index(active(_808)=true,_808).
+index(abrupt(_808)=true,_808).
+index(inactive(_808)=true,_808).
+index(distance(_808,_874)=true,_808).
+index(distance(_808,_874,_876)=true,_808).
+index(orientation(_808)=_868,_808).
+index(appearance(_808)=_868,_808).
+index(coord(_808,_874,_876)=_868,_808).
+
+
+cachingOrder2(_1274, person(_1274)=true) :- % level in dependency graph: 1, processing order in component: 1
+     id(_1274).
+
+cachingOrder2(_1234, close_24(_1234,_1236)=true) :- % level in dependency graph: 1, processing order in component: 1
+     id(_1234),id(_1236),_1234@<_1236.
+
+cachingOrder2(_1550, close_25(_1550,_1552)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_1550),id(_1552),_1550@<_1552.
+
+cachingOrder2(_1528, activeOrInactivePerson(_1528)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_1528).
+
+cachingOrder2(_1854, close_30(_1854,_1856)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_1854),id(_1856),_1854@<_1856.
+
+cachingOrder2(_1830, greeting1(_1830,_1832)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_1830),id(_1832),_1830@<_1832.
+
+cachingOrder2(_1806, greeting2(_1806,_1808)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_1806),id(_1808),_1806@<_1808.
+
+cachingOrder2(_2280, close_34(_2280,_2282)=true) :- % level in dependency graph: 4, processing order in component: 1
+     id(_2280),id(_2282),_2280@<_2282.
+
+cachingOrder2(_2298, close_34(_2298,_2300)=false) :- % level in dependency graph: 4, processing order in component: 2
+     id(_2298),id(_2300),_2298@<_2300.
+
+cachingOrder2(_2256, closeSymmetric_30(_2256,_2258)=true) :- % level in dependency graph: 4, processing order in component: 1
+     id(_2256),id(_2258),_2256@<_2258.
+
+cachingOrder2(_2808, leaving_object(_2808,_2810)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2808),id(_2810),_2808@<_2810.
+
+cachingOrder2(_2766, meeting(_2766,_2768)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2766),id(_2768),_2766@<_2768.
+
+cachingOrder2(_2724, moving(_2724,_2726)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2724),id(_2726),_2724@<_2726.
+
+cachingOrder2(_2700, fighting(_2700,_2702)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2700),id(_2702),_2700@<_2702.
+
+collectGrounds([walking(_752)=true, walking(_752)=true, disappear(_752), running(_752)=true, running(_752)=true, active(_752)=true, active(_752)=true, abrupt(_752)=true, abrupt(_752)=true, appear(_752), inactive(_752)=true, inactive(_752)=true, orientation(_752)=_766, appearance(_752)=_766, coord(_752,_772,_774)=_766],id(_752)).
+
+dgrounded(person(_1552)=true, id(_1552)).
+dgrounded(leaving_object(_1496,_1498)=true, id(_1496)).
+dgrounded(leaving_object(_1496,_1498)=true, id(_1498)).
+dgrounded(meeting(_1440,_1442)=true, id(_1440)).
+dgrounded(meeting(_1440,_1442)=true, id(_1442)).
+dgrounded(close_24(_1384,_1386)=true, id(_1384)).
+dgrounded(close_24(_1384,_1386)=true, id(_1386)).
+dgrounded(close_25(_1328,_1330)=true, id(_1328)).
+dgrounded(close_25(_1328,_1330)=true, id(_1330)).
+dgrounded(close_30(_1272,_1274)=true, id(_1272)).
+dgrounded(close_30(_1272,_1274)=true, id(_1274)).
+dgrounded(close_34(_1216,_1218)=true, id(_1216)).
+dgrounded(close_34(_1216,_1218)=true, id(_1218)).
+dgrounded(close_34(_1160,_1162)=false, id(_1160)).
+dgrounded(close_34(_1160,_1162)=false, id(_1162)).
+dgrounded(closeSymmetric_30(_1104,_1106)=true, id(_1104)).
+dgrounded(closeSymmetric_30(_1104,_1106)=true, id(_1106)).
+dgrounded(greeting1(_1048,_1050)=true, id(_1048)).
+dgrounded(greeting1(_1048,_1050)=true, id(_1050)).
+dgrounded(greeting2(_992,_994)=true, id(_992)).
+dgrounded(greeting2(_992,_994)=true, id(_994)).
+dgrounded(activeOrInactivePerson(_960)=true, id(_960)).
+dgrounded(moving(_904,_906)=true, id(_904)).
+dgrounded(moving(_904,_906)=true, id(_906)).
+dgrounded(fighting(_848,_850)=true, id(_848)).
+dgrounded(fighting(_848,_850)=true, id(_850)).

@@ -25,34 +25,68 @@ NOTE:
  *		  CLOSE 		*
  ****************************************/
 
-holdsFor(close(Id1,Id2,24)=true, I) :-
-	holdsFor(distance(Id1,Id2,24)=true, I).
+holdsFor(close_24(Id1,Id2)=true, I) :-
+	holdsFor(distance(Id1,Id2)=true, I).
 
-holdsFor(close(Id1,Id2,25)=true, I) :-
-	holdsFor(close(Id1,Id2,24)=true, I1),
+holdsFor(close_25(Id1,Id2)=true, I) :-
+	holdsFor(close_24(Id1,Id2)=true, I1),
 	holdsFor(distance(Id1,Id2,25)=true, I2),
 	union_all([I1,I2], I).
 
-holdsFor(close(Id1,Id2,30)=true, I) :-
-	holdsFor(close(Id1,Id2,25)=true, I1),
+holdsFor(close_30(Id1,Id2)=true, I) :-
+	holdsFor(close_25(Id1,Id2)=true, I1),
 	holdsFor(distance(Id1,Id2,30)=true, I2),
 	union_all([I1,I2], I).
 
-holdsFor(close(Id1,Id2,34)=true, I) :-
-	holdsFor(close(Id1,Id2,30)=true, I1),
+holdsFor(close_34(Id1,Id2)=true, I) :-
+	holdsFor(close_30(Id1,Id2)=true, I1),
 	holdsFor(distance(Id1,Id2,34)=true, I2),
 	union_all([I1,I2], I).
 
-holdsFor(close(Id1,Id2,Threshold)=false, I) :-
-	holdsFor(close(Id1,Id2,Threshold)=true, I1),
+% we don't need the close(_,_)=false for values 24, 25 and 30
+% as they are not used anywhere
+%
+%holdsFor(close_24(Id1,Id2)=false, I) :-
+	%holdsFor(close_24(Id1,Id2)=true, I1),
+	%complement_all([I1], I).
+
+%holdsFor(close_25(Id1,Id2)=false, I) :-
+	%holdsFor(close_25(Id1,Id2)=true, I1),
+	%complement_all([I1], I).
+
+%holdsFor(close_30(Id1,Id2)=false, I) :-
+	%holdsFor(close_30(Id1,Id2)=true, I1),
+	%complement_all([I1], I).
+
+holdsFor(close_34(Id1,Id2)=false, I) :-
+	holdsFor(close_34(Id1,Id2)=true, I1),
 	complement_all([I1], I).
 
 % this is a variation of close 
 
-holdsFor(closeSymmetric(Id1,Id2,Threshold)=true, I) :-
-	holdsFor(close(Id1,Id2,Threshold)=true, I1),
-	holdsFor(close(Id2,Id1,Threshold)=true, I2),
+% Similar to the above we only need
+%  closeSymmetric for value 30
+%
+%holdsFor(closeSymmetric_24(Id1,Id2)=true, I) :-
+	%holdsFor(close_24(Id1,Id2)=true, I1),
+	%holdsFor(close_24(Id2,Id1)=true, I2),
+	%union_all([I1,I2], I).
+
+%holdsFor(closeSymmetric_25(Id1,Id2)=true, I) :-
+	%holdsFor(close_25(Id1,Id2)=true, I1),
+	%holdsFor(close_25(Id2,Id1)=true, I2),
+	%union_all([I1,I2], I).
+
+%holdsFor(closeSymmetric_34(Id1,Id2)=true, I) :-
+    %holdsFor(close_34(Id1,Id2)=true, I1),
+    %holdsFor(close_34(Id2,Id1)=true, I2),
+    %union_all([I1,I2], I).
+
+holdsFor(closeSymmetric_30(Id1,Id2)=true, I) :-
+	holdsFor(close_30(Id1,Id2)=true, I1),
+	holdsFor(close_30(Id2,Id1)=true, I2),
 	union_all([I1,I2], I).
+
 
 
 /****************************************************************
@@ -91,7 +125,7 @@ initiatedAt(leaving_object(Person,Object)=true, T) :-
 	holdsAt(person(Person)=true, T),
 	% leaving_object is not symmetric in the pair of ids
 	% and thus we need closeSymmetric here as opposed to close 
-	holdsAt(closeSymmetric(Person,Object,30)=true, T).
+	holdsAt(closeSymmetric_30(Person, Object)=true, T).
 
 % ----- terminate leaving_object: pick up object
 
@@ -124,7 +158,7 @@ holdsFor(greeting1(P1,P2)=true, I) :-
 	holdsFor(person(P2)=true, IP2),
 	% optional optimisation check	
 	\+ IP2=[],
-	holdsFor(close(P1,P2,25)=true, IC),
+	holdsFor(close_25(P1,P2)=true, IC),
 	% optional optimisation check
 	\+ IC=[],  
 	intersect_all([IAI, IC, IP2], ITemp),
@@ -148,7 +182,7 @@ holdsFor(greeting2(P1,P2)=true, I) :-
 	holdsFor(activeOrInactivePerson(P2)=true, IAI2),
 	% optional optimisation check
 	\+ IAI2=[],
-	holdsFor(close(P2,P1,25)=true, IC),
+	holdsFor(close_25(P2,P1)=true, IC),
 	% optional optimisation check	
 	\+ IC=[], !,
 	intersect_all([IW1, IAI2, IC], I).
@@ -184,7 +218,7 @@ initiatedAt(meeting(_P1,P2)=false, T) :-
 
 % move away from each other
 initiatedAt(meeting(P1,P2)=false, T) :-
-	happensAt(start(close(P1,P2,34)=false), T).
+	happensAt(start(close_34(P1,P2)=false), T).
 
 initiatedAt(meeting(P1,_P2)=false, T) :-
         happensAt(disappear(P1),T).
@@ -202,7 +236,7 @@ holdsFor(moving(P1,P2)=true, MI) :-
 	intersect_all([WP1,WP2], WI),
 	% optional optimisation check
 	\+ WI=[], 
-	holdsFor(close(P1,P2,34)=true, CI),
+	holdsFor(close_34(P1,P2)=true, CI),
 	% optional optimisation check
 	\+ CI=[], !,
 	intersect_all([WI,CI], MI).
@@ -221,7 +255,7 @@ holdsFor(fighting(P1,P2)=true, FightingI) :-
 	union_all([AbruptP1I,AbruptP2I], AbruptI),
 	% optional optimisation check
 	\+ AbruptI=[],
-	holdsFor(close(P1,P2,24)=true, CloseI),
+	holdsFor(close_34(P1,P2)=true, CloseI),
 	% optional optimisation check
 	\+ CloseI=[],
 	intersect_all([AbruptI,CloseI], AbruptCloseI),
@@ -260,15 +294,15 @@ grounding(running(P)=_):-
 grounding(abrupt(P)=_):-
 	id(P).
 
-grounding(close(P1,P2,24)=true) :- id(P1), id(P2), P1@<P2.
-grounding(close(P1,P2,25)=true) :- id(P1), id(P2), P1@<P2.	
-grounding(close(P1,P2,30)=true) :- id(P1), id(P2), P1@<P2.	
-grounding(close(P1,P2,34)=true) :- id(P1), id(P2), P1@<P2.
+grounding(close_24(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
+grounding(close_25(P1,P2)=true) :- id(P1), id(P2), P1@<P2.	
+grounding(close_30(P1,P2)=true) :- id(P1), id(P2), P1@<P2.	
+grounding(close_34(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
 % we are only interesting in caching close=false with respect to the 34 threshold
 % we don't need any other thresholds for this fluent in the CAVIAR event description
-grounding(close(P1,P2,34)=false) :-	id(P1), id(P2), P1@<P2.
+grounding(close_34(P1,P2)=false) :-	id(P1), id(P2), P1@<P2.
 % similarly we are only interesting in caching closeSymmetric=true with respect to the 30 threshold
-grounding(closeSymmetric(P1,P2,30)=true) :- id(P1), id(P2), P1@<P2.
+grounding(closeSymmetric_30(P1,P2)=true) :- id(P1), id(P2), P1@<P2.
 grounding(walking(P)=true) :- id(P). 
 grounding(active(P)=true) :- id(P). 
 grounding(inactive(P)=true) :- id(P).
