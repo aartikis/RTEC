@@ -45,19 +45,6 @@ holdsFor(close_34(Id1,Id2)=true, I) :-
 
 % we don't need the close(_,_)=false for values 24, 25 and 30
 % as they are not used anywhere
-%
-%holdsFor(close_24(Id1,Id2)=false, I) :-
-	%holdsFor(close_24(Id1,Id2)=true, I1),
-	%complement_all([I1], I).
-
-%holdsFor(close_25(Id1,Id2)=false, I) :-
-	%holdsFor(close_25(Id1,Id2)=true, I1),
-	%complement_all([I1], I).
-
-%holdsFor(close_30(Id1,Id2)=false, I) :-
-	%holdsFor(close_30(Id1,Id2)=true, I1),
-	%complement_all([I1], I).
-
 holdsFor(close_34(Id1,Id2)=false, I) :-
 	holdsFor(close_34(Id1,Id2)=true, I1),
 	complement_all([I1], I).
@@ -66,22 +53,6 @@ holdsFor(close_34(Id1,Id2)=false, I) :-
 
 % Similar to the above we only need
 %  closeSymmetric for value 30
-%
-%holdsFor(closeSymmetric_24(Id1,Id2)=true, I) :-
-	%holdsFor(close_24(Id1,Id2)=true, I1),
-	%holdsFor(close_24(Id2,Id1)=true, I2),
-	%union_all([I1,I2], I).
-
-%holdsFor(closeSymmetric_25(Id1,Id2)=true, I) :-
-	%holdsFor(close_25(Id1,Id2)=true, I1),
-	%holdsFor(close_25(Id2,Id1)=true, I2),
-	%union_all([I1,I2], I).
-
-%holdsFor(closeSymmetric_34(Id1,Id2)=true, I) :-
-    %holdsFor(close_34(Id1,Id2)=true, I1),
-    %holdsFor(close_34(Id2,Id1)=true, I2),
-    %union_all([I1,I2], I).
-
 holdsFor(closeSymmetric_30(Id1,Id2)=true, I) :-
 	holdsFor(close_30(Id1,Id2)=true, I1),
 	holdsFor(close_30(Id2,Id1)=true, I2),
