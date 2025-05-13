@@ -26,7 +26,7 @@ NOTE:
  ****************************************/
 
 holdsFor(close_24(Id1,Id2)=true, I) :-
-	holdsFor(distance(Id1,Id2)=true, I).
+	holdsFor(distance(Id1,Id2,24)=true, I).
 
 holdsFor(close_25(Id1,Id2)=true, I) :-
 	holdsFor(close_24(Id1,Id2)=true, I1),

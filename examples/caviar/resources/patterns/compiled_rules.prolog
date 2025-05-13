@@ -78,7 +78,7 @@ initiatedAt(meeting(_112,_114)=false, _130, _82, _136) :-
      _82<_136.
 
 holdsForSDFluent(close_24(_112,_114)=true,_82) :-
-     holdsForProcessedIE(_112,distance(_112,_114)=true,_82).
+     holdsForProcessedIE(_112,distance(_112,_114,24)=true,_82).
 
 holdsForSDFluent(close_25(_112,_114)=true,_82) :-
      holdsForProcessedSDFluent(_112,close_24(_112,_114)=true,_132),
@@ -293,135 +293,132 @@ inputEntity(active(_148)=true).
 inputEntity(abrupt(_148)=true).
 inputEntity(appear(_142)).
 inputEntity(inactive(_148)=true).
-inputEntity(distance(_148,_150)=true).
 inputEntity(distance(_148,_150,_152)=true).
 inputEntity(orientation(_148)=_144).
 inputEntity(appearance(_148)=_144).
 inputEntity(coord(_148,_150,_152)=_144).
 
-outputEntity(person(_282)=true).
-outputEntity(person(_282)=false).
-outputEntity(leaving_object(_282,_284)=true).
-outputEntity(leaving_object(_282,_284)=false).
-outputEntity(meeting(_282,_284)=true).
-outputEntity(meeting(_282,_284)=false).
-outputEntity(close_24(_282,_284)=true).
-outputEntity(close_25(_282,_284)=true).
-outputEntity(close_30(_282,_284)=true).
-outputEntity(close_34(_282,_284)=true).
-outputEntity(close_34(_282,_284)=false).
-outputEntity(closeSymmetric_30(_282,_284)=true).
-outputEntity(greeting1(_282,_284)=true).
-outputEntity(greeting2(_282,_284)=true).
-outputEntity(activeOrInactivePerson(_282)=true).
-outputEntity(moving(_282,_284)=true).
-outputEntity(fighting(_282,_284)=true).
+outputEntity(person(_276)=true).
+outputEntity(person(_276)=false).
+outputEntity(leaving_object(_276,_278)=true).
+outputEntity(leaving_object(_276,_278)=false).
+outputEntity(meeting(_276,_278)=true).
+outputEntity(meeting(_276,_278)=false).
+outputEntity(close_24(_276,_278)=true).
+outputEntity(close_25(_276,_278)=true).
+outputEntity(close_30(_276,_278)=true).
+outputEntity(close_34(_276,_278)=true).
+outputEntity(close_34(_276,_278)=false).
+outputEntity(closeSymmetric_30(_276,_278)=true).
+outputEntity(greeting1(_276,_278)=true).
+outputEntity(greeting2(_276,_278)=true).
+outputEntity(activeOrInactivePerson(_276)=true).
+outputEntity(moving(_276,_278)=true).
+outputEntity(fighting(_276,_278)=true).
 
-event(disappear(_440)).
-event(appear(_440)).
+event(disappear(_434)).
+event(appear(_434)).
 
-simpleFluent(person(_520)=true).
-simpleFluent(person(_520)=false).
-simpleFluent(leaving_object(_520,_522)=true).
-simpleFluent(leaving_object(_520,_522)=false).
-simpleFluent(meeting(_520,_522)=true).
-simpleFluent(meeting(_520,_522)=false).
-
-
-sDFluent(close_24(_680,_682)=true).
-sDFluent(close_25(_680,_682)=true).
-sDFluent(close_30(_680,_682)=true).
-sDFluent(close_34(_680,_682)=true).
-sDFluent(close_34(_680,_682)=false).
-sDFluent(closeSymmetric_30(_680,_682)=true).
-sDFluent(greeting1(_680,_682)=true).
-sDFluent(greeting2(_680,_682)=true).
-sDFluent(activeOrInactivePerson(_680)=true).
-sDFluent(moving(_680,_682)=true).
-sDFluent(fighting(_680,_682)=true).
-sDFluent(walking(_680)=true).
-sDFluent(running(_680)=true).
-sDFluent(active(_680)=true).
-sDFluent(abrupt(_680)=true).
-sDFluent(inactive(_680)=true).
-sDFluent(distance(_680,_682)=true).
-sDFluent(distance(_680,_682,_684)=true).
-sDFluent(orientation(_680)=_676).
-sDFluent(appearance(_680)=_676).
-sDFluent(coord(_680,_682,_684)=_676).
-
-index(disappear(_808),_808).
-index(appear(_808),_808).
-index(person(_808)=true,_808).
-index(person(_808)=false,_808).
-index(leaving_object(_808,_874)=true,_808).
-index(leaving_object(_808,_874)=false,_808).
-index(meeting(_808,_874)=true,_808).
-index(meeting(_808,_874)=false,_808).
-index(close_24(_808,_874)=true,_808).
-index(close_25(_808,_874)=true,_808).
-index(close_30(_808,_874)=true,_808).
-index(close_34(_808,_874)=true,_808).
-index(close_34(_808,_874)=false,_808).
-index(closeSymmetric_30(_808,_874)=true,_808).
-index(greeting1(_808,_874)=true,_808).
-index(greeting2(_808,_874)=true,_808).
-index(activeOrInactivePerson(_808)=true,_808).
-index(moving(_808,_874)=true,_808).
-index(fighting(_808,_874)=true,_808).
-index(walking(_808)=true,_808).
-index(running(_808)=true,_808).
-index(active(_808)=true,_808).
-index(abrupt(_808)=true,_808).
-index(inactive(_808)=true,_808).
-index(distance(_808,_874)=true,_808).
-index(distance(_808,_874,_876)=true,_808).
-index(orientation(_808)=_868,_808).
-index(appearance(_808)=_868,_808).
-index(coord(_808,_874,_876)=_868,_808).
+simpleFluent(person(_514)=true).
+simpleFluent(person(_514)=false).
+simpleFluent(leaving_object(_514,_516)=true).
+simpleFluent(leaving_object(_514,_516)=false).
+simpleFluent(meeting(_514,_516)=true).
+simpleFluent(meeting(_514,_516)=false).
 
 
-cachingOrder2(_1274, person(_1274)=true) :- % level in dependency graph: 1, processing order in component: 1
-     id(_1274).
+sDFluent(close_24(_674,_676)=true).
+sDFluent(close_25(_674,_676)=true).
+sDFluent(close_30(_674,_676)=true).
+sDFluent(close_34(_674,_676)=true).
+sDFluent(close_34(_674,_676)=false).
+sDFluent(closeSymmetric_30(_674,_676)=true).
+sDFluent(greeting1(_674,_676)=true).
+sDFluent(greeting2(_674,_676)=true).
+sDFluent(activeOrInactivePerson(_674)=true).
+sDFluent(moving(_674,_676)=true).
+sDFluent(fighting(_674,_676)=true).
+sDFluent(walking(_674)=true).
+sDFluent(running(_674)=true).
+sDFluent(active(_674)=true).
+sDFluent(abrupt(_674)=true).
+sDFluent(inactive(_674)=true).
+sDFluent(distance(_674,_676,_678)=true).
+sDFluent(orientation(_674)=_670).
+sDFluent(appearance(_674)=_670).
+sDFluent(coord(_674,_676,_678)=_670).
 
-cachingOrder2(_1234, close_24(_1234,_1236)=true) :- % level in dependency graph: 1, processing order in component: 1
-     id(_1234),id(_1236),_1234@<_1236.
+index(disappear(_796),_796).
+index(appear(_796),_796).
+index(person(_796)=true,_796).
+index(person(_796)=false,_796).
+index(leaving_object(_796,_862)=true,_796).
+index(leaving_object(_796,_862)=false,_796).
+index(meeting(_796,_862)=true,_796).
+index(meeting(_796,_862)=false,_796).
+index(close_24(_796,_862)=true,_796).
+index(close_25(_796,_862)=true,_796).
+index(close_30(_796,_862)=true,_796).
+index(close_34(_796,_862)=true,_796).
+index(close_34(_796,_862)=false,_796).
+index(closeSymmetric_30(_796,_862)=true,_796).
+index(greeting1(_796,_862)=true,_796).
+index(greeting2(_796,_862)=true,_796).
+index(activeOrInactivePerson(_796)=true,_796).
+index(moving(_796,_862)=true,_796).
+index(fighting(_796,_862)=true,_796).
+index(walking(_796)=true,_796).
+index(running(_796)=true,_796).
+index(active(_796)=true,_796).
+index(abrupt(_796)=true,_796).
+index(inactive(_796)=true,_796).
+index(distance(_796,_862,_864)=true,_796).
+index(orientation(_796)=_856,_796).
+index(appearance(_796)=_856,_796).
+index(coord(_796,_862,_864)=_856,_796).
 
-cachingOrder2(_1550, close_25(_1550,_1552)=true) :- % level in dependency graph: 2, processing order in component: 1
-     id(_1550),id(_1552),_1550@<_1552.
 
-cachingOrder2(_1528, activeOrInactivePerson(_1528)=true) :- % level in dependency graph: 2, processing order in component: 1
-     id(_1528).
+cachingOrder2(_1256, person(_1256)=true) :- % level in dependency graph: 1, processing order in component: 1
+     id(_1256).
 
-cachingOrder2(_1854, close_30(_1854,_1856)=true) :- % level in dependency graph: 3, processing order in component: 1
-     id(_1854),id(_1856),_1854@<_1856.
+cachingOrder2(_1216, close_24(_1216,_1218)=true) :- % level in dependency graph: 1, processing order in component: 1
+     id(_1216),id(_1218),_1216@<_1218.
 
-cachingOrder2(_1830, greeting1(_1830,_1832)=true) :- % level in dependency graph: 3, processing order in component: 1
-     id(_1830),id(_1832),_1830@<_1832.
+cachingOrder2(_1532, close_25(_1532,_1534)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_1532),id(_1534),_1532@<_1534.
 
-cachingOrder2(_1806, greeting2(_1806,_1808)=true) :- % level in dependency graph: 3, processing order in component: 1
-     id(_1806),id(_1808),_1806@<_1808.
+cachingOrder2(_1510, activeOrInactivePerson(_1510)=true) :- % level in dependency graph: 2, processing order in component: 1
+     id(_1510).
 
-cachingOrder2(_2280, close_34(_2280,_2282)=true) :- % level in dependency graph: 4, processing order in component: 1
+cachingOrder2(_1836, close_30(_1836,_1838)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_1836),id(_1838),_1836@<_1838.
+
+cachingOrder2(_1812, greeting1(_1812,_1814)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_1812),id(_1814),_1812@<_1814.
+
+cachingOrder2(_1788, greeting2(_1788,_1790)=true) :- % level in dependency graph: 3, processing order in component: 1
+     id(_1788),id(_1790),_1788@<_1790.
+
+cachingOrder2(_2262, close_34(_2262,_2264)=true) :- % level in dependency graph: 4, processing order in component: 1
+     id(_2262),id(_2264),_2262@<_2264.
+
+cachingOrder2(_2280, close_34(_2280,_2282)=false) :- % level in dependency graph: 4, processing order in component: 2
      id(_2280),id(_2282),_2280@<_2282.
 
-cachingOrder2(_2298, close_34(_2298,_2300)=false) :- % level in dependency graph: 4, processing order in component: 2
-     id(_2298),id(_2300),_2298@<_2300.
+cachingOrder2(_2238, closeSymmetric_30(_2238,_2240)=true) :- % level in dependency graph: 4, processing order in component: 1
+     id(_2238),id(_2240),_2238@<_2240.
 
-cachingOrder2(_2256, closeSymmetric_30(_2256,_2258)=true) :- % level in dependency graph: 4, processing order in component: 1
-     id(_2256),id(_2258),_2256@<_2258.
+cachingOrder2(_2790, leaving_object(_2790,_2792)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2790),id(_2792),_2790@<_2792.
 
-cachingOrder2(_2808, leaving_object(_2808,_2810)=true) :- % level in dependency graph: 5, processing order in component: 1
-     id(_2808),id(_2810),_2808@<_2810.
+cachingOrder2(_2748, meeting(_2748,_2750)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2748),id(_2750),_2748@<_2750.
 
-cachingOrder2(_2766, meeting(_2766,_2768)=true) :- % level in dependency graph: 5, processing order in component: 1
-     id(_2766),id(_2768),_2766@<_2768.
+cachingOrder2(_2706, moving(_2706,_2708)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2706),id(_2708),_2706@<_2708.
 
-cachingOrder2(_2724, moving(_2724,_2726)=true) :- % level in dependency graph: 5, processing order in component: 1
-     id(_2724),id(_2726),_2724@<_2726.
-
-cachingOrder2(_2700, fighting(_2700,_2702)=true) :- % level in dependency graph: 5, processing order in component: 1
-     id(_2700),id(_2702),_2700@<_2702.
+cachingOrder2(_2682, fighting(_2682,_2684)=true) :- % level in dependency graph: 5, processing order in component: 1
+     id(_2682),id(_2684),_2682@<_2684.
 
 collectGrounds([walking(_752)=true, walking(_752)=true, disappear(_752), running(_752)=true, running(_752)=true, active(_752)=true, active(_752)=true, abrupt(_752)=true, abrupt(_752)=true, appear(_752), inactive(_752)=true, inactive(_752)=true, orientation(_752)=_766, appearance(_752)=_766, coord(_752,_772,_774)=_766],id(_752)).
 
