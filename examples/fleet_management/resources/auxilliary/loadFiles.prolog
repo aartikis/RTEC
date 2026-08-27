@@ -1,0 +1,2 @@
+
+:- ['./vehiclesInfo.prolog'].

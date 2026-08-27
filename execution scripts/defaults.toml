@@ -27,164 +27,684 @@
 #       dependency_graph_directory: The directory in which RTEC will store the dependency graph of the event description.
 #       include_input: If true, the dependency graph will include both input and output entities. Otherwise, the graph only includes output entities.
 
-[toy]
+[food]
 # Execution Parameters 
-window_size = 50
-step = 50
+window_size = 5
+step = 5
 start_time = 0
-end_time = 50
-clock_tick = 1
+end_time = 30
+clock_tick = 1 
 # Input Specification Parameters
 input_mode = "csv"
-input_providers = ['../examples/toy/dataset/csv/toy_data.csv']
-stream_rate = 5
-# Knowledge Base
-event_description = '../examples/toy/resources/patterns/rules.prolog'
-background_knowledge = ['../examples/toy/dataset/auxiliary/toy_var_domain.prolog']
-# Output Specification Parameters
+input_providers = ['../examples/seqex/dataset/csv/food_data.csv']
+stream_rate = 10000 
+# Knowledge Base 
+event_description = '../examples/seqex/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/seqex/dataset/auxiliary/food_var_domain.prolog']
+# Output Specification Parameters 
 output_mode = "file"
-results_directory = "../examples/toy/results"
+results_directory = "../examples/seqex/results"
 # Compiler Parameters
 dependency_graph_flag = false
-dependency_graph_directory = '../examples/toy/resources/graphs'
+dependency_graph_directory = '../examples/seqex/resources/graphs'
 include_input = false
-definition_optimisation = false
+definition_optimisation = false 
 
-[maritime]
+
+[maritime_1000_o]
 # Execution Parameters 
-window_size = 36000 # 1 day = 86400 seconds
-step = 36000
-start_time = 1443650400 
-end_time = 1448834400
+window_size = 561600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1446069601
+#end_time = 1444255201 
 clock_tick = 1
 # Input Specification Parameters
 input_mode = "csv"
-input_providers = ['../examples/maritime/dataset/csv/brest_critical.csv']
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed1000.csv']
 stream_rate = 10000
 # Knowledge Base
 event_description = '../examples/maritime/resources/patterns/rules.prolog'
 background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
 # Output Specification Parameters
 output_mode = "file"
-results_directory = "../examples/maritime/results"
+results_directory = "../examples/maritime/results/fixed/1000_o"
 # Compiler Parameters
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
 definition_optimisation = false
 
-[maritime_allen]
+[maritime_2000_o]
 # Execution Parameters 
-window_size = 36000 # 1 day = 86400 seconds
-step = 36000
-start_time = 1443650400 
-end_time = 1448834400
+window_size = 561600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1446069601 
+#end_time = 1444255201 
 clock_tick = 1
 # Input Specification Parameters
 input_mode = "csv"
-input_providers = ['../examples/maritime/dataset/csv/brest_critical.csv']
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed2000.csv']
 stream_rate = 10000
 # Knowledge Base
-event_description = '../examples/maritime/resources/patterns/rules_allen.prolog'
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
 background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
 # Output Specification Parameters
 output_mode = "file"
-results_directory = "../examples/maritime/results"
+results_directory = "../examples/maritime/results/fixed/2000_o"
 # Compiler Parameters
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/maritime/resources/graphs'
 include_input = false
 definition_optimisation = false
 
-[voting]
+[maritime_3000_o]
 # Execution Parameters 
-window_size = 10
-step = 10
-start_time = 0
-end_time = 100
+window_size = 561600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1446069601 
+#end_time = 1444255201 
 clock_tick = 1
 # Input Specification Parameters
 input_mode = "csv"
-input_providers = ['../examples/voting/dataset/csv/voting.csv']
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed3000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/3000_o"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_4000_o]
+# Execution Parameters 
+window_size = 561600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1446069601
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed4000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/4000_o"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_5000_o]
+# Execution Parameters 
+window_size = 561600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1446069601
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed5000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/5000_o"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+
+[maritime_1000]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1459461585 
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed1000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/1000"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_2000]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1459461585 
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed2000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/2000"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_3000]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1459461585 
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed3000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/3000"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_4000]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1459461585 
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed4000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/4000"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_5000]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1443650401
+end_time = 1459461585 
+#end_time = 1444255201 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/brest_critical_fixed5000.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/fixed/5000"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_1]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1 
+end_time = 1296000
+#end_time = 100000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq7200_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_1_rct"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_2]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq14400_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_2_rct"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_3]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq28800_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_3_rct"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_4]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq57600_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_4_rct"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_1_o]
+# Execution Parameters 
+step = 3600
+window_size = 7260 # 1 day = 86400 seconds
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq7200_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_1_o/"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_2_o]
+# Execution Parameters 
+step = 3600
+window_size = 14460 # 1 day = 86400 seconds
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq14400_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_2_o/"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_3_o]
+# Execution Parameters 
+step = 3600
+window_size = 28860 # 1 day = 86400 seconds
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq28800_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_3_o"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[maritime_s_4_o]
+# Execution Parameters 
+step = 3600
+window_size = 57660 # 1 day = 86400 seconds
+start_time = 1 
+end_time = 1296000
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/maritime/dataset/csv/synth_ais_seq57600_dur1296000_c.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/maritime/resources/patterns/rules_synth.prolog'
+background_knowledge = ['../examples/maritime/resources/auxiliary/compare.prolog', '../examples/maritime/resources/auxiliary/loadStaticData.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/maritime/results/synth/results_synth_4_o/"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/maritime/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+
+[voting_1000_20_orig]
+# Execution Parameters 
+window_size = 20
+step = 10
+start_time = 0
+end_time = 500
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-20.csv']
 stream_rate = 1
 # Knowledge Base
 event_description = '../examples/voting/resources/patterns/rules.prolog'
 background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
 # Output Specification Parameters
-output_mode = "fifo"
-results_directory = "../examples/voting/results"
+output_mode = "file"
+results_directory = "../examples/voting/results/1000_20_orig"
 # Compiler parameters
 dependency_graph_flag = false
 dependency_graph_directory = '../examples/voting/resources/graphs'
 include_input = false
 definition_optimisation = false
 
-[netbill]
+[voting_1000_40_orig]
+# Execution Parameters 
+window_size = 40
+step = 10
+start_time = 0
+end_time = 500
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-40.csv']
+stream_rate = 1
+# Knowledge Base
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/voting/results/1000_40_orig"
+# Compiler parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/voting/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[voting_1000_80_orig]
+# Execution Parameters 
+window_size = 80
+step = 10
+start_time = 0
+end_time = 500
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-80.csv']
+stream_rate = 1
+# Knowledge Base
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/voting/results/1000_80_orig"
+# Compiler parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/voting/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[voting_1000_160_orig]
+# Execution Parameters 
+window_size = 160
+step = 10
+start_time = 0
+end_time = 500
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-160.csv']
+stream_rate = 1
+# Knowledge Base
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/voting/results/1000_160_orig"
+# Compiler parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/voting/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+
+[voting_1000_20]
 # Execution Parameters 
 window_size = 10
 step = 10
 start_time = 0
-end_time = 100
+end_time = 500
 clock_tick = 1
 # Input Specification Parameters
 input_mode = "csv"
-input_providers = ['../examples/netbill/dataset/csv/netbill.csv']
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-20.csv']
 stream_rate = 1
 # Knowledge Base
-event_description = '../examples/netbill/resources/patterns/rules.prolog'
-background_knowledge = ['../examples/netbill/dataset/auxiliary/netbill_static_generator.prolog']
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
 # Output Specification Parameters
 output_mode = "file"
-results_directory = "../examples/netbill/results"
-# Compiler Parameters
+results_directory = "../examples/voting/results/1000_20"
+# Compiler parameters
 dependency_graph_flag = false
-dependency_graph_directory = '../examples/netbill/resources/graphs'
+dependency_graph_directory = '../examples/voting/resources/graphs'
 include_input = false
 definition_optimisation = false
 
-[caviar]
+[voting_1000_40]
 # Execution Parameters 
-window_size = 100000
-step = 100000
+window_size = 10
+step = 10
 start_time = 0
-end_time = 1007000
-clock_tick = 40
-# Input Specification Parameters
-input_mode = "csv"
-input_providers = ['../examples/caviar/dataset/csv/appearance.csv', '../examples/caviar/dataset/csv/movementB.csv']
-stream_rate = 10000
-# Knowledge Base
-event_description = '../examples/caviar/resources/patterns/rules.prolog'
-background_knowledge = ['../examples/caviar/resources/auxiliary/pre-processing.prolog'] #, '../examples/caviar/dataset/auxiliary/list-of-ids.prolog']
-# Output Specification Parameters
-output_mode = "file"
-results_directory = "../examples/caviar/results"
-# Compiler Parameters
-dependency_graph_flag = true
-dependency_graph_directory = '../examples/caviar/resources/graphs'
-include_input = true
-definition_optimisation = false
-
-[ctm]
-# Execution Parameters 
-window_size = 10000
-step = 10000
-start_time = 0
-end_time = 50000
+end_time = 500
 clock_tick = 1
 # Input Specification Parameters
 input_mode = "csv"
-input_providers = ['../examples/ctm/dataset/csv/abrupt_acceleration.csv', '../examples/ctm/dataset/csv/abrupt_deceleration.csv', '../examples/ctm/dataset/csv/internal_temperature_change.csv', '../examples/ctm/dataset/csv/noise_level_change.csv'    , '../examples/ctm/dataset/csv/passenger_density_change.csv', '../examples/ctm/dataset/csv/sharp_turn.csv', '../examples/ctm/dataset/csv/stop_enter_leave.csv']
-stream_rate = 5000
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-40.csv']
+stream_rate = 1
 # Knowledge Base
-event_description = '../examples/ctm/resources/patterns/rules.prolog'
-background_knowledge = ['../examples/ctm/dataset/auxiliary/vehicles.prolog']
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
 # Output Specification Parameters
 output_mode = "file"
-results_directory = "../examples/ctm/results"
-# Compiler Parameters
+results_directory = "../examples/voting/results/1000_40"
+# Compiler parameters
 dependency_graph_flag = false
-dependency_graph_directory = '../examples/ctm/resources/graphs'
+dependency_graph_directory = '../examples/voting/resources/graphs'
 include_input = false
 definition_optimisation = false
 
+[voting_1000_80]
+# Execution Parameters 
+window_size = 10
+step = 10
+start_time = 0
+end_time = 500
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-80.csv']
+stream_rate = 1
+# Knowledge Base
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/voting/results/1000_80"
+# Compiler parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/voting/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[voting_1000_160]
+# Execution Parameters 
+window_size = 10
+step = 10
+start_time = 0
+end_time = 500
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/voting/dataset/csv/voting-1000-1-160.csv']
+stream_rate = 1
+# Knowledge Base
+event_description = '../examples/voting/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/voting/dataset/auxiliary/voting_static_generator.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/voting/results/1000_160"
+# Compiler parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/voting/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[fm_rct]
+# Execution Parameters 
+window_size = 3600 # 1 day = 86400 seconds
+step = 3600
+start_time = 1530399600
+end_time = 1533705300 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/fleet_management/dataset/csv/ctm_data.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/fleet_management/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/fleet_management/resources/auxilliary/loadFiles.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/fleet_management/results/rct"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/fleet_management/resources/graphs'
+include_input = false
+definition_optimisation = false
+
+[fm_orig]
+# Execution Parameters 
+window_size = 86400 # 1 day = 86400 seconds
+step = 3600
+start_time = 1530399600
+end_time = 1533705300 
+clock_tick = 1
+# Input Specification Parameters
+input_mode = "csv"
+input_providers = ['../examples/fleet_management/dataset/csv/ctm_data.csv']
+stream_rate = 10000
+# Knowledge Base
+event_description = '../examples/fleet_management/resources/patterns/rules.prolog'
+background_knowledge = ['../examples/fleet_management/resources/auxilliary/loadFiles.prolog']
+# Output Specification Parameters
+output_mode = "file"
+results_directory = "../examples/fleet_management/results/orig"
+# Compiler Parameters
+dependency_graph_flag = false
+dependency_graph_directory = '../examples/fleet_management/resources/graphs'
+include_input = false
+definition_optimisation = false

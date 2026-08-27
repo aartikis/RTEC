@@ -61,18 +61,18 @@ runtests(FileName,Prolog):-
             length(TestResults,TestN),
             (
                 Sum = 0,
-                write('[92mPassed ('),
+                write('Passed ('),
                 write(TestN),
-                writeln(' tests)[0m')
+                writeln(' tests)')
             ;
                 Sum \=0,
-                write('[92mPassed ('),
+                write('Passed ('),
                 TestsPassed is TestN-Sum,
                 write(TestsPassed),
-                writeln(' tests)[0m'),
-                write('[91mFailed ('),
+                writeln(' tests)'),
+                write('Failed ('),
                 write(Sum),
-                writeln(' tests)[0m')
+                writeln(' tests)')
             ).
 
 % runtestCL_prolog calls the appropriate runtestCL with the appropriate prolog type and then runs the unit test case with ScenarioID `Scen', Case `C' and Case number `Na'.
@@ -208,7 +208,7 @@ performER(se,CaseName,CaseNumber,[(CT,PT)|OtherT],[Found|OtherFoundInt],Scenario
 % list corresponds to a query
 compareResult([],[],[]).
 compareResult([Ex|OtherEx],[Found|OtherFound],[(Status,Common,FP,FN)|OtherComps]):-
-    %write(compareResult),nl,
+    Ex\=(_,_),!,
     (
         intersect_all([Ex,Found],Common),
         union_all([Ex,Found],Common),
@@ -228,6 +228,25 @@ compareResult([Ex|OtherEx],[Found|OtherFound],[(Status,Common,FP,FN)|OtherComps]
     ),
     retractall(step(_)), retractall(allenMemory(_)), retractall(happensAtIE(_, _)), retractall(holdsForIESI(_, _)).
 
+compareResult([Ex|OtherEx],[Found|OtherFound],[(Status,Common,FP,FN)|OtherComps]):-
+    Ex=(_,_),!,
+    (
+        Ex = Found,
+        Status=passed,
+        Common = Ex,
+        FP=[],
+        FN=[],
+        compareResult(OtherEx,OtherFound,OtherComps)
+    );
+    (
+        Ex \= Found,
+        Status = failed,
+        Common = Ex,
+        FP = Found,
+        FN = [], 
+        compareResult(OtherEx,OtherFound,OtherComps)
+    ),
+    retractall(step(_)), retractall(allenMemory(_)), retractall(happensAtIE(_, _)), retractall(holdsForIESI(_, _)).
 
 %prints the results of all tests in a human readable form
 prettyPrint(Results):-prettyPrint(Results,0,0).

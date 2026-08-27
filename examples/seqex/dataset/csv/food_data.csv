@@ -1,0 +1,12 @@
+turnsOn|1|1|oven
+turnsOn|2|2|stove
+place|3|3|steak|stove
+place|5|5|potatoes|stove
+remove|9|9|steak|stove
+remove|12|12|potatoes|stove
+place|14|14|steak|oven
+place|16|16|potatoes|oven
+remove|18|18|steak|oven
+remove|19|19|potatoes|oven
+place|21|21|steak|plate
+place|22|22|potatoes|plate

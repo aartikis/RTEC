@@ -37,9 +37,9 @@ Power however is defined to answer queries.
  *********************/
 
 % deadlines on status:
-fi(status(M)=proposed, status(M)=null, 10).
-fi(status(M)=voting, status(M)=voted, 10).
-fi(status(M)=voted, status(M)=null, 10).
+fi(status(M)=proposed, status(M)=null, 20).
+fi(status(M)=voting, status(M)=voted, 20).
+fi(status(M)=voted, status(M)=null, 20).
 
 initially(status(_M)=null).
 initiatedAt(status(M)=proposed, T) :-
@@ -56,6 +56,11 @@ initiatedAt(status(M)=null, T) :-
 	happensAt(declare(C,M,_), T), 
 	role_of(C,chair),
 	holdsAt(status(M)=voted, T).
+	
+holdsFor(proposed2voted(M)=true, I):-
+	holdsFor(status(M)=proposed, Ip),
+	holdsFor(status(M)=voted, Iv),
+	seq(Ip, Iv, I).
 
 /*********************
     voted(V,M)=Vote
@@ -66,6 +71,12 @@ initiatedAt(voted(V,M)=Vote, T) :-
 	holdsAt(status(M)=voting, T).	
 initiatedAt(voted(_V,M)=null, T) :-
 	happensAt(start(status(M)=null), T).
+
+% assumption violated	
+%holdsFor(aye2nay(V)=true, I):-
+%	holdsFor(voted(V,_M1)=aye, Ia),
+%	holdsFor(voted(V,_M2)=nay, In),
+%	seq(Ia, In, I).
 
 /*****************************
       outcome(M)=Outcome
@@ -92,6 +103,11 @@ holdsFor(pow(close_ballot(_C,M))=true, I) :-
 	holdsFor(status(M)=voting, I).
 holdsFor(pow(declare(_C,M))=true, I) :-
 	holdsFor(status(M)=voted, I).
+	
+holdsFor(powPropose2vote(P,M)=true, I):-
+	holdsFor(pow(propose(P,M))=true, Ip),
+	holdsFor(pow(vote(P,M))=true, Iv),
+	seq(Ip, Iv, I).
 
 /*************
   PERMISSION
@@ -161,9 +177,22 @@ grounding(status(M)=proposed)			:- queryMotion(M).
 grounding(status(M)=voting)			:- queryMotion(M).
 grounding(status(M)=voted)			:- queryMotion(M).
 
+
+grounding(pow(propose(Ag,M))=true)			:- person(Ag), queryMotion(M).
+grounding(pow(second(Ag,M))=true)			:- person(Ag), queryMotion(M).
+grounding(pow(vote(Ag,M))=true)			        :- person(Ag), queryMotion(M).
+grounding(pow(close_ballot(Ag,M))=true)			:- person(Ag), queryMotion(M).
+grounding(pow(declare(Ag,M))=true)			:- person(Ag), queryMotion(M).
+
+%% Sequences
+grounding(proposed2voted(M)=true)               :- queryMotion(M).
+grounding(powPropose2vote(Ag,M)=true)		:- person(Ag), queryMotion(M).
+
 %grounding(voted(Ag,M)=null)			:- person(Ag),role_of(Ag,voter), queryMotion(M).
 grounding(voted(Ag,M)=aye)			:- person(Ag),role_of(Ag,voter), queryMotion(M).
 grounding(voted(Ag,M)=nay)			:- person(Ag),role_of(Ag,voter), queryMotion(M).
+
+grounding(aye2nay(Ag) = true) :- person(Ag).
 
 grounding(auxMotionOutcomeEvent(M,_Outcome)) :- queryMotion(M).
 

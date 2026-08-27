@@ -31,6 +31,9 @@ for arg in $@ ; do
     --definition-optimisation)
       definition_optimisation="true"
       ;;
+    --rtecs)
+      no_rct="true"
+      ;;
   esac
 done
 
@@ -50,11 +53,20 @@ fi
 
 Compiler=..${sep}src${sep}compiler.prolog
 
+
+if [ -z $no_rct ]
+then
+    rct_comp="assert(use_rct(yes)),"
+else
+    rct_comp="assert(use_rct(no)),"
+fi
+
+
 if [ -z $dependency_graph ]
 then
-	swipl -l ${Compiler} -g "compileED('${event_description}',$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
+	swipl -l ${Compiler} -g "${rct_comp}compileED('${event_description}',$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
 else 
-	swipl -l ${Compiler} -g "compileED('${event_description}','${dependency_graph_dot_file}',$events_flag,$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
+	swipl -l ${Compiler} -g "${rct_comp}compileED('${event_description}','${dependency_graph_dot_file}',$events_flag,$optimisation_flag),halt." # && echo "Compiled event description: ${event_description}."
 	dot -o $dependency_graph_png_file -T png $dependency_graph_dot_file # && echo "Dependency graph: ${dependency_graph_png_file}."
 fi
 

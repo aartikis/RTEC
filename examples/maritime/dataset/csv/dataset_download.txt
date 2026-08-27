@@ -1,5 +1,0 @@
-Critical point streams:
-
-https://owncloud.skel.iit.demokritos.gr/index.php/s/67dJSuymyIw1Mng
-
-After downloading the dataset, move it to the /csv folder.   

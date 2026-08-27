@@ -22,7 +22,8 @@ list_var([El|Other],Avg,Var):-
 %           S,E where S and E are the values of the intersection interval (S,E)
 %Returns :  Total Duration of intervals
 fluents_duration([],_,_,_,0).
-fluents_duration([(_=_,Li)|OtherFluents],TemporalDistance,S,E,Duration):-
+fluents_duration([(_=_,LiRct)|OtherFluents],TemporalDistance,S,E,Duration):-
+    get_intervals(LiRct,Li),
 	fluents_duration(OtherFluents,TemporalDistance,S,E,DurationIn),
 	intersect_all([Li,[(S,E)]],L),
 	interval_list_duration(L,CurDur),
@@ -42,9 +43,12 @@ writeResult(Time, LogFileStream):-
   	write(LogFileStream,'+'),
 	write(LogFileStream,Time).
 
-logWindowStats(LogFileStream, RecTimes, InputList, (OutputListOutFVpairs,OutputListOutLI,OutputListOutLD)):-
+logWindowStats(LogFileStream, RecTimes, InputList, (OutputListOutFVpairs,OutputListOutLI,OutputListOutLD),(HMemory, GMemory), RetainedI):-
 	list_stats(RecTimes,_,_,AvgTime,_,DevTime),
+	sumlist(RecTimes, TotalRecTime),
 	nl(LogFileStream), nl(LogFileStream),
+	write(LogFileStream, 'Total Recognition Time (ms)		: '),
+	write(LogFileStream, TotalRecTime), nl(LogFileStream),
 	write(LogFileStream, 'Recognition Time average (ms)		: '), 
 	write(LogFileStream, AvgTime), nl(LogFileStream),
 	write(LogFileStream, 'Recognition Time standard deviation (ms): '), 
@@ -86,6 +90,28 @@ logWindowStats(LogFileStream, RecTimes, InputList, (OutputListOutFVpairs,OutputL
 	write(LogFileStream, DevOutLD),nl(LogFileStream),
 	write('Output Entities (average # timepoints)		: '), 
 	writeln(AvgOutLD),
+	% calculate and record the average and standard deviation of heap usage per query
+	list_stats(HMemory,_,_,AvgHM,_,DevHM),
+	write(LogFileStream, 'Heap usage (average number of bytes)		: '), 
+	write(LogFileStream, AvgHM),nl(LogFileStream),
+	write(LogFileStream, 'Heap usage (standard deviation)	 		: '), 
+	write(LogFileStream, DevHM),nl(LogFileStream),
+	write('Heap usage (average number of bytes)		: '), 
+	writeln(AvgHM),
+	list_stats(GMemory,_,_,AvgGM,_,DevGM),
+	write(LogFileStream, 'Global stack usage (average number of bytes)	: '), 
+	write(LogFileStream, AvgGM),nl(LogFileStream),
+	write(LogFileStream, 'Global stack usage (standard deviation)	 	: '), 
+	write(LogFileStream, DevGM),nl(LogFileStream),
+	write('Global stack usage (average number of bytes)	: '), 
+	writeln(AvgGM),
+	list_stats(RetainedI,_,_,AvgRI,_,DevRI),
+	write(LogFileStream, 'Retained entities (average number of intervals)	: '), 
+	write(LogFileStream, AvgRI),nl(LogFileStream),
+	write(LogFileStream, 'Retained entities (standard deviation)	 	: '), 
+	write(LogFileStream, DevRI),nl(LogFileStream),
+	write('Global stack usage (average number of bytes)	: '), 
+	writeln(AvgGM),
 	writeln('=========================================================').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,12 +123,16 @@ printRecognitionsThread(CEIntervalsStream, CurrentTime, WM) :-
 	StartTime is CurrentTime-WM,
 	NextStartTime is StartTime+1,
 	NextCurrentTime is CurrentTime+1,
+	write(CEIntervalsStream,'Tq='), writeln(CEIntervalsStream,CurrentTime),
 	findall((F=V,L2), 
 		(
 		outputEntity(F=V),
                 holdsFor(F=V,L),
-                L\==[],
-                intersect_all([L,[(NextStartTime,NextCurrentTime)]],L2)
+                L\= [],
+                %L\= ([], _CurrentTime),
+                intersect_if_not_rct(L,[(NextStartTime,NextCurrentTime)],L2)
+                %L2\= ([], _),
+                %L2\= [] 
                 ), 
               CEIntervals),
 	writeCEs(CEIntervalsStream, CEIntervals).
@@ -113,16 +143,24 @@ printRecognitions(CEIntervalsFile, CurrentTime, WM) :-
 	StartTime is CurrentTime-WM,
 	NextStartTime is StartTime+1,
 	NextCurrentTime is CurrentTime+1,
+	write(CEIntervalsStream,'Tq='), writeln(CEIntervalsStream,CurrentTime),
 	findall((F=V,L2), 
 		(
 		outputEntity(F=V),
                 holdsFor(F=V,L),
-                L\==[],
-                intersect_all([L,[(NextStartTime,NextCurrentTime)]],L2)
+                L\= [],
+%                L\= ([], _CurrentTime),
+                intersect_if_not_rct(L,[(NextStartTime,NextCurrentTime)],L2)
+%                L2\= ([], _),
+%                L2\= [] 
                 ), 
               CEIntervals),
 	writeCEs(CEIntervalsStream, CEIntervals),
 	close(CEIntervalsStream).
+
+intersect_if_not_rct((L,To), _Iinter, (L,To)):-!.
+intersect_if_not_rct(L, Iinter, LI):-
+    intersect_all([L,Iinter], LI). 
 
 writeCEs(ResultStream, []) :-
 	nl(ResultStream), !.
@@ -156,7 +194,7 @@ printBeforeER(QueryTimeMinusWM, VerifiedQueryTime):-
 	write('Current Window                         	: ('), 
 	write(QueryTimeMinusWM), write(', '), write(VerifiedQueryTime), writeln(']').
 
-printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD):-
+printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD, HM, GM , RI):-
  	write('Recognition Time (ms)			: '), writeln(S),
  	% calculate and record the number of input entities
  	findall((Ev,EvT), (inputEntity(Ev),happensAtIE(Ev,EvT)), EvList), length(EvList,InL1),
@@ -164,7 +202,7 @@ printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs
  	InL is InL1+InL2,
  	write('Input Entities				: '), writeln(InL),
  	% compute and record output entity statistics
- 	findall(Interval, (outputEntity(F=V),holdsFor(F=V,L),member(Interval,L)), AllIntervals),
+ 	findall(Interval, (outputEntity(F=V),holdsFor(F=V,Lrct), get_intervals(Lrct,L), member(Interval,L)), AllIntervals),
  	temporalDistance(TemporalDistance),
  	% fluents_duration(+OELI, +TemporalDistance, +QueryTimeMinusWM, +VerifiedQueryTime, -OELID)
  	fluents_duration(OELI, TemporalDistance, QueryTimeMinusWM, VerifiedQueryTime, OELID),
@@ -172,11 +210,17 @@ printAfterER(S, QueryTimeMinusWM, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs
  	length(OELT,OELTL),
  	length(AllIntervals,AllIntervalsL),
  	OutLI is AllIntervalsL+OELTL,
- 	OutLD is OELID+OELTL,
+ 	OutLD is OELID+OELTL,	 	
  	write('Output Entities (# fluent-value pairs)	: '), writeln(OutFVpairs),
 	write('Output Entities (# intervals)		: '), writeln(OutLI),
 	write('Output Entities (# timepoints)		: '), writeln(OutLD),
+	write('Retained Entities (# intervals)		: '), writeln(RI),
+ 	write('Heap usage (bytes)			: '), writeln(HM),
+ 	write('Global stack usage (bytes)		: '), writeln(GM),
 	writeln('=========================================================').
+
+get_intervals((Io,_To),I):-remove_plus_from_interval_list(Io, I),!.
+get_intervals(I,I):-!.
 
 %% multiline arguments to format may produce an error in some Prolog engines, e.g., YAP 7.3
 printLogo:- 

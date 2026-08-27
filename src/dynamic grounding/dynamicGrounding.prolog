@@ -84,14 +84,27 @@ findRemainingTerms([(Event,GroundTerm)|Other],OldTerms,NewTerms):-
                             (
 				(sDFluent(Event),
 				 outputEntity(Event),
-                                 sdFPList(I,Event,L,_))
+                                 (
+                                 	sdFPList(I,Event,L,_) ;
+                                 	retained(Event, _, _, _) ; % RCTs
+                                 	retained(ilsource(Event), _, _, _)  % RCTs (seq source)
+                                 )
+                                )
                                 ;
 				(simpleFluent(Event),
-                                simpleFPList(I,Event,L,_))
+				 (
+                                	simpleFPList(I,Event,L,_) ;
+                          	        retained(ilsource(Event), _, _, _)  % RCTs (seq source)
+                                 )
+                                )
 				;
 				(sDFluent(Event),
 				 inputEntity(Event),
-                		 iePList(I,Event,L,_))
+				  (
+                		   iePList(I,Event,L,_) ;
+                		   retained(ilsource(Event), _, _, _)  % RCTs (seq source)
+                		  )
+                		 )
                             ),
                             L\=[],
                             append(_,[(_,inf)],L)

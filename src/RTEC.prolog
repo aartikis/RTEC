@@ -78,7 +78,14 @@ DECLARATIONS:
 % ========================
 
 :- set_prolog_flag(toplevel_print_options, [max_depth(400)]).
+:- set_prolog_flag(stack_limit, 2_147_483_648).
+:- set_prolog_flag(optimise, true).
+:- set_prolog_flag(cpu_count, 1).
+%:- set_prolog_flag(agc_margin, 100_000_000).   % example, tune based on memory
+%:- set_prolog_flag(gc, true).
+
 :- use_module(library(lists)).
+:- use_module(library(apply_macros)).
 
 loadSocketLibrary(socket):-
     use_module(library(socket)), !.
@@ -90,8 +97,12 @@ loadSocketLibrary(_).
 :- ['processSimpleFluents.prolog'].
 :- ['processSDFluents.prolog'].
 :- ['processEvents.prolog'].
+:- ['RCThandling.prolog'].
+:- ['multithreading.prolog'].
 :- ['utilities/interval-manipulation.prolog'].
+:- ['utilities/seq.prolog'].
 :- ['utilities/amalgamate-periods.prolog'].
+%:- ['utilities/makeLogs.prolog'].
 % Load allen relations module
 :- ['allen.prolog'].
 % Load the dynamic grounding module
@@ -102,7 +113,7 @@ loadSocketLibrary(_).
 /***** dynamic predicates *****/
 
 % The predicates below are asserted/retracted
-:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, queryTime/1, 
+:- dynamic temporalDistance/1, input/1, noDynamicGrounding/0, preProcessing/1, initTime/1, queryTime/1, prevQueryTime/1, 
 		   iePList/4, simpleFPList/4, sdFPList/4, evTList/3, happensAtIE/2, holdsForIESI/2, holdsAtIE/2, 
 		   processedCyclic/2, initiallyCyclic/1, storedCyclicPoints/3, startingPoints/3, 
 		   step/1, allenMemory/1, cachedIntervalsAllen/5.
@@ -110,6 +121,7 @@ loadSocketLibrary(_).
 % The predicates below may or may not appear in the event description of an application;
 % thus they must be declared dynamic
 :- dynamic collectIntervals2/2, buildFromPoints2/2, cyclic/1, fi/3, p/1, internalEntity/1, sDFluent/1,	simpleFluent/1, inputEntity/1, collectGrounds/2, dgrounded/2.
+
 
 /***** multifile predicates *****/
 
@@ -131,9 +143,12 @@ inputEntity/1, internalEntity/1, outputEntity/1, index/2, event/1, simpleFluent/
 % these predicates may be part of an event description 
 holdsFor/2, holdsForSDFluent/2, initially/1, initiatedAt/2, terminatedAt/2, initiates/3, terminates/3, initiatedAt/4, terminatedAt/4, happensAt/2, fi/3, p/1,
 % this predicate may appear in the data files of an application
-updateSDE/4. 
+updateSDE/4,
+% made discontiguous for parallelisation
+processingLevel/3, cachingOrder2/2.
 
 /********************************** INITIALISE RECOGNITION ***********************************/
+
 
 
 
@@ -142,7 +157,8 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Tempor
 	% Assert threshold for forget and dynamic grounding mechanisms here 
 	% to avoid carrying these values forever 
 	assertz(eventsPerTimepointThreshold(-1)), 
-	assertz(groundTermOverlapThreshold(-1)), %
+	assertz(groundTermOverlapThreshold(-1)),
+	assertz(prevQueryTime(-1)), %
 	(InputFlag=ordered, assertz(input(InputFlag)) ; assertz(input(unordered))),
 	% if we need dynamic grounding then dynamicGrounding/1 is already defined
 	% so there is no need to assert anything here
@@ -151,13 +167,13 @@ initialiseRecognition(InputFlag, DynamicGroundingFlag, PreProcessingFlag, Tempor
 	% so there is no need to assert anything here
 	(PreProcessingFlag=preprocessing ; assertz(preProcessing(_))), !.
 
-
 initialiseRecognition(Step, InputFlag, DynamicGroundingFlag, PreProcessingFlag, ForgetThreshold, DynamicGroundingThreshold, TemporalDistance, AllenMem) :-
 	assert(temporalDistance(TemporalDistance)), 
 	% Assert threshold for forget and dynamic grounding mechanisms here 
 	% to avoid carrying these values forever 
 	assertz(eventsPerTimepointThreshold(ForgetThreshold)), 
 	assertz(groundTermOverlapThreshold(DynamicGroundingThreshold)), %
+        assertz(prevQueryTime(-1)), %
 	(InputFlag=ordered, assertz(input(InputFlag)) ; assertz(input(unordered))),
 	% if we need dynamic grounding then dynamicGrounding/1 is already defined
 	% so there is no need to assert anything here
@@ -168,7 +184,6 @@ initialiseRecognition(Step, InputFlag, DynamicGroundingFlag, PreProcessingFlag, 
 	assertz(step(Step)),
 	assertz(allenMemory(AllenMem)), !.
 
-
 /************************************* EVENT RECOGNITION *************************************/
 
 
@@ -176,7 +191,7 @@ eventRecognition(QueryTime, WM) :-
 	InitTime is QueryTime-WM,
 	assertz(initTime(InitTime)),
 	assertz(queryTime(QueryTime)),
-    % delete input entities that have taken place before or on Qi-WM
+	% delete input entities that have taken place before or on Qi-WM
 	forget(InitTime),
 	% calculate the items for which we will perform reasoning
 	dynamicGrounding(InitTime, QueryTime),
@@ -196,9 +211,24 @@ eventRecognition(QueryTime, WM) :-
 	% which is specified in the domain-dependent file 
 	% cachingOrder2/2 is produced in the compilation stage 
 	% by combining cachingOrder/1, indexOf/2 and grounding/1
-	findall(OE, (cachingOrder2(Index,OE), processEntity(Index,OE,InitTime,QueryTime)), _),
+	%----- dependency aware parallel processing start -------
+	findall(goal(OE,findall(OE, (cachingOrder2(Index,OE),
+		processEntity(Index,OE,InitTime,QueryTime)), _)),
+		processingLevel(_Level, Index, OE), Goals),
+	dependency_aware_parallel_execution(Goals, []),
+	%----- dependency aware parallel processing end -------
+	%findall(OE, (cachingOrder2(Index,OE), processEntity(Index,OE,InitTime,QueryTime)), _),
+        %commitVariables(processEntityFlag),
 	% DEADLINES #2 CHANGE
 	findall((F=V,Duration), (fi(F=V,_,Duration), deadlines2(F=V,Duration,InitTime)), _),
+	% sequencing forget old RCT (i.e., those from previous query time)
+   	% use previous query time for faster retract
+	prevQueryTime(PrevQueryTime),
+	rct_forget(PrevQueryTime),
+	% update previous query time
+	retract(prevQueryTime(PrevQueryTime)),
+	assertz(prevQueryTime(QueryTime)),
+	% retract querytime and initime
 	retract(queryTime(QueryTime)),
 	retract(initTime(InitTime)).
 
@@ -206,12 +236,45 @@ processEntity(Index, OE, InitTime, QueryTime) :-
 	(
 		% compute the intervals of output entities/statically determined fluents
 		sDFluent(OE), 
-		processSDFluent(Index, OE, InitTime) 
+            %OE = (F=_),
+			%functor(F, FName, _),
+			%atom_concat(FName, time, OEVariableName),
+			%atom_concat(FName, instances, OEVarInstName),
+            %getCPUtime(Time1sdFluent),
+		processSDFluent(Index, OE, InitTime)
+            %getCPUtime(Time2sdFluent),
+			%updateTimeTemp(process_sdfluent_time, Time1sdFluent, Time2sdFluent),
+            %(sdFPList(Index, OE, NewPeriods, BrokenPeriod), 
+			%amalgamatePeriods(BrokenPeriod, NewPeriods, Intervals), length(Intervals, LenIntervals); LenIntervals=0),
+		    %updateVariableTemp(sdfluent_interval_no, LenIntervals)
 		;
 		% compute the intervals of simple fluents 
 		% (simple fluents are by definition output entities) 
 		simpleFluent(OE), 
+            %OE = (F=_),
+			%functor(F, FName, _),
+			%atom_concat(FName, time, OEVariableName),
+			%atom_concat(FName, instances, OEVarInstName),
+            %
+            %getCPUtime(Time1simpleFluent),
 		processSimpleFluent(Index, OE, InitTime, QueryTime),
+            %getCPUtime(Time2simpleFluent),
+            %(simpleFPList(Index, OE, NewPeriods, BrokenPeriod), 
+			%amalgamatePeriods(BrokenPeriod, NewPeriods, Intervals), length(Intervals, LenIntervals); LenIntervals=0),
+            %updateTimeTemp(OEVariableName, Time1simpleFluent, Time2simpleFluent),
+			%updateVariableTemp(OEVarInstName, LenIntervals),
+            %(translatableSF(OE) -> (updateTimeTemp(process_translatable_simple_fluent_time, Time1simpleFluent, Time2simpleFluent), 
+            %(simpleFPList(Index, OE, NewPeriods, BrokenPeriod), 
+			% amalgamatePeriods(BrokenPeriod, NewPeriods, Intervals), length(Intervals, LenIntervals); LenIntervals=0),
+			% updateVariableTemp(translatable_simple_fluent_interval_no, LenIntervals)
+            %) 
+         %; 
+            %(updateTimeTemp(process_non_translatable_simple_fluent_time, Time1simpleFluent, Time2simpleFluent), 
+            %(simpleFPList(Index, OE, NewPeriods, BrokenPeriod), 
+			%amalgamatePeriods(BrokenPeriod, NewPeriods, Intervals), length(Intervals, LenIntervals); LenIntervals=0),
+			 %updateVariableTemp(non_translatable_simple_fluent_interval_no, LenIntervals)
+            %)
+            %),
 		% CYCLES #2 CHANGE (no need to assert if not cyclic)
 		assertCyclic(Index, OE)
 		;
@@ -547,7 +610,8 @@ holdsAtProcessedIE(Index, F=V, T) :-
 
 % cached simple fluent
 holdsAtProcessedSimpleFluent(Index, F=V, T) :-	
-	simpleFPList(Index, F=V, [H|Tail], _),
+    simpleFPList(Index, F=V, [H|Tail], _),
+	%retrieveOEIntervals(Index, F=V, L),
 	tinIntervals(T, [H|Tail]).
 
 % cached output entity/statically determined fluent
@@ -720,9 +784,15 @@ retrieveOEIntervals(Index, F=V, L) :-
 
 retrieveOEIntervals(_Index, _U, []).
 
-
+% extended to support RCTs
 retrieveOESDFluentIntervals(Index, F=V, L) :-
-	sdFPList(Index, F=V, RestrictedList, Extension), !,
+	sdFPList(Index, F=V, RestrictedList, Extension),
+    RestrictedList \= (_, _), !,
+	amalgamatePeriods(Extension, RestrictedList, L).
+
+retrieveOESDFluentIntervals(Index, F=V, (L,To)) :-
+	sdFPList(Index, F=V, RestrictedListRCT, Extension),
+    RestrictedListRCT = (RestrictedList, To), !,
 	amalgamatePeriods(Extension, RestrictedList, L).
 
 retrieveOESDFluentIntervals(_Index, _U, []).

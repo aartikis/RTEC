@@ -98,6 +98,9 @@ function input_parser (){
             --definition-optimisation)
               definition_optimisation="true"
               ;;
+            --rtecs)
+              no_rct="true"
+              ;;
             # Utilities
 	    --help)
 	        help
@@ -135,7 +138,7 @@ function set_prolog_command() {
 	[ -z $results_directory ] || second_argument+=",results_directory='$results_directory'" 
 	second_argument+="]"
         # In interactive mode, we do not halt after execution, in order to allow the user to pose queries to the system.
-	[ -z $interactive_mode ] && prolog_command="swipl -l continuousQueries.prolog -g continuousQueries(${application},${second_argument}),halt." || prolog_command="swipl -l continuousQueries.prolog -g continuousQueries(${application},${second_argument})."
+	[ -z $interactive_mode ] && prolog_command="swipl -O -l continuousQueries.prolog -g continuousQueries(${application},${second_argument}),halt." || prolog_command="swipl -O -l continuousQueries.prolog -g profile(continuousQueries(${application},${second_argument}))."
 }
 
 function error_message() {

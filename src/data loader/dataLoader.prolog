@@ -197,11 +197,13 @@ getIEFromRowandAssertIt(Row) :-
 	% IElabel becomes the first argument of Row
 	getRowArgument(1, Row, IElabel),
 	(
+	      	Row =.. [_RowAtom|[EventLabel|[_ArrivalTime|[OccurenceTime|EventAttributes]]]],
+		Event =.. [EventLabel|EventAttributes],
 		% check whether the given input entity is an event
-		event(E), E=..[IElabel|_], inputEntity(E), !, 
+		event(Event), inputEntity(Event), !, 
 		% assertEvent(+Row),
 		% distill from Row the event instance and assert it 
-		assertEvent(Row)
+		assertz( happensAtIE(Event, OccurenceTime) )
 		;
 		% check whether the given input entity is a statically determined fluent	
 		inputEntity(F=V), F=..[IElabel|_], sDFluent(F=V), !,
@@ -226,19 +228,6 @@ getRowArgument(_N, [], []) :- !.
 getRowArgument(N, Row, Arg) :- 	
 	arg(N, Row, Arg).
 	
-
-% assertEvent(+Row)
-% distill from Row the event instance and assert it in the RTEC format 	
-assertEvent(Row) :-
-	% get rid of row atom and Arrival time 
-	Row =.. [_RowAtom|[EventLabel|[_ArrivalTime|[OccurenceTime|EventAttributes]]]],
-	Event =.. [EventLabel|EventAttributes],
-	assertz( happensAtIE(Event, OccurenceTime) ), !.
-
-% the event arrival time or occurrence time is missing
-assertEvent(Row) :-
-	write('ERROR IN INPUT CSV; LINE: '), writeln(Row).
-
 
 % assertFluent(+Row)	
 % distill from Row the instantaneous instance of Fluent=Value and assert it in the RTEC format 
@@ -272,7 +261,7 @@ checkGrounding(IEType, Row) :-
 		findGroundings(IEType, Row)
 		;
 		true
-	).
+	), !.
 
 % this predicate deals with dynamic grounding, ie
 % writes explicitly a domain-dependent predicate declaring the index for dynamic grounding

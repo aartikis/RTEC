@@ -11,8 +11,8 @@
 %:- ['prolog/agent9000.prolog'].
 %:- ['prolog/agent10000.prolog'].
 
-%assert_n_agents(N):- N>0, N1 is N-1, N1=0, assertz(agent(N1)).
-%assert_n_agents(N):- N>0, N1 is N-1, assertz(agent(N1)), assert_n_agents(N1).
+assert_n_agents(N):- N>0, N1 is N-1, N1=0, assertz(person(N1)).
+assert_n_agents(N):- N>0, N1 is N-1, assertz(person(N1)), assert_n_agents(N1).
 
 role(chair).
 role(voter).
@@ -35,6 +35,26 @@ motion(7).
 motion(8).
 motion(9).
 motion(10).
+%motion(11).
+%motion(12).
+%motion(13).
+%motion(14).
+%motion(15).
+%motion(16).
+%motion(17).
+%motion(18).
+%motion(19).
+%motion(20).
+%motion(21).
+%motion(22).
+%motion(23).
+%motion(24).
+%motion(25).
+%motion(26).
+%motion(27).
+%motion(28).
+%motion(29).
+%motion(30).
 
 queryMotion(M) :-
 	motion(M), Temp is M mod 3, Temp=0.

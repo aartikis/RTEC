@@ -54,11 +54,11 @@ continuousQueries(App, ParamList) :-
     % In case that the input is a live stream, sleep until the first query time, which is specified with the <Step> parameter.
     sleep_if_live_stream(InputMode, Step, StreamRate, 0),
     % This predicates runs RTEC for the next query time. Afterwards, it is being called recursively until we have passed the EndReasoningTime.
-    querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, SDEBatch, StreamRate),
+    querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, [], RecTimes, [], InputList, ([],[],[]), OutputLists, ([],[]), Memory, [], RetainedI, SDEBatch, StreamRate),
     % Calculate and record the recognition time statistics
     closeInput(InputMode, InputPaths, InputStreams, InputThreadIDs),
     open(LogFile, append, LogFileStream),
-    logWindowStats(LogFileStream, RecTimes, InputList, OutputLists),
+    logWindowStats(LogFileStream, RecTimes, InputList, OutputLists, Memory, RetainedI),
     %writeAllGlobals(LogFileStream),
     close(LogFileStream),
     closeOutput(OutputMode, OutputThreadID), !.
@@ -73,7 +73,7 @@ continuousQueries(App) :- !,
 %PrevQueryTime is QueryTime-Step,
 %PrevQueryTime >= EndReasoningTime, !.
 
-querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, SDEBatch, StreamRate) :-
+querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, QueryTime, StartReasoningTime, EndReasoningTime, InitRecTime, RecTimes, InitInput, InputList, (InitOutputOutFVpairs,InitOutputOutLI,InitOutputOutLD), OutputList, (InitHMemory, InitGMemory), Memory, InitRI, OutRI, SDEBatch, StreamRate) :-
 	getWindowStartTime(QueryTime, WM, StartReasoningTime, WindowStartTime),
 	% VerifiedQueryTime=QueryTime when QueryTime =< EndReasoningTime
 	% otherwise: VerifiedQueryTime=EndReasoningTime 
@@ -89,41 +89,71 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 	% When QueryTime =< EndReasoningTime then event recognition takes place in (QueryTime-WM,QueryTime]
 	% Otherwise, event recognition takes place effectively in (QueryTime-WM,EndReasoningTime]
 	% because no input data are loader after EndReasoningTime
-	eventRecognition(QueryTime, WM),
-	findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L),L\=[]), OELI),
-	findall((EE,TT), (outputEntity(EE),happensAt(EE,TT)), OELT),
+	verifyWM(WM, QueryTime, VerifiedQueryTime, VWM),
+	eventRecognition(VerifiedQueryTime, VWM),
+	findall((F=V,L), (outputEntity(F=V),holdsFor(F=V,L),L\=[],L\=([],_)), OELI),
+	findall((EE,TT), (outputEntity(EE), happensAt(EE,TT)), OELT),
 	statistics(StatisticsFlag,[S2,_T2]),
+	garbage_collect,
+	findall(RCount, (retained(_FCount, _F, _Ti, RetainedInfo), intervals_in_info(RetainedInfo, RCount)), RET),
+	sumlist(RET, RI),
+	heap_usage(HM),
+	global_stack_usage(GM),
 	% log the computed intervals of output entities
 	% log window execution time
  	S is S2-S1, %S=T2,
 	open(LogFile, append, LogFileStream),
- 	writeResult(S, LogFileStream),
+ 	writeResult((S,RI), LogFileStream),
 	close(LogFileStream),
 	% print statistics about window execution: recognition time, input entities and output entities.
-	printAfterER(S, WindowStartTime, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD),
+	printAfterER(S, WindowStartTime, VerifiedQueryTime, OELI, OELT, InL, OutFVpairs, OutLI, OutLD, HM, GM, RI),!,
 	(
-		% if the designated last time-point of reasoning has not been passed
-		QueryTime < EndReasoningTime,
-		% (i) compute the next query-time
-		NextQueryTime is QueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
-                % If the <OutputMode> is fifo, send a "ready" message to the thread writing the computed intervals into a named pipe.
-        	((OutputMode=fifo ; OutputMode=socket), thread_send_message(OutputThreadID, printRecognitions) ;
-                % If the <OutputMode> is file, this thread writes the computed intervals into a regular file.
-         	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
-		% (ii) sleep until the next query time 
-		% after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
-		sleep_if_live_stream(InputMode, Step, StreamRate, S),
-		querying(InputMode, InputStreams, NewPointerPositions, StatisticsFlag, LogFile, OutputMode, ResultsFile, OutputThreadID, WM, Step, NextQueryTime, StartReasoningTime, EndReasoningTime, [S|InitRecTime], RecTimes, [InL|InitInput], InputList, ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]), OutputList, SDEBatch, StreamRate)
-	;
-                % Since this is the final window, this thread has to wait for the thread executing printRecognitions to terminate before exiting.
-                % This is why we have to wait for a "printRecognitionsOK" message in this case.
-        	((OutputMode=fifo ; OutputMode=socket), thread_send_message(OutputThreadID, printRecognitions), thread_get_message(printRecognitionsOK(QueryTime)) ;
-         	 OutputMode=file, printRecognitions(ResultsFile, QueryTime, WM)),
-		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
-		QueryTime >= EndReasoningTime,
-		RecTimes = [S|InitRecTime],
-		InputList = [InL|InitInput],
-		OutputList= ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD])
+		(
+            % if the designated last time-point of reasoning has not been passed
+            VerifiedQueryTime < EndReasoningTime,
+        
+    		% (i) compute the next query-time
+    		NextQueryTime is VerifiedQueryTime+Step, !,  %% This cut is necessary to prevent the local stack from exploding.
+            % If the <OutputMode> is fifo, send a "ready" message to the thread writing the computed intervals into a named pipe.
+        	(
+        	        (OutputMode=fifo ; OutputMode=socket),
+        	        thread_send_message(OutputThreadID, printRecognitions) ;
+                        % If the <OutputMode> is file, this thread writes the computed intervals into a regular file.
+         	        OutputMode=file, printRecognitions(ResultsFile, VerifiedQueryTime, VWM)
+         	),
+		    % (ii) sleep until the next query time 
+		    % after each window, except the first and the last one, sleep for an amount of tie calculated as the step minus the time used for event recognition on the current window.
+		    sleep_if_live_stream(InputMode, Step, StreamRate, S),
+		    querying(InputMode, InputStreams, 
+		        NewPointerPositions, StatisticsFlag,
+		        LogFile, OutputMode, ResultsFile,
+		        OutputThreadID, VWM, Step, NextQueryTime,
+		        StartReasoningTime, EndReasoningTime,
+		        [S|InitRecTime], RecTimes, [InL|InitInput],
+		        InputList, ([OutFVpairs|InitOutputOutFVpairs],
+		        [OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]),
+		        OutputList, ([HM|InitHMemory],[GM|InitGMemory]), Memory,
+		        [RI|InitRI], OutRI, SDEBatch, StreamRate)
+        )    
+        ;
+        (
+            % Since this is the final window, this thread has to wait for the thread executing printRecognitions to terminate before exiting.
+            % This is why we have to wait for a "printRecognitionsOK" message in this case.
+        	(
+                (OutputMode=fifo ; OutputMode=socket),
+                thread_send_message(OutputThreadID, printRecognitions), 
+                thread_get_message(printRecognitionsOK(VerifiedQueryTime)) 
+                ;
+         	    OutputMode=file, printRecognitions(ResultsFile, VerifiedQueryTime, VWM)
+         	),
+    		% if the designated last time-point of reasoning has been passed, compute exit with the final execution metrics.
+		    VerifiedQueryTime >= EndReasoningTime,
+	    	RecTimes = [S|InitRecTime],
+		    InputList = [InL|InitInput],
+		    OutputList = ([OutFVpairs|InitOutputOutFVpairs],[OutLI|InitOutputOutLI],[OutLD|InitOutputOutLD]),
+		    Memory = ([HM|InitHMemory],[GM|InitGMemory]),
+	    	OutRI = [RI|InitRI]
+        )
 	).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,7 +164,25 @@ querying(InputMode, InputStreams, PointerPositions, StatisticsFlag, LogFile, Out
 handleProlog(yap, cputime) :-
     current_prolog_flag(dialect, yap).
 handleProlog(swi, runtime) :-
-	current_prolog_flag(dialect, swi).
+    current_prolog_flag(dialect, swi).
+
+% heap_usage(-Memory) (in bytes)
+heap_usage(Memory):-
+    current_prolog_flag(dialect, swi),
+    statistics(heapused, Memory).
+	
+heap_usage(Memory):-
+    current_prolog_flag(dialect, yap),
+    statistics(heap, [Memory, _]).
+   
+global_stack_usage(Memory):-
+    current_prolog_flag(dialect, swi),
+    statistics(globalused, Memory).
+
+global_stack_usage(Memory):-
+    current_prolog_flag(dialect, yap),
+    statistics(global_stack, Memory).
+
 
 % init_input(+InputMode, +InputPaths, -InputStreams, -PointerPositions, -InputThreadIDs)
 init_input(csv, InputPaths, InputStreams, PointerPositions, []):-
@@ -341,6 +389,9 @@ verifyQueryTime(QueryTime, EndReasoningTime, EndReasoningTime) :-
  	write('***Attention***: QueryTime adjusted from '), write(QueryTime), 
 	write(' to '), write(EndReasoningTime),
 	writeln(' but QueryTime-WM remains the same.').
+
+verifyWM(WM, QueryTime, VerifiedQueryTime, VWM):-
+	VWM is WM - (QueryTime - VerifiedQueryTime).
 
 % if fifo, sleep until the next query time 
 % sleep_if_live_stream_between_windows(+InputMode, +Step, +StreamRate, +S)	

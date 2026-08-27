@@ -1,3 +1,5 @@
+vesselStaticInfo(X,synth,3.5):-
+    X >= 0, X < 1000.
 vesselStaticInfo(11603,unknown,25.5).
 vesselStaticInfo(1178,anti-pollution,0.0).
 vesselStaticInfo(1234500,fishing,0.0).

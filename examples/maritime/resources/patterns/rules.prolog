@@ -319,7 +319,26 @@ holdsFor(pilotOps(Vessel1, Vessel2)=true, I) :-
     holdsFor(withinArea(Vessel1, nearCoast)=true, Iw1),
     holdsFor(withinArea(Vessel2, nearCoast)=true, Iw2),
     relative_complement_all(Ii,[Iw1, Iw2], I).
-
+    
+%---------- transhipment -----------------------%
+holdsFor(transhipment(Vessel1, Vessel2)=true, I):-
+    holdsFor(trawling(Vessel1), Itr),
+    holdsFor(rendezVous(Vessel1, Vessel2), Ir),
+    seq(Itr, Ir, I).
+    
+%---------- stopped2high ---------------------%
+holdsFor(stopped2high(Vessel)=true, I):-
+    holdsFor(stopped(Vessel)=nearPorts, Is),
+    holdsFor(movingSpeed(Vessel)=above, Imn),
+    seq(Is, Imn, I).
+ 
+%---------- stopped2high2stopped ---------------------%
+holdsFor(stopped2high2stopped(Vessel)=true, I):-
+    holdsFor(stopped2high(Vessel)=true, Imn),
+    holdsFor(stopped(Vessel)=farFromPorts, Is),
+    seq(Imn, Is, I).
+   
+    
 % proximity is an input statically determined fluent.
 % its instances arrive in the form of intervals.
 collectIntervals(proximity(_,_)=true).
@@ -391,6 +410,12 @@ grounding(trawling(Vessel)=true):-
 	vessel(Vessel).
 grounding(loitering(Vessel)=true):-
 	vessel(Vessel).
+grounding(stopped2high(Vessel)=true):-
+	vessel(Vessel).
+grounding(stopped2high2stopped(Vessel)=true):-
+	vessel(Vessel).
+grounding(transhipment(Vessel1, Vessel2)=true):-
+	vpair(Vessel1, Vessel2).
 
 needsGrounding(_, _, _) :-
 	fail.

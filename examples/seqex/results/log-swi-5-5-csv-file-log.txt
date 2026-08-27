@@ -1,0 +1,22 @@
++0,1+0,2+0,4+1,2+0,4+1,4
+
+Total Recognition Time (ms)		: 2
+Recognition Time average (ms)		: 0.3333333333333333
+Recognition Time standard deviation (ms): 0.4714045207910317
+Recognition Time worst (ms)		: 1
+
+Input Entities average			: 2
+Input Entities standard deviation	: 1.2909944487358056
+
+Output Entities (average number of fluent-value pairs)	: 6.5
+Output Entities (standard deviation)	  		: 0.7637626158259734
+Output Entities (average number of intervals)	: 6.5
+Output Entities (standard deviation)	  	: 0.7637626158259734
+Output Entities (average number of timepoints)	: 24
+Output Entities (standard deviation)	 	: 8.48528137423857
+Heap usage (average number of bytes)		: 5848242.666666667
+Heap usage (standard deviation)	 		: 7763.9600434028225
+Global stack usage (average number of bytes)	: 185806.66666666666
+Global stack usage (standard deviation)	 	: 37987.42905517853
+Retained entities (average number of intervals)	: 2.8333333333333335
+Retained entities (standard deviation)	 	: 1.2133516482134197

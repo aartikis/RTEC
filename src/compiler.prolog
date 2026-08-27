@@ -7,6 +7,7 @@
  
  Event processing should be performed on the event description produced by this compiler.
  *************************************************************************************************************************************/
+:- ['utilities/seq-compile-utils.prolog'].
 
 :- use_module(library(lists)). % needed to use member/2 in YAP.
 
@@ -17,13 +18,31 @@
 :- discontiguous event/1, inputEntity/1, index/2, simpleFluent/1, outputEntity/1, sDFluent/1, initiatedAt/2, terminatedAt/2, holdsFor/3, happensAt/2, grounding/1, dgrounded/2, initiatedAt/4, terminatedAt/4, fi/3, p/1, holdsFor/2, initially/1, initiates/3, terminates/3.
 
 % these predicates may or may not appear in the input rules and declarations files.
-:- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1, internalEntity/1, simpleFluent/1, sDFluent/1, event/1, outputEntity/1, inputEntity/1, index/2, dynamicDomain/1, allen_count/1.
+:- dynamic initially/1, initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, initiates/3, terminates/3, happensAt/2, holdsFor/2, holdsAt/2, grounding/1, cyclic/1, collectIntervals/1, buildFromPoints/1, internalEntity/1, simpleFluent/1, sDFluent/1, event/1, outputEntity/1, inputEntity/1, index/2, dynamicDomain/1, allen_count/1, use_rct/1.
 
 :- multifile indexOf/2.
 
 % these predicates are asserted dynamically by the compiler.
 % they should be retracted before terminating.
 :- dynamic scc/1, fdependency/2, idependency/2, fluentDependency/2, fluentCycle/1, fluentscc/1, fluentLevel/2, fluentsccedge/2, dynamicAndGrounder/2, fcdedge/2, frdwcc/1, fcdscc/1, cdc/1, cyclicPathInFCD/1, cdedge/2, cdcLevel/2, translatableSF/1, optimise_sfs/0.
+
+%rtec_{get/set}_val are used for
+% retrieving and setting global RTEC
+% values, e.g., tq, window size etc.
+:-dynamic rtec_val/2.
+
+% this is required for compilation of sequence 
+rtec_get_val(Const, Val):-
+    rtec_val(Const, Val).
+
+rtec_set_val(Const, Val):-
+    rtec_val(Const, OldVal),!,
+    retract(rtec_val(Const, OldVal)),
+    assertz(rtec_val(Const, Val)).
+rtec_set_val(Const, Val):-
+    assertz(rtec_val(Const, Val)).
+    
+:-rtec_set_val(f_count, 0).
 
 % Compile the rules of <ApplicationName> found in '../examples/<ApplicationName>/resources/patterns/rules.prolog'. 
 % This incarnation of compileED does not construct a dependency graph.
@@ -311,10 +330,24 @@ compileHoldsFor :-
 	% or any other domain-independent code
 	\+ var(F), 
 	assertz(allen_count(0)),
+	rule_body_has_seq(Body),
+	compileConditionsWithSeq(Body, NewBody, [], false, F=V),
+	retractall(allen_count(_)),
+	writeCompiledRule('holdsFor', [F=V,I], NewBody), fail.
+
+% compile holdsFor/2 rules
+compileHoldsFor :-
+	clause(holdsFor(F=V,I), Body),	
+	% the condition below makes sure that we do not compile rules from RTEC.prolog 
+	% or any other domain-independent code
+	\+ var(F), 
+	assertz(allen_count(0)),
+	\+ rule_body_has_seq(Body),
 	compileConditions(Body, NewBody, [], false, F=V),
 	retractall(allen_count(_)),
 	writeCompiledRule('holdsFor', [F=V,I], NewBody), fail.
-	
+
+
 % compile holdsAt/2 rules
 
 compileHoldsAt :-
@@ -925,6 +958,7 @@ compileConditions1(equal(I1, I2, Outmode ,I), equal(F=V, AllenCount, I1, I2, Out
 	incr_allen_count(AllenCount), !.
 
 
+
 %%% other body literals, eg interval manipulation constructs 
 %%% or optimisation checks
 
@@ -935,6 +969,11 @@ compileConditions1(findall(Targets,user:ECPred,List),findall(Targets,NewECPred,L
 compileConditions1(findall(Targets,ECPred,List),findall(Targets,NewECPred,List), Timespan, Cyclic, FVP) :-
 	compileConditions(ECPred, NewECPred, Timespan, Cyclic, FVP), !.
 
+
+%
+
+
+
 compileConditions1(Something, Something, _Timespan, _Cyclic, _FVP).
 
 %compileConditions1(Something, _T1, _T2, Something, _).
@@ -943,6 +982,7 @@ incr_allen_count(Count):-
 	retract(allen_count(Count)),
 	NewCount is Count + 1,
 	assertz(allen_count(NewCount)).
+	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % I/O Utils
@@ -2808,6 +2848,7 @@ writeCachingOrderRulesOf([Entity|Rest],  ProcOrd, Level):-
         % Write cachingOrder2 rule with body "grounding" facts.
 	write('cachingOrder2('), write(Index), write(', '), write(EntityNoConst), write(') :-'), write(' % level in dependency graph: '), write(Level), write(', processing order in component: '), write(ProcOrd), nl, 
 	tab(5), write(Body), write('.'), nl, nl,
+	write('processingLevel('), write(Level), write(','), write(Index), write(', '), write(EntityNoConst), write(').'),nl, 
         NextProcOrd is ProcOrd + 1,
 	writeCachingOrderRulesOf(Rest, NextProcOrd, Level).
 

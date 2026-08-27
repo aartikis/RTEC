@@ -45,3 +45,4 @@ typeSpeed(tug,2,10,5).
 %typeSpeed(unknown,7,18,14).
 %typeSpeed(unspecified,7,18,14).
 typeSpeed(wingingrnd,9,14,12).
+typeSpeed(synth,5,10,7).
