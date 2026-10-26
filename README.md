@@ -4,7 +4,7 @@
 It is written in Prolog and has been tested under [SWI-Prolog](https://www.swi-prolog.org/) on Linux.
 
 Pitsikalis E., Artikis A., Stream Reasoning with Sequencing.
-In International Conference on Logic for Programming, Artificial Intelligence and Reasoning (LPAR), 2026. [pdf](https://easychair.org/publications/paper/lH4k/open) 
+In International Conference on Logic for Programming, Artificial Intelligence and Reasoning (LPAR), 2026. [(pdf)](https://easychair.org/publications/paper/lH4k/open) 
 
 ---
 
