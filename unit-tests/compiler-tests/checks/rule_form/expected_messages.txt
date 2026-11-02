@@ -1,0 +1,9 @@
+RTEC warning: rules.prolog:2: [rule form] initiatedAt(rich(X)=true,T): holdsAt(location(X)=pub,T) as the first condition is evaluated before the time-point T is known, so this rule never fires; start with happensAt(Event, T).
+RTEC warning: rules.prolog:7: [rule form] terminatedAt(rich(X)=true,T): the time-point T1 of holdsAt(location(X)=home,T1) is not bound by an earlier condition; use the time-point T of the head.
+RTEC warning: rules.prolog:12: [rule form] holdsFor(happy(X)=true,I): happensAt(win_lottery(X),_T) is not evaluated on the intervals of a holdsFor rule; use holdsFor and interval constructs.
+RTEC warning: rules.prolog:18: [rule form] holdsFor(sad(X)=true,I): the body does not compute the interval list I of the head, so the rule gives no intervals.
+RTEC warning: rules.prolog:22: [rule form] initiatedAt(location(X),T): the head must have a fluent-value pair F=V, not location(X); the compiler skips this rule.
+RTEC warning: rules.prolog:26: [rule form] initiatedAt(cheerful(X)=true,T): the rule does not start with happensAt(Event, T), and the compiler attaches the time window to the first condition only, so this rule can give wrong intervals (for example with deadlines).
+RTEC warning: rules.prolog:31: [rule form] happensAt(celebrate(X),T): holdsAt(rich(X)=true,T) as the first condition is evaluated before the time-point T is known, so this rule never fires; start with happensAt(Event, T).
+RTEC warning: rules.prolog:34: [rule form] happensAt(complain(X),T): \+happensAt(win_lottery(X),T) as the first condition is evaluated before the time-point T is known; start with happensAt(Event, T).
+RTEC warning: rules.prolog:39: [rule form] initiatedAt(calm(X)=true,T): the compiler does not translate the conditions inside '\+ (A, B)', so start(rich(X)=true) never happens there; write one rule with \+ A and one with \+ B.

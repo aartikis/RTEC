@@ -132,6 +132,8 @@ indexOf(Index, Entity):-
 %	- Optionally, collectIntervals/buildFromPoints/points declarations statiting whether the input statically determined fluents arrive in time-points or intervals.
 compileEventDescription(InputDescription, OutputDescription):-
 	consult(InputDescription),
+	% print warnings and errors about likely mistakes of the event description to user_error (see checkEventDescription/2).
+	checkEventDescription(InputDescription, OutputDescription),
 	tell(OutputDescription),
 	processRules.
 
@@ -341,11 +343,33 @@ compileHappensAt :-
 compileFI :-
 	clause(fi(F1=V1, F2=V2, R), Body),
 	write(fi(F1=V1, F2=V2, R)),
-        ((Body=true, \+ clause(grounding(F1=V1), _), \+ clause(grounding(F2=V2), _)) -> write('.\n\n') ; write(':-\n')),
-	(Body\=true -> (tab(5), write(Body), write(','), nl); true),
-        (clause(grounding(F1=V1), _) -> (tab(5), write('grounding('), write(F1=V1), write('),\n')); true),
-        (clause(grounding(F2=V2), _) -> (tab(5), write('grounding('), write(F2=V2), write(').\n\n')); true),
-        fail.
+	(Body=true -> Conditions0=[] ; Conditions0=[Body]),
+	(clause(grounding(F1=V1), _) -> append(Conditions0, [grounding(F1=V1)], Conditions1) ; Conditions1=Conditions0),
+	(clause(grounding(F2=V2), _) -> append(Conditions1, [grounding(F2=V2)], Conditions) ; Conditions=Conditions1),
+	% the compiled fi is closed by a period whichever of its body and groundings are present
+	writeFIConditions(Conditions),
+	fail.
+
+% writeFIConditions(+Conditions)
+writeFIConditions([]):-
+	write('.\n\n').
+writeFIConditions([Condition|Conditions]):-
+	write(':-\n'),
+	writeFIConditions1([Condition|Conditions]).
+
+writeFIConditions1([Condition]):- !,
+	tab(5), writeFICondition(Condition), write('.\n\n').
+writeFIConditions1([Condition|Conditions]):-
+	tab(5), writeFICondition(Condition), write(','), nl,
+	writeFIConditions1(Conditions).
+
+% writeFICondition(+Condition)
+% A ';' or '->' keeps its brackets, so that the condition is read back the same next to the groundings.
+writeFICondition(Condition):-
+	nonvar(Condition), Condition=(_,_), !,
+	write(Condition).
+writeFICondition(Condition):-
+	write_term(Condition, [portray(true), numbervars(true), priority(999)]).
 
 % unused
 % compile cachingOrder/1 rules
@@ -2985,3 +3009,634 @@ writeDependency(DependsOn, Entity):-
 writeDependency(DependsOn, Entity):-
 	write("dependency("), writeEntityUnderscores(DependsOn), write(","), writeEntityUnderscores(Entity), write(").\n").
 */
+
+%%%%%%%%%%%%%%%%%%%%%%%% EVENT DESCRIPTION CHECKS START %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The compiler translates the rules it is given and does not reject mistakes. For example, an initiatedAt
+% rule whose first condition is a holdsAt compiles but never fires, and a ';' next to other conditions is
+% written without brackets, so that A,(B;C) is read back as (A,B);C.
+% checkEventDescription/2 reads the event description again and prints a message to user_error for each
+% likely mistake, in the form:
+%	RTEC warning: <file>:<line>: [<check>] <clause head>: <problem>.
+%	RTEC error: <file>:<line>: [<check>] <clause head>: <problem>.
+% Warnings do not change the compiled event description. Errors are the mistakes on which the compiler
+% cannot finish; after printing them, the compilation stops (see stopCompilation/2).
+% The checks are: rule form, disjunction, built-in, fi/p, grounding, number and fluent.
+
+:- multifile prolog:message//1.
+prolog:message(rtec_event_description_errors(N)) -->
+	['the event description has ~w error(s), see the RTEC errors above; nothing was compiled'-[N]].
+
+% checkEventDescription(+InputDescription, +OutputDescription)
+checkEventDescription(InputDescription, OutputDescription):-
+	catch(readEventDescription(InputDescription, Clauses), _, Clauses=[]),
+	catch(descriptionIndex(Clauses, Index), _, Index=index([], [], [])),
+	catch(findall(_, (member(Clause, Clauses), clauseWarning(Clause, Index, Check, Problem), printMessage(warning, Clause, Check, Problem)), _), _, true),
+	catch(findall(_, (member(Clause, Clauses), clauseError(Clause, Check, Problem), printMessage(error, Clause, Check, Problem)), Errors), _, Errors=[]),
+	length(Errors, N),
+	(N=:=0 -> true ; stopCompilation(OutputDescription, N)), !.
+checkEventDescription(_, _).
+
+% stopCompilation(+OutputDescription, +N)
+% The compiled event description is replaced by one without rules, so that no rules of an earlier compilation
+% are used by mistake, and the compilation stops with the exception rtec_event_description_errors(N).
+stopCompilation(OutputDescription, N):-
+	catch(setup_call_cleanup(open(OutputDescription, write, Stream),
+		format(Stream, "% The event description has errors; nothing was compiled.~n", []),
+		close(Stream)), _, true),
+	throw(rtec_event_description_errors(N)).
+
+% readEventDescription(+File, -Clauses)
+% Clauses contains clause(Term, VarNames, File:Line) for each clause of File, read with the variable names of the user.
+% File is found as consult/1 finds it, so that its extension may be left out.
+% Directives and clauses with a syntax error are skipped; the syntax errors are reported when the file is consulted.
+readEventDescription(File, Clauses):-
+	absolute_file_name(File, Path, [file_type(prolog), access(read)]),
+	setup_call_cleanup(open(Path, read, Stream), readClauses(Stream, File, Clauses), close(Stream)).
+
+readClauses(Stream, File, Clauses):-
+	stream_property(Stream, position(Before)),
+	catch(read_term(Stream, Term, [variable_names(VarNames), term_position(Position)]), _, Term='$syntax error'),
+	readClauses(Term, VarNames, Position, Before, Stream, File, Clauses).
+
+% readClauses(+Term, +VarNames, +Position, +Before, +Stream, +File, -Clauses)
+readClauses(Term, _, _, _, Stream, File, Clauses):-
+	var(Term), !,
+	readClauses(Stream, File, Clauses).
+readClauses(Term, _, _, _, _, _, []):-
+	Term==end_of_file, !.
+readClauses(Term, _, _, Before, Stream, File, Clauses):-
+	Term=='$syntax error', !,
+	% stop if the reader did not move past the clause with the syntax error
+	stream_property(Stream, position(After)),
+	(After==Before -> Clauses=[] ; readClauses(Stream, File, Clauses)).
+readClauses((:- _), _, _, _, Stream, File, Clauses):- !,
+	readClauses(Stream, File, Clauses).
+readClauses(Term, VarNames, Position, _, Stream, File, [clause(Term, VarNames, File:Line)|Clauses]):-
+	stream_position_data(line_count, Position, Line),
+	readClauses(Stream, File, Clauses).
+
+% descriptionIndex(+Clauses, -Index)
+% Index is index(Sources, Heads, Groundings): the sources of the fi declarations, the RuleType-FVP heads of the
+% initiatedAt, terminatedAt, holdsFor and initially clauses, and the groundings. They are collected once, for
+% the checks that compare a clause with the rest of the event description.
+descriptionIndex(Clauses, index(Sources, Heads, Groundings)):-
+	findall(Source, (member(clause(Term, _, _), Clauses), fiClause(Term, Source, _, _, _)), Sources),
+	findall(RuleType-FVP, (member(clause(Term, _, _), Clauses), clauseHead(Term, Head), nonvar(Head),
+		Head =.. [RuleType, FVP|_], memberchk(RuleType, [initiatedAt, terminatedAt, holdsFor, initially])), Heads),
+	findall(Grounded, (member(clause(Term, _, _), Clauses), clauseHead(Term, grounding(Grounded))), Groundings).
+
+% printMessage(+Level, +Clause, +Check, +Problem)
+% Level is warning or error, and Problem is format(Format, Arguments). The variables of the clause are printed
+% with their names.
+printMessage(Level, clause(Term, VarNames, File:Line), Check, format(Format, Arguments)):-
+	clauseHead(Term, Head),
+	\+ \+ (
+		nameVariables(VarNames, Term),
+		format(atom(Text), Format, Arguments),
+		format(user_error, "RTEC ~w: ~w:~w: [~w] ~w: ~w.~n", [Level, File, Line, Check, Head, Text])
+	).
+
+% nameVariables(+VarNames, +Term)
+% Bind each variable of Term to '$VAR'(Name), so that it is written with its name; anonymous variables are written as _.
+nameVariables(VarNames, Term):-
+	maplist(nameVariable, VarNames),
+	term_variables(Term, Anonymous),
+	maplist(=('$VAR'('_')), Anonymous).
+
+nameVariable(Name=Variable):-
+	Variable='$VAR'(Name).
+
+clauseHead((Head:-_), Head):- !.
+clauseHead(Head, Head).
+
+% conjunctList(+Body, -Conditions)
+% The top-level conditions of a rule body, in order.
+conjunctList(Body, [Body]):-
+	var(Body), !.
+conjunctList((A,B), Conditions):- !,
+	conjunctList(A, ConditionsA),
+	conjunctList(B, ConditionsB),
+	append(ConditionsA, ConditionsB, Conditions).
+conjunctList(Condition, [Condition]).
+
+% bodyConditions(+Body, -Conditions)
+% The conditions of a rule body, including the conditions under a negation.
+% The conditions share their variables with Body, so that warnings print them with their names.
+bodyConditions(Body, Conditions):-
+	conjunctList(Body, TopConditions),
+	withNegatedConditions(TopConditions, Conditions).
+
+% withNegatedConditions(+Conditions, -AllConditions)
+withNegatedConditions([], []).
+withNegatedConditions([Condition|Rest], [Condition|AllConditions]):-
+	nonvar(Condition),
+	(Condition = (\+ Negated) ; Condition = not(Negated)), !,
+	conjunctList(Negated, NegatedConditions),
+	withNegatedConditions(NegatedConditions, AllNegated),
+	withNegatedConditions(Rest, AllRest),
+	append(AllNegated, AllRest, AllConditions).
+withNegatedConditions([Condition|Rest], [Condition|AllConditions]):-
+	withNegatedConditions(Rest, AllConditions).
+
+% bodyCondition(+TopCondition, -Condition)
+% Condition is TopCondition or a condition under its negation.
+bodyCondition(Condition, Condition).
+bodyCondition(Negation, Condition):-
+	nonvar(Negation),
+	(Negation = (\+ Negated) ; Negation = not(Negated)),
+	conjunctList(Negated, NegatedConditions),
+	member(NegatedCondition, NegatedConditions),
+	bodyCondition(NegatedCondition, Condition).
+
+% eventCalculusRuleHead(+Head)
+% The heads of the rules that the compiler translates.
+eventCalculusRuleHead(Head):-
+	nonvar(Head),
+	functor(Head, Name, Arity),
+	memberchk(Name/Arity, [initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, happensAt/2, holdsFor/2, holdsAt/2, fi/3]).
+
+% triggeredRuleHead(+Head, -T)
+% The heads of the rules whose first condition is a happensAt at the time-point T of the head.
+triggeredRuleHead(initiatedAt(_, T), T).
+triggeredRuleHead(terminatedAt(_, T), T).
+triggeredRuleHead(happensAt(_, T), T).
+
+% triggerAt(+Condition, +T)
+% Condition may be the first condition of a rule whose head has time-point T.
+% initiatedAt and terminatedAt conditions are allowed, as in the definition of happy(X)=true in the manual.
+triggerAt(happensAt(_, T1), T):- T1==T.
+triggerAt(initiatedAt(_, T1), T):- T1==T.
+triggerAt(terminatedAt(_, T1), T):- T1==T.
+
+timedCondition(happensAt(_, T), T).
+timedCondition(holdsAt(_, T), T).
+
+% pointCondition(+Condition)
+% Conditions evaluated at a time-point, which are not evaluated on the intervals of a holdsFor rule.
+pointCondition(happensAt(_, _)).
+pointCondition(holdsAt(_, _)).
+pointCondition(initiatedAt(_, _)).
+pointCondition(terminatedAt(_, _)).
+
+fluentValuePair(FVP):-
+	nonvar(FVP), FVP=(F=_), nonvar(F), \+ number(F).
+
+% variableFluent(+FVP)
+% FVP, or its fluent, is a variable.
+variableFluent(FVP):-
+	var(FVP), !.
+variableFluent(F=_):-
+	var(F).
+
+% boundBefore(+Variable, +Conditions)
+% Variable occurs in Conditions, so it is bound when the conditions after them are evaluated.
+boundBefore(Variable, Conditions):-
+	member(Condition, Conditions),
+	term_variables(Condition, Variables),
+	member(Bound, Variables),
+	Bound==Variable, !.
+
+% firstConditionProblem(+Head, +First, -Problem)
+% The compiler evaluates the first condition before the time-point T of the head is known, so a holdsAt there
+% never holds. It also attaches the time window of an initiatedAt or terminatedAt rule to the first condition
+% only. happensAt rules have no time window, so only a first condition on T is a problem there.
+firstConditionProblem(_, First, format("~w as the first condition is evaluated before the time-point T is known, so this rule never fires; start with happensAt(Event, T)", [First])):-
+	nonvar(First),
+	First=holdsAt(_, _), !.
+firstConditionProblem(happensAt(_, _), First, format("~w as the first condition is evaluated before the time-point T is known; start with happensAt(Event, T)", [First])):- !,
+	nonvar(First),
+	(First=(\+ _) ; First=not(_)).
+firstConditionProblem(_, _, format("the rule does not start with happensAt(Event, T), and the compiler attaches the time window to the first condition only, so this rule can give wrong intervals (for example with deadlines)", [])).
+
+% disjunction(+Condition) and disjunction(+Condition, -Operator)
+disjunction(Condition):-
+	disjunction(Condition, _).
+disjunction(Condition, Operator):-
+	nonvar(Condition),
+	Condition =.. [Operator, _, _],
+	memberchk(Operator, [;, ->, *->]).
+
+% conditionalOperator(+Condition, -Operator)
+% Operator is the first '->' or '*->' in Condition, also inside a ';' or a ','.
+conditionalOperator(Condition, Operator):-
+	nonvar(Condition),
+	Condition =.. [Operator0, A, B],
+	(   memberchk(Operator0, [->, *->]) -> Operator=Operator0
+	;   memberchk(Operator0, [;, ',']), (conditionalOperator(A, Operator) -> true ; conditionalOperator(B, Operator))
+	).
+
+% disjunctionProblem(+Head, +Condition, +Conditions, -Problem)
+% Condition is a top-level condition of the body of a rule, and Conditions are all its top-level conditions.
+% holdsAt rules translate ';', but the compiler drops a holdsAt rule with '->'. Other rules are compiled with
+% ';' and '->' written as they are, and the conditions inside them are not translated: next to other conditions
+% a ';' loses its brackets, a holdsFor rule whose body is a ';' gives the intervals of one alternative only, an
+% initiatedAt or terminatedAt rule whose body is a ';' has no time window, and a start or end event inside a ';'
+% never happens (see fluentEventInside/2).
+disjunctionProblem(holdsAt(_, _), Condition, _, format("the compiler drops a holdsAt rule with '~w'", [Operator])):- !,
+	conditionalOperator(Condition, Operator).
+disjunctionProblem(_, Condition, _, format("the compiler does not translate '~w', so the compiled rule does not mean the same; write one rule per alternative", [Operator])):-
+	conditionalOperator(Condition, Operator), !.
+disjunctionProblem(Head, Condition, Conditions, format("';' next to other conditions is written without brackets, so that A,(B;C) is read back as (A,B);C; ~w", [Advice])):-
+	disjunction(Condition, Operator), Operator==(;),
+	Conditions=[_, _|_], !,
+	disjunctionAdvice(Head, Advice).
+disjunctionProblem(holdsFor(_, _), Condition, _, format("a holdsFor rule whose body is a ';' gives the intervals of its first alternative that succeeds only; combine the interval lists with union_all instead", [])):-
+	disjunction(Condition, Operator), Operator==(;), !.
+disjunctionProblem(Head, Condition, _, format("the compiler does not translate ';', so the rule has no time window, which can give wrong intervals (for example with deadlines); write one rule per alternative", [])):-
+	(Head=initiatedAt(_, _) ; Head=terminatedAt(_, _)),
+	disjunction(Condition, Operator), Operator==(;), !.
+disjunctionProblem(happensAt(_, _), Condition, [_], format("the compiler does not translate the conditions inside ';', so ~w never happens there; write one rule per alternative", [Event])):-
+	disjunction(Condition, Operator), Operator==(;),
+	fluentEventInside(Condition, Event), !.
+disjunctionProblem(Head, Condition, _, format("the compiler does not translate the conditions inside '\\+ (A ; B)', so ~w never happens there; write \\+ A, \\+ B instead", [Event])):-
+	functor(Head, Name, Arity),
+	memberchk(Name/Arity, [initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, happensAt/2]),
+	nonvar(Condition),
+	Condition=(\+ Negated),
+	disjunction(Negated, Operator), Operator==(;),
+	fluentEventInside(Negated, Event), !.
+
+% fluentEventInside(+Term, -Event)
+% Event is the start, end, startI or endI event of a happensAt condition inside Term. Except in holdsAt rules, the
+% compiler does not translate the conditions inside a ';' or inside a negation of several conditions, so RTEC
+% evaluates them with happensAt/2 of RTEC.prolog, which has no clause for these events: they never happen there.
+fluentEventInside(Term, Event):-
+	nonvar(Term),
+	Term=happensAt(Event, _), !,
+	nonvar(Event),
+	functor(Event, Name, 1),
+	memberchk(Name, [start, end, startI, endI]).
+fluentEventInside(Term, Event):-
+	compound(Term),
+	Term =.. [_|Arguments],
+	member(Argument, Arguments),
+	fluentEventInside(Argument, Event).
+
+% disjunctionAdvice(+Head, -Advice)
+disjunctionAdvice(holdsFor(_, _), 'combine the interval lists with union_all instead'):- !.
+disjunctionAdvice(_, 'write one rule per alternative').
+
+% builtinArities(+Name, -Arities)
+builtinArities(happensAt, [2]).
+builtinArities(holdsAt, [2,3]).
+builtinArities(holdsFor, [2]).
+builtinArities(initiatedAt, [2,4]).
+builtinArities(terminatedAt, [2,4]).
+builtinArities(union_all, [2]).
+builtinArities(intersect_all, [2]).
+builtinArities(complement_all, [2]).
+builtinArities(relative_complement_all, [3]).
+builtinArities(allen, [5]).
+
+% fvpArgument(+Condition, -Name, -Argument)
+% The arguments that must be a fluent-value pair F=V.
+fvpArgument(holdsAt(FVP, _), holdsAt, FVP).
+fvpArgument(holdsFor(FVP, _), holdsFor, FVP).
+fvpArgument(happensAt(Event, _), Name, FVP):-
+	nonvar(Event),
+	Event =.. [Name, FVP],
+	memberchk(Name, [start, end, startI, endI]).
+
+% fluentCondition(+Condition, -FVP)
+% The conditions whose fluent-value pair the compiler takes apart.
+fluentCondition(holdsAt(FVP, _), FVP).
+fluentCondition(holdsFor(FVP, _), FVP).
+fluentCondition(happensAt(Event, _), FVP):-
+	nonvar(Event),
+	(Event=start(FVP) ; Event=end(FVP)).
+
+% fluentHead(+Head, -FVP)
+% The heads whose fluent-value pair the compiler takes apart.
+fluentHead(Head, FVP):-
+	nonvar(Head),
+	Head =.. [Name, FVP|Arguments],
+	length(Arguments, N),
+	memberchk(Name/N, [initiatedAt/1, initiatedAt/3, terminatedAt/1, terminatedAt/3, holdsFor/1, initially/0, grounding/0]).
+
+% listArgument(+Condition, -Name, -List)
+% The arguments that must be a list of interval lists.
+listArgument(union_all(List, _), union_all, List).
+listArgument(intersect_all(List, _), intersect_all, List).
+listArgument(complement_all(List, _), complement_all, List).
+listArgument(relative_complement_all(_, List, _), relative_complement_all, List).
+
+% intervalOutput(+Condition, -Intervals)
+% The arguments that hold a list of intervals once the condition has been evaluated.
+intervalOutput(holdsFor(_, Intervals), Intervals).
+intervalOutput(union_all(_, Intervals), Intervals).
+intervalOutput(intersect_all(_, Intervals), Intervals).
+intervalOutput(complement_all(_, Intervals), Intervals).
+intervalOutput(relative_complement_all(_, _, Intervals), Intervals).
+intervalOutput(allen(_, _, _, _, Intervals), Intervals).
+intervalOutput(Condition, Intervals):-
+	nonvar(Condition),
+	Condition =.. [Relation, _, _, _, Intervals],
+	allenRelation(Relation).
+
+% producedIntervalList(+Variable, +Conditions)
+producedIntervalList(Variable, Conditions):-
+	var(Variable),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	intervalOutput(Condition, Intervals),
+	Intervals==Variable, !.
+
+allenRelation(before).
+allenRelation(meets).
+allenRelation(starts).
+allenRelation(finishes).
+allenRelation(during).
+allenRelation(overlaps).
+allenRelation(equal).
+
+% the output modes accepted by apply_return_type/4 of allen.prolog
+allenMode(source).
+allenMode(target).
+allenMode(lhs).
+allenMode(rhs).
+allenMode(union).
+allenMode(intersection).
+allenMode(relative_complement).
+allenMode(relative_complement_inverse).
+
+% allenCondition(+Condition, -Relation, -Mode)
+allenCondition(allen(Relation, _, _, Mode, _), Relation, Mode).
+allenCondition(Condition, Relation, Mode):-
+	nonvar(Condition),
+	Condition =.. [Relation, _, _, Mode, _],
+	allenRelation(Relation).
+
+% fiClause(+Term, -Source, -Target, -Duration, -Body)
+fiClause((fi(Source, Target, Duration):-Body), Source, Target, Duration, Body):- !.
+fiClause(fi(Source, Target, Duration), Source, Target, Duration, true).
+
+% definedBy(+Index, +FVP, -RuleType)
+% FVP is the head of a rule of type RuleType.
+definedBy(index(_, Heads, _), FVP, RuleType):-
+	member(RuleType-HeadFVP, Heads),
+	\+ \+ HeadFVP=FVP.
+
+% hasGrounding(+Index, +FVP)
+hasGrounding(index(_, _, Groundings), FVP):-
+	member(Grounded, Groundings),
+	\+ \+ Grounded=FVP, !.
+
+%%%% clauseWarning(+Clause, +Index, -Check, -Problem)
+
+% rule form: initiatedAt, terminatedAt and happensAt rules start with a positive happensAt at the time-point of
+% the head (see firstConditionProblem/3).
+clauseWarning(clause((Head:-Body), _, _), _, 'rule form', Problem):-
+	triggeredRuleHead(Head, T),
+	conjunctList(Body, [First|_]),
+	% a disjunction as the first condition is reported by the disjunction check
+	\+ disjunction(First),
+	\+ triggerAt(First, T),
+	firstConditionProblem(Head, First, Problem).
+
+% rule form: the time-point of the other happensAt and holdsAt conditions of such rules is bound by an earlier
+% condition, normally the time-point T of the head.
+clauseWarning(clause((Head:-Body), _, _), _, 'rule form', format("the time-point ~w of ~w is not bound by an earlier condition; use the time-point ~w of the head", [T1, Condition, T])):-
+	triggeredRuleHead(Head, T),
+	conjunctList(Body, [First|Others]),
+	append(Before, [Other|_], Others),
+	bodyCondition(Other, Condition),
+	nonvar(Condition),
+	timedCondition(Condition, T1),
+	var(T1), \+ T1==T,
+	\+ boundBefore(T1, [First|Before]).
+
+% rule form: holdsFor rules combine the interval lists of FVPs; a condition on a time-point is not evaluated on
+% these intervals.
+clauseWarning(clause((holdsFor(_, _):-Body), _, _), _, 'rule form', format("~w is not evaluated on the intervals of a holdsFor rule; use holdsFor and interval constructs", [Condition])):-
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	pointCondition(Condition).
+
+% rule form: the body of a holdsFor rule computes the interval list of the head.
+clauseWarning(clause((holdsFor(_, Intervals):-Body), _, _), _, 'rule form', format("the body does not compute the interval list ~w of the head, so the rule gives no intervals", [Intervals])):-
+	var(Intervals),
+	term_variables(Body, BodyVariables),
+	\+ (member(Variable, BodyVariables), Variable==Intervals).
+
+% rule form: the head of an initiatedAt, terminatedAt or holdsFor rule is a fluent-value pair. A variable fluent
+% is an error (see clauseError/3).
+clauseWarning(clause((Head:-_), _, _), _, 'rule form', format("the head must have a fluent-value pair F=V, not ~w; the compiler skips this rule", [FVP])):-
+	nonvar(Head),
+	functor(Head, Name, Arity),
+	memberchk(Name/Arity, [initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, holdsFor/2]),
+	arg(1, Head, FVP),
+	nonvar(FVP),
+	\+ FVP=(_=_).
+
+% rule form: the compiler translates a negated condition, but not the conditions inside a negation of several
+% conditions, where a start or end event never happens (see fluentEventInside/2).
+clauseWarning(clause((Head:-Body), _, _), _, 'rule form', format("the compiler does not translate the conditions inside '\\+ (A, B)', so ~w never happens there; write one rule with \\+ A and one with \\+ B", [Event])):-
+	nonvar(Head),
+	functor(Head, Name, Arity),
+	memberchk(Name/Arity, [initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, happensAt/2]),
+	conjunctList(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	Condition=(\+ Negated),
+	nonvar(Negated),
+	Negated=(_, _),
+	once(fluentEventInside(Negated, Event)).
+
+% disjunction: the compiler does not translate ';' and '->' (see disjunctionProblem/4). A ';' under a negation
+% keeps its brackets and is not reported.
+clauseWarning(clause((Head:-Body), _, _), _, disjunction, Problem):-
+	nonvar(Head),
+	functor(Head, Name, Arity),
+	memberchk(Name/Arity, [initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, happensAt/2, holdsFor/2, holdsAt/2]),
+	conjunctList(Body, Conditions),
+	member(Condition, Conditions),
+	disjunctionProblem(Head, Condition, Conditions, Problem).
+
+% built-in: the number of arguments of the predicates of RTEC.
+clauseWarning(clause((Head:-Body), _, _), _, 'built-in', format("~w has ~w ~w, but ~w takes ~w", [Condition, Arity, Unit, Name, Expected])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	functor(Condition, Name, Arity),
+	builtinArities(Name, Arities),
+	\+ memberchk(Arity, Arities),
+	atomic_list_concat(Arities, ' or ', Expected),
+	(Arity=:=1 -> Unit=argument ; Unit=arguments).
+
+% built-in: holdsAt, holdsFor, start and end take a fluent-value pair F=V. A variable fluent is an error
+% (see clauseError/3).
+clauseWarning(clause((Head:-Body), _, _), _, 'built-in', format("~w takes a fluent-value pair F=V, not ~w", [Name, FVP])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	fvpArgument(Condition, Name, FVP),
+	\+ variableFluent(FVP),
+	\+ fluentValuePair(FVP).
+
+% built-in: happensAt takes an event, not a fluent-value pair.
+clauseWarning(clause((Head:-Body), _, _), _, 'built-in', format("happensAt takes an event, not the fluent-value pair ~w; use holdsAt, or the start or end of the fluent-value pair", [FVP])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(happensAt(FVP, _), Conditions),
+	fluentValuePair(FVP).
+
+% built-in: union_all, intersect_all, complement_all and relative_complement_all take a list of interval lists.
+clauseWarning(clause((Head:-Body), _, _), _, 'built-in', format("~w expects a list of interval lists, e.g. [~w], not the interval list ~w", [Name, List, List])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	listArgument(Condition, Name, List),
+	producedIntervalList(List, Conditions).
+
+% built-in: the relations and output modes of Allen's interval algebra.
+clauseWarning(clause((Head:-Body), _, _), _, 'built-in', Problem):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	allenCondition(Condition, Relation, Mode),
+	allenProblem(Head, Relation, Mode, Problem).
+
+% fi/p: fi and p are declarations, not conditions.
+clauseWarning(clause((Head:-Body), _, _), _, 'fi/p', format("~w is a declaration, not a condition; write it as a separate clause", [Condition])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	(Condition=fi(_, _, _) ; Condition=p(_)).
+
+% fi/p: fi(F=V1, F=V2, Duration) relates two values of one fluent. A variable fluent in the target is an error, and
+% so is a target that matches the source (see clauseError/3). A variable fluent in the source is not reported: the
+% compiler compiles it, and the body of the fi may bind it.
+clauseWarning(clause(Term, _, _), _, 'fi/p', format("fi takes two fluent-value pairs of the same fluent, fi(F=V1, F=V2, Duration)", [])):-
+	fiClause(Term, Source, Target, _, _),
+	\+ variableFluent(Source),
+	\+ variableFluent(Target),
+	\+ (fluentValuePair(Source), fluentValuePair(Target)).
+clauseWarning(clause(Term, _, _), _, 'fi/p', format("~w and ~w are different fluents, so RTEC never applies this fi", [F1, F2])):-
+	fiClause(Term, F1=_, F2=_, _, _),
+	nonvar(F1), nonvar(F2),
+	\+ (functor(F1, Name, Arity), functor(F2, Name, Arity)).
+clauseWarning(clause(Term, _, _), _, 'fi/p', format("the arguments of ~w and ~w never match, so RTEC never applies this fi", [F1, F2])):-
+	fiClause(Term, F1=_, F2=_, _, _),
+	nonvar(F1), nonvar(F2),
+	functor(F1, Name, Arity), functor(F2, Name, Arity),
+	\+ F1=F2.
+
+% fi/p: the duration is a positive integer, or a variable that the body or the fluent-value pairs of the fi bind,
+% e.g. with a threshold.
+clauseWarning(clause(Term, _, _), _, 'fi/p', format("the duration ~w is a name where a number is needed; RTEC stops with an error when it applies this fi", [Duration])):-
+	fiClause(Term, _, _, Duration, _),
+	atom(Duration).
+clauseWarning(clause(Term, _, _), _, 'fi/p', format("the duration ~w is bound neither by the body of the fi nor by its fluent-value pairs, so RTEC stops with an error when it applies this fi", [Duration])):-
+	fiClause(Term, Source, Target, Duration, Body),
+	var(Duration),
+	\+ boundBefore(Duration, [Body, Source, Target]).
+clauseWarning(clause(Term, _, _), _, 'fi/p', format("the duration ~w must be a positive integer", [Duration])):-
+	fiClause(Term, _, _, Duration, _),
+	number(Duration),
+	\+ (integer(Duration), Duration>0).
+
+% fi/p: fi and p apply only to fluent-value pairs defined by initiatedAt and terminatedAt rules.
+clauseWarning(clause(Term, _, _), Index, 'fi/p', format("~w is defined by holdsFor rules; RTEC ignores fi for statically determined fluents", [Source])):-
+	fiClause(Term, Source, _, _, _),
+	fluentValuePair(Source),
+	definedBy(Index, Source, holdsFor),
+	\+ (definedBy(Index, Source, RuleType), RuleType\=holdsFor).
+
+% fi/p: p(F=V) postpones the deadline of a fi(F=V, F=V2, Duration).
+clauseWarning(clause(p(FVP), _, _), _, 'fi/p', format("p takes a fluent-value pair F=V, not ~w", [FVP])):-
+	\+ variableFluent(FVP),
+	\+ fluentValuePair(FVP).
+clauseWarning(clause(p(FVP), _, _), index(Sources, _, _), 'fi/p', format("there is no fi(~w, ..., Duration), so this p has no effect", [FVP])):-
+	fluentValuePair(FVP),
+	\+ (member(Source, Sources), \+ \+ Source=FVP).
+
+% number: the operands of a comparison and the right side of is are numbers. A name, or an interval list, there
+% stops RTEC with an error when the rule is evaluated.
+clauseWarning(clause((Head:-Body), _, _), _, number, format("~w is a name where a number is needed, so RTEC stops with an error when it evaluates this condition", [Name])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	arithmeticOperand(Condition, Operand),
+	nameInExpression(Operand, Name).
+clauseWarning(clause((Head:-Body), _, _), _, number, format("~w is an interval list where a number is needed, so RTEC stops with an error when it evaluates this condition", [Operand])):-
+	eventCalculusRuleHead(Head),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	arithmeticOperand(Condition, Operand),
+	producedIntervalList(Operand, Conditions).
+
+% grounding: RTEC computes the intervals of a fluent-value pair only for the instances its grounding enumerates.
+clauseWarning(clause(Term, _, _), Index, grounding, format("~w has no grounding, so RTEC computes no intervals for it", [Target])):-
+	fiClause(Term, _, Target, _, _),
+	fluentValuePair(Target),
+	Index=index(_, _, [_|_]),
+	\+ hasGrounding(Index, Target).
+
+%%%% clauseError(+Clause, -Check, -Problem)
+% The mistakes on which the compiler cannot finish.
+
+% fluent: the compiler takes apart the fluent of the heads of initiatedAt, terminatedAt and holdsFor rules and of
+% initially and grounding, of the holdsAt, holdsFor, start and end conditions of initiatedAt, terminatedAt,
+% holdsFor and happensAt rules, and of the target of fi. A variable there stops it with an instantiation error.
+clauseError(clause(Term, _, _), fluent, format("the fluent of the head is a variable, which the compiler cannot compile", [])):-
+	clauseHead(Term, Head),
+	fluentHead(Head, FVP),
+	variableFluent(FVP).
+clauseError(clause((Head:-Body), _, _), fluent, format("the fluent of ~w is a variable, which the compiler cannot compile", [Condition])):-
+	nonvar(Head),
+	functor(Head, Name, Arity),
+	memberchk(Name/Arity, [initiatedAt/2, initiatedAt/4, terminatedAt/2, terminatedAt/4, happensAt/2, holdsFor/2]),
+	bodyConditions(Body, Conditions),
+	member(Condition, Conditions),
+	nonvar(Condition),
+	fluentCondition(Condition, FVP),
+	variableFluent(FVP).
+clauseError(clause(Term, _, _), fluent, format("the fluent of ~w is a variable, which the compiler cannot compile", [Target])):-
+	fiClause(Term, _, Target, _, _),
+	variableFluent(Target).
+
+% fi/p: the compiler does not finish on an fi whose target matches its source.
+clauseError(clause(Term, _, _), 'fi/p', format("the target ~w matches the source, and the compiler cannot finish on such an fi", [Target])):-
+	fiClause(Term, Source, Target, _, _),
+	fluentValuePair(Source),
+	fluentValuePair(Target),
+	\+ \+ Source=Target.
+
+% arithmeticOperand(+Condition, -Operand)
+arithmeticOperand(Condition, Operand):-
+	nonvar(Condition),
+	Condition =.. [Operator, Left, Right],
+	memberchk(Operator, [<, >, =<, >=, =:=, =\=]),
+	member(Operand, [Left, Right]).
+arithmeticOperand(Condition, Expression):-
+	nonvar(Condition),
+	Condition = (_ is Expression).
+
+% nameInExpression(+Expression, -Name)
+% Name is an atom of the arithmetic Expression that is not an evaluable constant, such as pi or inf.
+nameInExpression(Expression, Expression):-
+	atom(Expression),
+	\+ current_arithmetic_function(Expression).
+nameInExpression(Expression, Name):-
+	compound(Expression),
+	\+ Expression=[_|_],
+	current_arithmetic_function(Expression),
+	Expression =.. [_|Arguments],
+	member(Argument, Arguments),
+	nameInExpression(Argument, Name).
+
+% allenProblem(+Head, +Relation, +Mode, -Problem)
+allenProblem(Head, _, _, format("Allen relations are compiled only in the body of holdsFor rules, so RTEC stops with an error when it evaluates this rule", [])):-
+	\+ Head=holdsFor(_, _), !.
+allenProblem(_, Relation, _, format("~w is not an Allen relation (before, meets, starts, finishes, during, overlaps, equal)", [Relation])):-
+	\+ allenRelation(Relation), !.
+allenProblem(_, Relation, Mode, format("~w is not an output mode of ~w (source, target, lhs, rhs, union, intersection, relative_complement, relative_complement_inverse)", [Mode, Relation])):-
+	nonvar(Mode),
+	\+ allenMode(Mode).
+%%%%%%%%%%%%%%%%%%%%%%%% EVENT DESCRIPTION CHECKS END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

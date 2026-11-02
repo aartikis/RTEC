@@ -1,0 +1,8 @@
+RTEC warning: rules.prolog:2: [built-in] holdsFor(happy(X)=true,I): union_all(I1,[I2],I) has 3 arguments, but union_all takes 2.
+RTEC warning: rules.prolog:8: [built-in] holdsFor(content(X)=true,I): union_all expects a list of interval lists, e.g. [I1], not the interval list I1.
+RTEC warning: rules.prolog:13: [built-in] initiatedAt(location(X)=pub,T): holdsAt takes a fluent-value pair F=V, not rich(X).
+RTEC warning: rules.prolog:18: [built-in] terminatedAt(rich(X)=true,T): happensAt takes an event, not the fluent-value pair location(X)=pub; use holdsAt, or the start or end of the fluent-value pair.
+RTEC warning: rules.prolog:22: [built-in] initiatedAt(tired(X)=true,T): start takes a fluent-value pair F=V, not location(X).
+RTEC warning: rules.prolog:26: [built-in] holdsFor(drinking(X)=true,I): intersect is not an output mode of during (source, target, lhs, rhs, union, intersection, relative_complement, relative_complement_inverse).
+RTEC warning: rules.prolog:32: [built-in] initiatedAt(lucky(X)=true,T): Allen relations are compiled only in the body of holdsFor rules, so RTEC stops with an error when it evaluates this rule.
+RTEC warning: rules.prolog:37: [built-in] initiatedAt(cheerful(X)=true,T): holdsAt(rich(X)=true) has 1 argument, but holdsAt takes 2 or 3.

@@ -1,0 +1,4 @@
+RTEC error: rules.prolog:8: [fluent] terminatedAt(Fluent=true,T): the fluent of the head is a variable, which the compiler cannot compile.
+RTEC error: rules.prolog:13: [fluent] initiatedAt(rich(X)=true,T): the fluent of holdsAt(Fluent=true,T) is a variable, which the compiler cannot compile.
+RTEC error: rules.prolog:19: [fluent] fi(rich(X)=true,_Fluent=false,10): the fluent of _Fluent=false is a variable, which the compiler cannot compile.
+RTEC error: rules.prolog:22: [fi/p] fi(location(X)=pub,location(X)=pub,10): the target location(X)=pub matches the source, and the compiler cannot finish on such an fi.
