@@ -1,0 +1,3 @@
+RTEC warning: rules.prolog:2: [number] initiatedAt(rich(X)=true,T): richThreshold is a name where a number is needed, so RTEC stops with an error when it evaluates this condition.
+RTEC warning: rules.prolog:12: [number] initiatedAt(budget(X)=B,T): taxRate is a name where a number is needed, so RTEC stops with an error when it evaluates this condition.
+RTEC warning: rules.prolog:17: [number] holdsFor(happy(X)=true,I): I1 is an interval list where a number is needed, so RTEC stops with an error when it evaluates this condition.

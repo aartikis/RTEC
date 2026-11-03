@@ -1,0 +1,7 @@
+RTEC warning: rules.prolog:2: [disjunction] initiatedAt(rich(X)=true,T): the compiler does not translate ';', so the rule has no time window, which can give wrong intervals (for example with deadlines); write one rule per alternative.
+RTEC warning: rules.prolog:8: [disjunction] holdsFor(happy(X)=true,I): a holdsFor rule whose body is a ';' gives the intervals of its first alternative that succeeds only; combine the interval lists with union_all instead.
+RTEC warning: rules.prolog:20: [disjunction] holdsAt(calm(X)=true,T): the compiler drops a holdsAt rule with '->'.
+RTEC warning: rules.prolog:27: [disjunction] initiatedAt(lucky(X)=true,T): ';' next to other conditions is written without brackets, so that A,(B;C) is read back as (A,B);C; write one rule per alternative.
+RTEC warning: rules.prolog:34: [disjunction] initiatedAt(careful(X)=true,T): the compiler does not translate '->', so the compiled rule does not mean the same; write one rule per alternative.
+RTEC warning: rules.prolog:41: [disjunction] happensAt(cheer(X),T): the compiler does not translate the conditions inside ';', so start(rich(X)=true) never happens there; write one rule per alternative.
+RTEC warning: rules.prolog:47: [disjunction] initiatedAt(steady(X)=true,T): the compiler does not translate the conditions inside '\+ (A ; B)', so end(rich(X)=true) never happens there; write \+ A, \+ B instead.

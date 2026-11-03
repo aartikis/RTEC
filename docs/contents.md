@@ -18,5 +18,6 @@
    4. [Voting in Multi-Agent Systems](../examples/voting/voting_readme.md)
    5. [NetBill: An E-commerce Protocol](../examples/netbill/netbill_readme.md)
    6. [Maritime Situational Awareness](../examples/maritime/maritime_readme.md)
-7. [References](references.md)
+7. [Checks of the Event Description](compiler-checks.md)
+8. [References](references.md)
 
